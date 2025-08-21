@@ -1,16 +1,50 @@
 import {
   createModule,
+  getInjector,
   imports,
   provide,
   setInjectable,
   setModule,
 } from "../core/di/fn.ts";
-import Injector from "../core/di/injector.ts";
 
-class SomeModule {}
+// foo
+
+class ServiceFoo {
+  constructor(private foo: string, private bar: string) {}
+}
+setInjectable(ServiceFoo, {
+  dependencies: ["foo", "bar"],
+});
+
 class ModuleFoo {}
-class ModuleBar {}
 
+setModule(
+  ModuleFoo,
+  createModule(
+    provide("foo", () => "Foo Value"),
+    provide("bar", () => "Bar Value"),
+    provide(ServiceFoo),
+  ),
+);
+
+// bar
+
+class ServiceBar {
+  constructor(readonly foo: ServiceFoo) {
+  }
+}
+setInjectable(ServiceBar, {
+  dependencies: [ServiceFoo],
+});
+
+class ModuleBar {}
+setModule(
+  ModuleBar,
+  createModule(
+    imports(ModuleFoo),
+    provide(ServiceBar),
+  ),
+);
 class SomeService {
   constructor(private foo: string, private bar: string) {}
 }
@@ -18,6 +52,7 @@ setInjectable(SomeService, {
   dependencies: ["foo", "bar"],
 });
 
+class SomeModule {}
 setModule(
   SomeModule,
   createModule(
@@ -27,9 +62,5 @@ setModule(
     provide(SomeService),
   ),
 );
-
-const inj = new Injector(
-  SomeModule,
-);
-
-console.log(await inj.resolve("foo"));
+const foo = await getInjector(ModuleBar).resolve(ServiceBar);
+console.log(foo);

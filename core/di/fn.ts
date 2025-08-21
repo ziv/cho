@@ -1,4 +1,5 @@
-import type { Ctr, Factory, Injector, Provider, Token } from "./types.ts";
+import Injector from "./injector.ts";
+import type {Ctr, Factory, Provider, Resolver, Token} from "./types.ts";
 
 export type InjectableDescriptor = {
   dependencies?: Token[];
@@ -13,6 +14,7 @@ export type ModuleDescriptorFn = (md: ModuleDescriptor) => ModuleDescriptor;
 
 const IDS = Symbol("InjectableDescriptor");
 const MDS = Symbol("ModuleDescriptor");
+const MIJ = Symbol("ModuleInjector");
 
 export function provide<T>(
   token: Token,
@@ -31,7 +33,7 @@ export function provide<T>(
     return (md: ModuleDescriptor) => {
       md.providers.push({
         provide: token,
-        factory: async (i: Injector) => {
+        factory: async (i: Resolver) => {
           const deps = (token.prototype[IDS]?.dependencies ?? []) as Token[];
           const args = await Promise.all(deps.map((dep) => i.resolve(dep)));
           return Reflect.construct(token, args);
@@ -81,4 +83,19 @@ export function setModule(ctr: Ctr, descriptor: ModuleDescriptor) {
     );
   }
   ctr.prototype[MDS] = descriptor;
+  ctr.prototype[MIJ] = new Injector(ctr);
+}
+
+export function getModule(ctr: Ctr): ModuleDescriptor {
+  if (MDS in ctr.prototype) {
+    return ctr.prototype[MDS];
+  }
+  throw new Error(`Module descriptor not found for ${ctr.name}.`);
+}
+
+export function getInjector(ctr: Ctr): Injector {
+  if (MIJ in ctr.prototype) {
+    return ctr.prototype[MIJ];
+  }
+  throw new Error(`Injector not found for ${ctr.name}.`);
 }
