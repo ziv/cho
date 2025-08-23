@@ -22,7 +22,8 @@ An Angular like example:
 class Service {
     // this type of decorator (argument decorator) does not 
     // exists in JS decorators
-    constructor(@Inject() private dep: Dep) {
+    constructor(@Inject() private dep: Dep,
+                @Inject('config') private config: Config) {
     }
 }
 ````
@@ -36,9 +37,10 @@ is done using the
 import {Injectable} from '@cho/core/di/decorators.ts';
 import {dependsOn} from '@cho/core/di/fn.ts';
 
-@Injectable(dependsOn(Dep))
+@Injectable(dependsOn(Dep, 'config'))
 class Service {
-    constructor(private dep: Dep) {
+    constructor(private dep: Dep,
+                private config: Config) {
     }
 }
 ````
