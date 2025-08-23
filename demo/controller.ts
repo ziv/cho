@@ -5,7 +5,7 @@ import {
   Middlewares,
   Post,
 } from "../web/decorators.ts";
-import { controllers, route } from "../web/fn.ts";
+import { Controllers, Route } from "../web/fn.ts";
 import { Context } from "hono";
 import ChoWebApplication from "../web/application.ts";
 import { DependsOn, Injectable, Provide } from "@cho/core/di";
@@ -24,17 +24,20 @@ function funcMiddlewareasync(c: Context, next: () => Promise<void>) {
   next().catch(console.error);
 }
 
-@Middlewares(ClassMiddleware, funcMiddlewareasync)
 @Controller(
-  route("foo"),
+  Route("foo"),
   DependsOn("foo"),
+  Middlewares(ClassMiddleware, funcMiddlewareasync),
 )
 class MyController {
   constructor(private foo: string) {
   }
 
   @Middlewares(ClassMiddleware, funcMiddlewareasync)
-  @Get("bar")
+  @Get(
+    "bar",
+    Middlewares(ClassMiddleware, funcMiddlewareasync),
+  )
   myMethod(c: Context) {
     return c.json({
       foo: "1",
@@ -51,7 +54,7 @@ class MyController {
 
 @Middlewares(ClassMiddleware, funcMiddlewareasync)
 @Feature(
-  controllers(MyController),
+  Controllers(MyController),
   Provide("foo", () => "bar"),
   Provide(ClassMiddleware),
 )

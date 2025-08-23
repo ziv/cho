@@ -56,6 +56,7 @@ export type InjectableDescriptor = {
 export type ModuleDescriptor = InjectableDescriptor & {
   imports: Ctr[];
   providers: Provider[];
+  exports: Token[];
 };
 
 export type DescriptorFn<T = Any> = (d: T) => T;

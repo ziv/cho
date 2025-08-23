@@ -9,6 +9,7 @@ import {
 import {
   CreateController,
   CreateFeature,
+  CreateMethod,
   SetController,
   SetFeature,
   SetMethod,
@@ -20,18 +21,26 @@ import {
  * @param method
  */
 function createMethodDecorator(method: string) {
-  return function (route: string): ClassDecorator {
+  return function (
+    route: string | DescriptorFn,
+    ...fns: DescriptorFn[]
+  ): ClassDecorator {
     return function (
       target: Target,
       context: MethodContext,
     ) {
-      SetMethod(target, {
-        middlewares: [],
-        route,
-        method,
-        name: context.name,
-        context,
-      });
+      // make sure to add the method and name to the fns array
+      fns.push((d) => ({ ...d, method, name: context.name }));
+      if (typeof route === "function") {
+        // if route is a function, add it to the front of the fns array
+        fns.unshift(route);
+      } else if (typeof route === "string") {
+        // if route is a string, add a function to set the route
+        fns.unshift((d) => ({ ...d, route }));
+      } else {
+        throw new Error("Route must be a string or a function");
+      }
+      SetMethod(target, CreateMethod(...fns));
       /**
        * We are using TC39 stage 3 proposal decorators (ESM/Deno)
        * While TypeScript decorators are TS specific and do not
@@ -43,9 +52,9 @@ function createMethodDecorator(method: string) {
   };
 }
 
-export function Middlewares(...middlewares: (Target | Ctr)[]) {
+export function Middlewares(...middlewares: any[]) {
   return (target: Target) => {
-    SetMiddleware(target, middlewares);
+    SetMiddleware(target, { middlewares });
   };
 }
 
