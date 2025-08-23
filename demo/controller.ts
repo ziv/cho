@@ -12,7 +12,6 @@ class MyController {
     });
   }
 
-  @Body(Validator)
   @Post("foo")
   myPostMethod(c: Context) {
     return c.json({

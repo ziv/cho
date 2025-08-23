@@ -1,4 +1,4 @@
-import { Ctr, DescriptorFn, Target } from "../core/di/types.ts";
+import { DescriptorFn, Target } from "../core/di/types.ts";
 import { type MethodContext } from "./fn.ts";
 import {
   CreateInjectable,
@@ -15,6 +15,10 @@ import {
   SetMethod,
 } from "./meta.ts";
 
+/**
+ * Creates a method decorator for the given HTTP method.
+ * @param method
+ */
 function createMethodDecorator(method: string) {
   return function (route: string): ClassDecorator {
     return function (
