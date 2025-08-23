@@ -5,9 +5,10 @@
 ## Decorators
 
 A tiny decorators based framework using the [TC39 stage 3 proposal](https://github.com/tc39/proposal-decorators) for
-decorators and at [decorators.deno.dev](https://decorators.deno.dev/).
+decorators.
 
 The JS decorators are different from TypeScript decorators, and they are not compatible with each other.
+For more information, see [decorators.deno.dev](https://decorators.deno.dev/).
 
     JS decorators can not be applied on arguments, while TS ones can.
 
@@ -26,7 +27,8 @@ class Service {
 }
 ````
 
-Lack of this feature in JS decorators requires a different approach - being more verbose. With `CHO`, defining dependencies
+Lack of this feature in JS decorators requires a different approach - being more verbose. With `CHO`, defining
+dependencies
 is done using the
 `dependsOn()` function in the class decorator.
 
