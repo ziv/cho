@@ -13,8 +13,6 @@ not compatible with each other. For more information, see:
 - [Typescript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
 - [TC39 stage 3 proposal](https://github.com/tc39/proposal-decorators)
 
-  JS decorators can not be applied on arguments, while TS ones can.
-
 <img src="./assets/cho.svg"  alt="CHO" width="200"/>
 
 ## Cho
@@ -44,13 +42,14 @@ Module is a logical unit to provide dependencies. A module can import other
 modules to use their provided dependencies.
 
 ```ts
+
 @Module(
-  // importing
-  Imports(FooModule, BarModule),
-  // provide by an async factory function
-  Provide("token", (i: Injector) => Promise.resolve("factory value")),
-  // provide by a class
-  Provide(MyService),
+    // importing
+    Imports(FooModule, BarModule),
+    // provide by an async factory function
+    Provide("token", (i: Injector) => Promise.resolve("factory value")),
+    // provide by a class
+    Provide(MyService),
 )
 class MyModule {
 }
@@ -59,16 +58,17 @@ class MyModule {
 Defining a class as injectable entity:
 
 ```ts
+
 @Injectable(
-  // dependencies (list of tokens for the constructor arguments)
-  DependsOn(OtherService, "foo"),
+    // dependencies (list of tokens for the constructor arguments)
+    DependsOn(OtherService, "foo"),
 )
 class MyService {
-  constructor(
-    readonly other: OtherService,
-    readonly foo: string,
-  ) {
-  }
+    constructor(
+        readonly other: OtherService,
+        readonly foo: string,
+    ) {
+    }
 }
 ```
 
@@ -77,15 +77,16 @@ class MyService {
 An Angular like example:
 
 ```ts
+
 @Injectable()
 class Service {
-  // this type of decorator (argument decorator) does not
-  // exists in JS decorators
-  constructor(
-    @Inject() private dep: Dep,
-    @Inject("config") private config: Config,
-  ) {
-  }
+    // this type of decorator (argument decorator) does not
+    // exists in JS decorators
+    constructor(
+        @Inject() private dep: Dep,
+        @Inject("config") private config: Config,
+    ) {
+    }
 }
 ```
 
@@ -94,11 +95,11 @@ verbose. With `CHO`, defining dependencies is done using the `dependsOn()`
 function in the class decorator.
 
 ```ts
-import { dependsOn, Injectable } from "@cho/core/di";
+import {dependsOn, Injectable} from "@cho/core/di";
 
 @Injectable(dependsOn(Dep, "config"))
 class Service {
-  constructor(private dep: Dep, private config: Config) {
-  }
+    constructor(private dep: Dep, private config: Config) {
+    }
 }
 ```
