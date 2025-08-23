@@ -2,9 +2,9 @@
 
 <img src="./assets/cho.svg"  alt="CHO" width="200"/>
 
-## Decorators
+## Modern Decorators
 
-A tiny decorators based framework using the [TC39 stage 3 proposal](https://github.com/tc39/proposal-decorators) for
+A tiny decorators based framework using the [TC39 stage 3 proposal](https://github.com/tc39/proposal-decorators) 
 decorators.
 
 The JS decorators are different from TypeScript decorators, and they are not compatible with each other.
