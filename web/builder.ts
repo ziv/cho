@@ -1,6 +1,6 @@
 import { Ctr, Token } from "../core/di/types.ts";
 import { ModuleInit } from "./lifecycle.ts";
-import debuglog from "../core/debug.ts";
+import debuglog from "../core/utils/debuglog.ts";
 import {
   EndPointDescriptor,
   ProcessedController,

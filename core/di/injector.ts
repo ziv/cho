@@ -9,7 +9,7 @@ import type {
   Resolver,
   Token,
 } from "./types.ts";
-import debuglog from "../debug.ts";
+import debuglog from "../utils/debuglog.ts";
 import { GetInjector } from "./meta.ts";
 
 const log = debuglog("Injector");

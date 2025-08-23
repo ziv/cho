@@ -1,7 +1,7 @@
 import { Context, Hono } from "hono";
 import ChoWebLinker from "@cho/web/linker.ts";
 import { ProcessedFeature } from "@cho/web/types.ts";
-import debuglog from "@cho/core/debug.ts";
+import debuglog from "../../core/utils/debuglog.ts";
 
 const log = debuglog("HonorAdapter");
 
