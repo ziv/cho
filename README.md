@@ -1,3 +1,3 @@
 # CHO
 
-![CHO](./cho.svg)
+<img src="./cho.svg"  alt="CHO" width="200"/>
