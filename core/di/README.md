@@ -19,36 +19,57 @@ its own injector. The injector caches instances/values of providers.
 
 ---
 
+# Resolving Dependencies
+
+Classic DI mechanism does not instantiate the module classes.
+In Cho the module classes are instantiated before you can access their injector.
+
+```
++----------+              +----------+
+| ModuleA  | --imports--> | ModuleB  |
++----------+              +----------+ 
+| ServiceA |              | ServiceB |
++----------+              +----------+
+```
+
+If `ServiceA` depends on `ServiceB`, the injector of `ModuleA` will resolve `ModuleB` to access its injector, and then
+it can ask for `ServiceB`.
+
+
+
+
+---
+
 ## Using decorators
 
 ### @Injectable
 
-Use this decorator to declare a provider. The provider can be a class or a
-function.
+Use `Injectable` to declare a class as a provider. Use `DependsOn` to declare its dependencies.
 
 ```ts
-import { dependsOn, Injectable } from "@cho/core/di";
+import {DependsOn, Injectable} from "@cho/core/di";
 
-@Injectable(dependsOn("foo", "bar"))
+@Injectable(DependsOn("foo", "bar"))
 class MyService {
-  constructor(private foo: string, private bar: number) {
-    // foo and bar will be injected by the injector
-  }
+    constructor(private foo: string, private bar: number) {
+        // foo and bar will be injected by the injector
+    }
 }
 ```
 
 ### @Module
 
-Use this decorator to declare a module. The module can import other modules and
-declare providers. All required dependencies should be declared or imported.
+Use `Module` decorator to declare a module.
+Module is a logic container for providers.
+Module can import other modules to access their providers.
 
 ```ts
-import { imports, Injectable, Module, provide } from "@cho/core/di";
+import {imports, Injectable, Module, provide} from "@cho/core/di";
 
 @Module(
-  imports(OtherModule),
-  provide("foo", () => "bar"),
-  provide(MyService),
+    imports(OtherModule),
+    provide("foo", () => "bar"),
+    provide(MyService),
 )
 class MyModule {
 }

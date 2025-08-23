@@ -1,6 +1,6 @@
-import { DependsOn, Imports, Provide } from "../core/di/fn.ts";
-import { Injectable, Module } from "../core/di/decorators.ts";
-import { GetInjector } from "../core/di/meta.ts";
+import {DependsOn, Imports, Provide} from "../core/di/fn.ts";
+import {Injectable, Module} from "../core/di/decorators.ts";
+import Injector from "../core/di/injector.ts";
 
 // foo
 
@@ -30,6 +30,6 @@ class ServiceBar {
 class ModuleBar {
 }
 
-const injector = GetInjector(ModuleBar);
-const value = await injector.resolve(ServiceBar);
+const injector = new Injector(ModuleBar);
+const value = await injector.resolve(ServiceFoo);
 console.log(value);

@@ -7,10 +7,11 @@ import type {
   Factory,
   InjectableDescriptor,
   ModuleDescriptor,
+  Provider,
   Resolver,
   Token,
 } from "./types.ts";
-import { GetInjectable } from "./meta.ts";
+import { getInjectable } from "./meta.ts";
 
 // providing functions
 
@@ -34,11 +35,13 @@ import { GetInjectable } from "./meta.ts";
 export function DependsOn<T extends InjectableDescriptor>(
   ...tokens: Token[]
 ): DescriptorFn<T> {
-  return (d: T) => {
-    if ("dependencies" in d) {
+  return (d: Partial<T>) => {
+    if (d.dependencies) {
       d.dependencies.push(...tokens);
+    } else {
+      d.dependencies = [...tokens];
     }
-    return d;
+    return d as T;
   };
 }
 
@@ -66,38 +69,42 @@ export function DependsOn<T extends InjectableDescriptor>(
  * @param token
  * @param factory
  */
+export function Provide<T>(token: Ctr<T>): DescriptorFn<ModuleDescriptor>;
+export function Provide<T>(
+  token: Token,
+  factory: Factory<T>,
+): DescriptorFn<ModuleDescriptor>;
 export function Provide<T, D extends ModuleDescriptor>(
   token: Token,
   factory?: Factory<T>,
 ): DescriptorFn<D> {
+  // factory is provided
   if (factory) {
-    return (d: D) => {
-      if ("providers" in d) {
-        d.providers.push({
-          provide: token,
-          factory,
-        });
+    return (d: Partial<D>) => {
+      if (d.providers) {
+        d.providers.push({ provide: token, factory });
+      } else {
+        d.providers = [{ provide: token, factory }];
       }
-
       return d;
     };
   }
   // no factory but token is a class
   // create the factory from the class constructor
   if (typeof token === "function") {
-    return (d: D) => {
-      if ("providers" in d) {
-        d.providers.push({
-          provide: token,
-          factory: async (i: Resolver) => {
-            const args = await Promise.all(
-              GetInjectable(token)
-                .dependencies
-                .map((dep) => i.resolve(dep)),
-            );
-            return Reflect.construct(token, args);
-          },
-        });
+    return (d: Partial<D>) => {
+      const provider: Provider = {
+        provide: token,
+        factory: async (i: Resolver) => {
+          const deps = getInjectable(token)?.dependencies ?? [];
+          const args = await Promise.all(deps.map((d) => i.resolve(d)));
+          return Reflect.construct(token, args);
+        },
+      };
+      if (d.providers) {
+        d.providers.push(provider);
+      } else {
+        d.providers = [provider];
       }
       return d;
     };
@@ -127,9 +134,11 @@ export function Provide<T, D extends ModuleDescriptor>(
 export function Imports<D extends ModuleDescriptor>(
   ...modules: Ctr[]
 ): DescriptorFn<D> {
-  return (d: D) => {
-    if ("imports" in d) {
+  return (d: Partial<D>) => {
+    if (d.imports) {
       d.imports.push(...modules);
+    } else {
+      d.imports = [...modules];
     }
     return d;
   };

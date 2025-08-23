@@ -1,14 +1,14 @@
 /**
  * # Decorators for Dependency Injection
  */
-import type { DescriptorFn, Target } from "./types.ts";
-import {
-  CreateInjectable,
-  CreateModule,
-  SetInjectable,
-  SetInjector,
-  SetModule,
-} from "./meta.ts";
+import type {
+  DescriptorFn,
+  InjectableDescriptor,
+  ModuleDescriptor,
+  Target,
+} from "./types.ts";
+import { setInjectable, setModule } from "./meta.ts";
+import { collect } from "./utils.ts";
 
 /**
  * Mark a class as injectable.
@@ -19,7 +19,7 @@ import {
  *
  * @example:
  * ```ts
- * @Injectable(dependsOn(SomeDependency))
+ * @Injectable(DependsOn(SomeDependency))
  * class MyService {
  *   constructor(private someDependency: SomeDependency) {}
  * }
@@ -30,7 +30,8 @@ import {
  */
 export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
-    SetInjectable(target, CreateInjectable(...fns));
+    const data = collect<InjectableDescriptor>(fns);
+    setInjectable(target, data);
   };
 }
 
@@ -45,9 +46,9 @@ export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
  * @example:
  * ```ts
  * @Module(
- *  imports(SomeModule),
- *  provide(SomeService, () => new SomeService()),
- *  provide(SomeOtherService, (inj) => inj.resolve(SomeDependency)),
+ *  Imports(SomeModule),
+ *  Provide(SomeService, () => new SomeService()),
+ *  Provide(SomeOtherService, (inj) => inj.resolve(SomeDependency)),
  * )
  * class MyModule {
  *  constructor(private someService: SomeService) {}
@@ -59,8 +60,8 @@ export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
  */
 export function Module(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
-    SetInjectable(target, CreateInjectable(...fns));
-    SetModule(target, CreateModule(...fns));
-    SetInjector(target, CreateModule(...fns));
+    const data = collect<InjectableDescriptor & ModuleDescriptor>(fns);
+    setInjectable(target, data);
+    setModule(target, data);
   };
 }

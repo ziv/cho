@@ -1,4 +1,11 @@
-import { Ctr, Target } from "./types.ts";
+import { Ctr, type DescriptorFn, Target } from "./types.ts";
+
+export function collect<T>(fns: DescriptorFn[]) {
+  return fns.reduce(
+    (acc, cur) => cur(acc),
+    {} as Partial<T>,
+  ) as T;
+}
 
 export function write(
   target: Target | Ctr,
@@ -24,4 +31,10 @@ export function read<T>(
     return target[key as keyof typeof target] as T;
   }
   return undefined;
+}
+
+export function ensureArray(value: { [key: string]: unknown }, name: string) {
+  if (!(name in value)) {
+    value[name] = [];
+  }
 }

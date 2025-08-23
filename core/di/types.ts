@@ -56,10 +56,9 @@ export type InjectableDescriptor = {
 export type ModuleDescriptor = InjectableDescriptor & {
   imports: Ctr[];
   providers: Provider[];
-  exports: Token[];
 };
 
-export type DescriptorFn<T = Any> = (d: T) => T;
+export type DescriptorFn<T = Any> = (d: Partial<T>) => Partial<T>;
 
 /** @see decorators stage 3, TC39 */
 export type MethodContext = {

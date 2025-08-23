@@ -1,20 +1,6 @@
-import { Ctr, DescriptorFn, MethodContext, Target } from "../core/di/types.ts";
-import {
-  CreateInjectable,
-  CreateModule,
-  SetInjectable,
-  SetInjector,
-  SetModule,
-} from "../core/di/meta.ts";
-import {
-  CreateController,
-  CreateFeature,
-  CreateMethod,
-  SetController,
-  SetFeature,
-  SetMethod,
-  SetMiddleware,
-} from "./meta.ts";
+import {DescriptorFn, MethodContext, Target} from "../core/di/types.ts";
+import {CreateInjectable, CreateModule, SetInjectable, SetInjector, SetModule,} from "../core/di/meta.ts";
+import {CreateController, CreateFeature, CreateMethod, SetController, SetFeature, SetMethod,} from "./meta.ts";
 
 /**
  * Creates a method decorator for the given HTTP method.
@@ -49,12 +35,6 @@ function createMethodDecorator(method: string) {
        * that this is a class decorator.
        */
     } as unknown as ClassDecorator;
-  };
-}
-
-export function Middlewares(...middlewares: any[]) {
-  return (target: Target) => {
-    SetMiddleware(target, { middlewares });
   };
 }
 
