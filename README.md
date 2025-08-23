@@ -18,7 +18,7 @@ For more information, see [decorators.deno.dev](https://decorators.deno.dev/).
 
 An Angular like example:
 
-````ts
+```ts
 
 @Injectable()
 class Service {
@@ -28,14 +28,14 @@ class Service {
                 @Inject('config') private config: Config) {
     }
 }
-````
+```
 
 Lack of this feature in JS decorators requires a different approach - being more verbose. With `CHO`, defining
 dependencies
 is done using the
 `dependsOn()` function in the class decorator.
 
-````ts
+```ts
 import {dependsOn, Injectable} from '@cho/core/di';
 
 @Injectable(dependsOn(Dep, 'config'))
@@ -44,4 +44,4 @@ class Service {
                 private config: Config) {
     }
 }
-````
+```
