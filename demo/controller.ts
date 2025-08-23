@@ -2,9 +2,15 @@ import { Controller, Feature, Get, Post } from "../web/decorators.ts";
 import { controllers, route } from "../web/fn.ts";
 import { Context } from "hono";
 import ChoWebApplication from "../web/application.ts";
+import { dependsOn, provide } from "@cho/core/di";
 
-@Controller(route("foo"))
+@Controller(
+  route("foo"),
+  dependsOn("foo"),
+)
 class MyController {
+  constructor(private foo: string) {
+  }
   @Get("bar")
   myMethod(c: Context) {
     return c.json({
@@ -22,6 +28,7 @@ class MyController {
 
 @Feature(
   controllers(MyController),
+  provide("foo", () => "bar"),
 )
 class MyFeature {
 }
