@@ -36,8 +36,7 @@ is done using the
 `dependsOn()` function in the class decorator.
 
 ````ts
-import {Injectable} from '@cho/core/di/decorators.ts';
-import {dependsOn} from '@cho/core/di/fn.ts';
+import {dependsOn, Injectable} from '@cho/core/di';
 
 @Injectable(dependsOn(Dep, 'config'))
 class Service {
