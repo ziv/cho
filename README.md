@@ -1,3 +1,3 @@
 # CHO
 
-<img src="./cho.svg"  alt="CHO" width="200"/>
+<img src="assets/cho.svg"  alt="CHO" width="200"/>
