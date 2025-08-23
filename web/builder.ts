@@ -6,7 +6,7 @@ import {
   ProcessedController,
   ProcessedFeature,
 } from "./types.ts";
-import { GetController, GetFeature, getMethods } from "./meta.ts";
+import {GetController, GetFeature, getMethods, GetMiddleware} from "./meta.ts";
 import { GetInjectable, GetInjector } from "../core/di/meta.ts";
 import Injector from "../core/di/injector.ts";
 
@@ -49,15 +49,15 @@ export default class ChoWebBuilder {
       // controllers are not modules and does not
       // have lifecycle hooks, and don't have
       // their own injector so we use the feature injector
-      const deps = GetInjectable(controllerCtr).dependencies ?? [];
       const route = GetController(controllerCtr).route;
       const controller = await this.instance(
         injector,
         controllerCtr,
-        deps,
+        GetInjectable(controllerCtr).dependencies,
       );
       const endpoints: EndPointDescriptor[] = getMethods(controller as object);
       controllers.push({
+        middlewares: [],
         route,
         controller,
         endpoints,
@@ -67,7 +67,10 @@ export default class ChoWebBuilder {
       );
     }
 
+    // find all middlewares applied to the feature
+    const middlewares = GetMiddleware(ctr);
     return {
+      middlewares: [],
       route: feature.route,
       injector,
       features,

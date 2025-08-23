@@ -1,5 +1,4 @@
-import { DescriptorFn, Target } from "../core/di/types.ts";
-import { type MethodContext } from "./fn.ts";
+import { Ctr, DescriptorFn, MethodContext, Target } from "../core/di/types.ts";
 import {
   CreateInjectable,
   CreateModule,
@@ -13,6 +12,7 @@ import {
   SetController,
   SetFeature,
   SetMethod,
+  SetMiddleware,
 } from "./meta.ts";
 
 /**
@@ -26,6 +26,7 @@ function createMethodDecorator(method: string) {
       context: MethodContext,
     ) {
       SetMethod(target, {
+        middlewares: [],
         route,
         method,
         name: context.name,
@@ -39,6 +40,12 @@ function createMethodDecorator(method: string) {
        * that this is a class decorator.
        */
     } as unknown as ClassDecorator;
+  };
+}
+
+export function Middlewares(...middlewares: (Target | Ctr)[]) {
+  return (target: Target) => {
+    SetMiddleware(target, middlewares);
   };
 }
 

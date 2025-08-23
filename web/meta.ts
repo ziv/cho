@@ -3,14 +3,16 @@ import {
   createGetMetadata,
   createSetMetadata,
 } from "../core/di/meta.ts";
+import type { Ctr, Provider, Token } from "../core/di/types.ts";
+import { read } from "../core/di/utils.ts";
 import {
   ControllerDescriptor,
   FeatureDescriptor,
   MethodDescriptor,
-} from "./fn.ts";
-import type { Ctr, Provider, Token } from "../core/di/types.ts";
-import { read } from "../core/di/utils.ts";
+  MiddlewareDescriptor,
+} from "./types.ts";
 
+const MiddlewareMetadata = Symbol("MiddlewareMetadata");
 const MethodMetadata = Symbol("MethodMetadata");
 const ControllerMetadata = Symbol("ControllerMetadata");
 const FeatureMetadata = Symbol("Feature");
@@ -19,17 +21,20 @@ export const CreateMethod = createDescriptorCreator<MethodDescriptor>({
   name: "",
   route: "",
   method: "GET", // default method
+  middlewares: [],
 });
 
 export const CreateController = createDescriptorCreator<ControllerDescriptor>({
   route: "",
   dependencies: [] as Token[],
+  middlewares: [] as MiddlewareDescriptor[],
 });
 
 export const CreateFeature = createDescriptorCreator<FeatureDescriptor>({
   route: "",
-  imports: [] as Ctr[],
-  providers: [] as Provider[],
+  // imports: [] as any[],
+  middlewares: [] as MiddlewareDescriptor[],
+  // providers: [] as Provider[],
   controllers: [] as Ctr[],
   features: [] as Ctr[],
   dependencies: [] as Token[],
@@ -41,7 +46,16 @@ export const GetController = createGetMetadata<ControllerDescriptor>(
   ControllerMetadata,
 );
 
+export const GetMiddleware = createGetMetadata<MiddlewareDescriptor>(
+  MiddlewareMetadata,
+);
+
 export const GetFeature = createGetMetadata<FeatureDescriptor>(FeatureMetadata);
+
+export const SetMiddleware = createSetMetadata<MiddlewareDescriptor>(
+  MiddlewareMetadata,
+  ["middlewares"],
+);
 
 export const SetMethod = createSetMetadata<MethodDescriptor>(
   MethodMetadata,

@@ -1,9 +1,30 @@
-import { Controller, Feature, Get, Post } from "../web/decorators.ts";
+import {
+  Controller,
+  Feature,
+  Get,
+  Middlewares,
+  Post,
+} from "../web/decorators.ts";
 import { controllers, route } from "../web/fn.ts";
 import { Context } from "hono";
 import ChoWebApplication from "../web/application.ts";
-import { dependsOn, provide } from "@cho/core/di";
+import { dependsOn, Injectable, provide } from "@cho/core/di";
 
+@Injectable()
+class ClassMiddleware {
+  constructor(private foo: string) {
+  }
+  handle(c: Context, next: () => Promise<void>) {
+    console.log("ClassMiddleware", this.foo);
+    return next();
+  }
+}
+
+function funcMiddlewareasync(c: Context, next: () => Promise<void>) {
+  next().catch(console.error);
+}
+
+@Middlewares(ClassMiddleware, funcMiddlewareasync)
 @Controller(
   route("foo"),
   dependsOn("foo"),
@@ -11,6 +32,8 @@ import { dependsOn, provide } from "@cho/core/di";
 class MyController {
   constructor(private foo: string) {
   }
+
+  @Middlewares(ClassMiddleware, funcMiddlewareasync)
   @Get("bar")
   myMethod(c: Context) {
     return c.json({
@@ -26,9 +49,11 @@ class MyController {
   }
 }
 
+@Middlewares(ClassMiddleware, funcMiddlewareasync)
 @Feature(
   controllers(MyController),
   provide("foo", () => "bar"),
+  provide(ClassMiddleware),
 )
 class MyFeature {
 }
