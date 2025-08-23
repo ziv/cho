@@ -1,76 +1,58 @@
-import {
-  createDescriptorCreator,
-  createGetMetadata,
-  createSetMetadata,
-} from "../core/di/meta.ts";
-import type { Ctr, Provider, Token } from "../core/di/types.ts";
-import { read } from "../core/di/utils.ts";
+import type { Target } from "../core/di/types.ts";
+import { read, write } from "../core/di/utils.ts";
 import {
   ControllerDescriptor,
   FeatureDescriptor,
   MethodDescriptor,
-  MiddlewareDescriptor,
 } from "./types.ts";
 
-const MiddlewareMetadata = Symbol("MiddlewareMetadata");
 const MethodMetadata = Symbol("MethodMetadata");
 const ControllerMetadata = Symbol("ControllerMetadata");
 const FeatureMetadata = Symbol("Feature");
 
-export const CreateMethod = createDescriptorCreator<MethodDescriptor>({
-  name: "",
-  route: "",
-  method: "GET", // default method
-  middlewares: [],
-});
+export function setController(
+  target: Target,
+  data: Partial<ControllerDescriptor>,
+) {
+  write(target, ControllerMetadata, {
+    route: data.route ?? "",
+    middlewares: data.middlewares ?? [],
+  });
+}
 
-export const CreateController = createDescriptorCreator<ControllerDescriptor>({
-  route: "",
-  dependencies: [] as Token[],
-  middlewares: [] as MiddlewareDescriptor[],
-});
+export function setFeature(
+  target: Target,
+  data: Partial<FeatureDescriptor>,
+) {
+  write(target, FeatureMetadata, {
+    route: data.route ?? "",
+    middlewares: data.middlewares ?? [],
+    controllers: data.controllers ?? [],
+    features: data.features ?? [],
+  });
+}
 
-export const CreateFeature = createDescriptorCreator<FeatureDescriptor>({
-  route: "",
-  // imports: [] as any[],
-  middlewares: [] as MiddlewareDescriptor[],
-  // providers: [] as Provider[],
-  controllers: [] as Ctr[],
-  features: [] as Ctr[],
-  dependencies: [] as Token[],
-});
+export function setMethod(
+  target: Target,
+  data: Partial<MethodDescriptor>,
+) {
+  write(target, MethodMetadata, {
+    name: data.name ?? "",
+    route: data.route ?? "",
+    method: data.method ?? "GET",
+    middlewares: data.middlewares ?? [],
+  });
+}
 
-export const GetMethod = createGetMetadata<MethodDescriptor>(MethodMetadata);
+export function getFeature(target: Target): FeatureDescriptor | undefined {
+  return read<FeatureDescriptor>(target, FeatureMetadata);
+}
 
-export const GetController = createGetMetadata<ControllerDescriptor>(
-  ControllerMetadata,
-);
-
-export const GetMiddleware = createGetMetadata<MiddlewareDescriptor>(
-  MiddlewareMetadata,
-);
-
-export const GetFeature = createGetMetadata<FeatureDescriptor>(FeatureMetadata);
-
-export const SetMiddleware = createSetMetadata<MiddlewareDescriptor>(
-  MiddlewareMetadata,
-  ["middlewares"],
-);
-
-export const SetMethod = createSetMetadata<MethodDescriptor>(
-  MethodMetadata,
-  ["route", "method", "name"],
-);
-
-export const SetController = createSetMetadata<ControllerDescriptor>(
-  ControllerMetadata,
-  ["route"],
-);
-
-export const SetFeature = createSetMetadata<FeatureDescriptor>(
-  FeatureMetadata,
-  ["route", "features", "controllers"],
-);
+export function getController(
+  target: Target,
+): ControllerDescriptor | undefined {
+  return read<ControllerDescriptor>(target, ControllerMetadata);
+}
 
 export function getMethods(instance: object): MethodDescriptor[] {
   const props = Object.getOwnPropertyNames(

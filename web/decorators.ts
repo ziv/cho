@@ -1,6 +1,34 @@
-import {DescriptorFn, MethodContext, Target} from "../core/di/types.ts";
-import {CreateInjectable, CreateModule, SetInjectable, SetInjector, SetModule,} from "../core/di/meta.ts";
-import {CreateController, CreateFeature, CreateMethod, SetController, SetFeature, SetMethod,} from "./meta.ts";
+import {
+  DescriptorFn,
+  InjectableDescriptor,
+  MethodContext,
+  type ModuleDescriptor,
+  Target,
+} from "../core/di/types.ts";
+import {
+  CreateInjectable,
+  CreateModule,
+  SetInjectable,
+  setInjectable,
+  SetInjector,
+  SetModule,
+  setModule,
+} from "../core/di/meta.ts";
+import {
+  CreateFeature,
+  CreateMethod,
+  setController,
+  SetFeature,
+  setFeature,
+  SetMethod,
+  setMethod,
+} from "./meta.ts";
+import { collect } from "../core/di/utils.ts";
+import {
+  ControllerDescriptor,
+  FeatureDescriptor,
+  MethodDescriptor,
+} from "./types.ts";
 
 /**
  * Creates a method decorator for the given HTTP method.
@@ -16,7 +44,11 @@ function createMethodDecorator(method: string) {
       context: MethodContext,
     ) {
       // make sure to add the method and name to the fns array
-      fns.push((d) => ({ ...d, method, name: context.name }));
+      fns.push((d) => ({
+        ...d,
+        method,
+        name: context.name,
+      }));
       if (typeof route === "function") {
         // if route is a function, add it to the front of the fns array
         fns.unshift(route);
@@ -26,7 +58,8 @@ function createMethodDecorator(method: string) {
       } else {
         throw new Error("Route must be a string or a function");
       }
-      SetMethod(target, CreateMethod(...fns));
+      const data = collect<MethodDescriptor>(fns);
+      setMethod(target, data);
       /**
        * We are using TC39 stage 3 proposal decorators (ESM/Deno)
        * While TypeScript decorators are TS specific and do not
@@ -40,17 +73,20 @@ function createMethodDecorator(method: string) {
 
 export function Controller(...fns: DescriptorFn[]) {
   return (target: Target) => {
-    SetInjectable(target, CreateInjectable(...fns));
-    SetController(target, CreateController(...fns));
+    const data = collect<InjectableDescriptor & ControllerDescriptor>(fns);
+    setInjectable(target, data);
+    setController(target, data);
   };
 }
 
 export function Feature(...fns: DescriptorFn[]) {
   return (target: Target) => {
-    SetInjectable(target, CreateInjectable(...fns));
-    SetModule(target, CreateModule(...fns));
-    SetInjector(target, CreateModule(...fns));
-    SetFeature(target, CreateFeature(...fns));
+    const data = collect<
+      InjectableDescriptor & ModuleDescriptor & FeatureDescriptor
+    >(fns);
+    setInjectable(target, data);
+    setModule(target, data);
+    setFeature(target, data);
   };
 }
 

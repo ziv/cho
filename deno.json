@@ -7,7 +7,9 @@
     "hono": "jsr:@hono/hono@^4.9.2",
     "@std/assert": "jsr:@std/assert@^1.0.14",
     "@cho/core/di": "./core/di/mod.ts",
-    "@cho/": "./"
+    "@cho/core/utils": "./core/utils/mod.ts",
+    "@cho/": "./",
+    "mongodb": "npm:mongodb@^6.18.0"
   },
   "fmt": {
     "lineWidth": 80

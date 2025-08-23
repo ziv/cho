@@ -1,18 +1,23 @@
-import {DependsOn, Imports, Provide} from "../core/di/fn.ts";
-import {Injectable, Module} from "../core/di/decorators.ts";
-import Injector from "../core/di/injector.ts";
+import { DependsOn, Imports, Provide } from "../core/di/fn.ts";
+import { Injectable, Injector, Module } from "@cho/core/di";
+import { MongoClient } from "mongodb";
 
 // foo
 
 @Injectable(DependsOn("bar", "foo"))
 class ServiceFoo {
-  constructor(private foo: string, private bar: string) {
+  constructor(readonly foo: string, readonly bar: string) {
   }
 }
 
 @Module(
   Provide("foo", () => "Foo Value"),
-  Provide("bar", () => "Bar Value"),
+  Provide("bar", async () => {
+    const mongodb = Deno.env.get("MONGO");
+    const client = new MongoClient(mongodb);
+    await client.connect();
+    return client;
+  }),
   Provide(ServiceFoo),
 )
 class ModuleFoo {
@@ -32,4 +37,6 @@ class ModuleBar {
 
 const injector = new Injector(ModuleBar);
 const value = await injector.resolve(ServiceFoo);
-console.log(value);
+console.log(typeof value);
+
+Deno.exit(0);

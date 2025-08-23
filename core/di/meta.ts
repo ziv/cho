@@ -1,15 +1,11 @@
 import type {
-  Any,
   Ctr,
-  DescriptorFn,
   InjectableDescriptor,
   ModuleDescriptor,
-  Provider,
   Target,
-  Token,
 } from "./types.ts";
 import { read, write } from "./utils.ts";
-import Injector from "./injector.ts";
+import type { Injector } from "./injector.ts";
 
 export const InjectableMetadata = Symbol("InjectableDescriptor");
 export const ModuleMetadata = Symbol("ModuleDescriptor");

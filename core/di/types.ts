@@ -43,10 +43,9 @@ export type Provider<T = Any> = {
   factory: Factory<T>;
 };
 
-export type Resolved<T = Any> = Provider<T> & {
+export type Resolved<T = Any> = {
   value: T;
   refCount: number;
-  context?: Ctr;
 };
 
 export type InjectableDescriptor = {

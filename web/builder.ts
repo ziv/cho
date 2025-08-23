@@ -1,16 +1,8 @@
-import { Ctr, Token } from "../core/di/types.ts";
-import { ModuleInit } from "./lifecycle.ts";
-import debuglog from "../core/utils/debuglog.ts";
-import {
-  EndPointDescriptor,
-  ProcessedController,
-  ProcessedFeature,
-} from "./types.ts";
-import {GetController, GetFeature, getMethods, GetMiddleware} from "./meta.ts";
-import { GetInjectable, GetInjector } from "../core/di/meta.ts";
-import Injector from "../core/di/injector.ts";
-
-const log = debuglog("ChoWebBuilder");
+import type { Ctr } from "@cho/core/di";
+import { getInjector, Injector } from "@cho/core/di";
+import { debuglog } from "@cho/core/utils";
+import { ChoControllerDescriptor, ChoFeatureDescriptor } from "./types.ts";
+import { getController, getFeature, getMethods } from "./meta.ts";
 
 /**
  * Convert feature class into a processed feature
@@ -18,68 +10,59 @@ const log = debuglog("ChoWebBuilder");
  * - Feature is a module, so it has its own injector and module lifecycle
  * - Each feature and controller is instantiated with its dependencies
  */
-export default class ChoWebBuilder {
-  async build(ctr: Ctr): Promise<ProcessedFeature> {
-    log(ctr.name, "building feature");
-    const feature = GetFeature(ctr);
-    const injector = GetInjector(ctr);
+export class ChoWebBuilder {
+  async build(ctr: Ctr): Promise<ChoFeatureDescriptor> {
+    const log = debuglog(`${ctr.name}Builders`);
+    log("building feature");
+    // fetch the feature metadata as a base for ChoFeatureDescriptor
+    const feature = getFeature(ctr) as Partial<ChoFeatureDescriptor>;
+    if (!feature) {
+      throw new Error(`${ctr.name} is not a feature`);
+    }
+
+    // set/gets the module injector
+    feature.injector = getInjector(ctr) ?? new Injector(ctr);
 
     // create feature instance
-    const instance = await this.instance<ModuleInit>(
-      injector,
-      ctr,
-      GetInjectable(ctr).dependencies,
-    );
-    log(`${ctr.name} instance created`);
+    const instance = await feature.injector.create(ctr);
+    log("instance created");
 
     if (instance.init) {
       await instance.init();
     }
-    log(`${ctr.name} initialized`);
+    log("instance initialized");
 
-    // build all sub-features
-    const features: ProcessedFeature[] = [];
+    // recursively build all sub-features
+    const features: ChoFeatureDescriptor[] = [];
     for (const f of feature.features) {
       features.push(await this.build(f));
     }
 
     // build all controllers
-    const controllers: ProcessedController[] = [];
+    const controllers: ChoControllerDescriptor = [];
     for (const controllerCtr of feature.controllers) {
       // controllers are not modules and does not
       // have lifecycle hooks, and don't have
       // their own injector so we use the feature injector
-      const route = GetController(controllerCtr).route;
-      const controller = await this.instance(
-        injector,
-        controllerCtr,
-        GetInjectable(controllerCtr).dependencies,
-      );
-      const endpoints: EndPointDescriptor[] = getMethods(controller as object);
+      const ctrDesc = getController(controllerCtr);
+      const controller = await feature.injector.create(controllerCtr);
+      const methods = getMethods(controller as object);
       controllers.push({
-        middlewares: [],
-        route,
+        middlewares: ctrDesc?.middlewares ?? [],
+        route: ctrDesc?.route ?? "",
         controller,
-        endpoints,
+        methods,
       });
       log(
-        `${ctr.name} register controller ${ctr.name} with ${endpoints.length} endpoints`,
+        `register controller ${controllerCtr.name} with ${methods.length} endpoints`,
       );
     }
 
-    // find all middlewares applied to the feature
-    const middlewares = GetMiddleware(ctr);
+    // return the completed feature descriptor
     return {
-      middlewares: [],
-      route: feature.route,
-      injector,
-      features,
+      ...feature,
       controllers,
+      features,
     };
-  }
-
-  private async instance<T>(injector: Injector, ctr: Ctr, deps: Token[]) {
-    const args = await Promise.all(deps.map((d) => injector.resolve(d)));
-    return Reflect.construct(ctr, args) as T;
   }
 }

@@ -9,55 +9,52 @@ import type {
   Resolver,
   Token,
 } from "./types.ts";
-import debuglog from "../utils/debuglog.ts";
+import { debuglog } from "@cho/core/utils";
 import { getInjectable, getInjector, getModule, setInjector } from "./meta.ts";
 
-const log = debuglog("Injector");
-
-export default class Injector implements Resolver {
+export class Injector implements Resolver {
   readonly name: string;
   readonly desc: ModuleDescriptor;
+  readonly log: (...args: unknown[]) => void;
   readonly cache = new Map<Token, Resolved>();
 
   constructor(
     readonly ctr: Ctr,
   ) {
+    const inj = getInjector(ctr);
+    if (inj) {
+      throw new Error(`Injector already set for this module.`);
+    }
     const desc = getModule(ctr);
     if (!desc) {
       throw new Error(`${ctr.name} is not a module`);
     }
     this.desc = desc;
     this.name = `${ctr.name}Injector`;
-    log(`${this.name} created`);
+    this.log = debuglog(this.name);
+    this.log(`created`);
     setInjector(ctr, this);
   }
 
   async resolve<T>(token: Token): Promise<T> {
-    const name = this.name;
     const tokenName = typeof token === "function" ? token.name : String(token);
-    log(`${name} search for "${tokenName}"`);
+    this.log(`search for "${tokenName}"`);
 
     // search in cache
     if (this.cache.has(token)) {
-      log(`${name} found "${tokenName}" in cache`);
+      this.log(`"${tokenName}" found in cache`);
       const resolved = this.cache.get(token) as Resolved;
       resolved.refCount++;
-      return resolved.value as T;
+      return Promise.resolve(resolved.value as T);
     }
 
     // create self
     if (token === this.ctr) {
-      log(`${name} resolving module ref`);
-      const args = await Promise.all(
-        (getInjectable(token)?.dependencies ?? []).map((d) => this.resolve(d)),
-      );
-      const value = Reflect.construct(token, args);
-      log(`${name} created module ref`);
+      const value = await this.create(token);
+      this.log(`module ref created`);
       this.cache.set(token, {
         value,
         refCount: 1,
-        provide: token,
-        factory: () => Promise.resolve(),
       });
       return value as T;
     }
@@ -65,10 +62,12 @@ export default class Injector implements Resolver {
     // search in providers
     const p = this.provider(token);
     if (p) {
-      log(`${name} found "${tokenName}" in local providers`);
+      this.log(`"${tokenName}"found in local providers`);
       const value = await p.factory(this);
-      log(`${name} created "${tokenName}"`);
-      this.cache.set(token, { ...p, value, refCount: 1 });
+      this.cache.set(token, {
+        value,
+        refCount: 1,
+      });
       return value as T;
     }
 
@@ -86,13 +85,31 @@ export default class Injector implements Resolver {
         await injector.resolve(im);
       }
       if (injector.provider(token)) {
+        this.log(`"${tokenName}"found in imported ${im.name}`);
         return injector.resolve(token);
       }
     }
     throw new Error(`${String(token)} not found`);
   }
 
+  /**
+   * Get a provider by its token.
+   * @param token
+   */
   provider(token: Token): Provider | undefined {
     return this.desc.providers.find((p) => p.provide === token);
+  }
+
+  /**
+   * Create an instance of a class with its dependencies resolved.
+   * @param ctr
+   * @param deps
+   */
+  async create(ctr: Ctr, deps?: Token[]) {
+    if (!deps) {
+      deps = getInjectable(ctr)?.dependencies ?? [];
+    }
+    const args = await Promise.all(deps.map((d) => this.resolve(d)));
+    return Reflect.construct(ctr, args) as T;
   }
 }

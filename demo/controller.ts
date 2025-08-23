@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Feature,
-  Get,
-  Middlewares,
-  Post,
-} from "../web/decorators.ts";
+import { Controller, Feature, Get, Post } from "../web/decorators.ts";
 import { Controllers, Route } from "../web/fn.ts";
 import { Context } from "hono";
 import ChoWebApplication from "../web/application.ts";
@@ -27,16 +21,13 @@ function funcMiddlewareasync(c: Context, next: () => Promise<void>) {
 @Controller(
   Route("foo"),
   DependsOn("foo"),
-  Middlewares(ClassMiddleware, funcMiddlewareasync),
 )
 class MyController {
   constructor(private foo: string) {
   }
 
-  @Middlewares(ClassMiddleware, funcMiddlewareasync)
   @Get(
     "bar",
-    Middlewares(ClassMiddleware, funcMiddlewareasync),
   )
   myMethod(c: Context) {
     return c.json({
@@ -52,7 +43,6 @@ class MyController {
   }
 }
 
-@Middlewares(ClassMiddleware, funcMiddlewareasync)
 @Feature(
   Controllers(MyController),
   Provide("foo", () => "bar"),

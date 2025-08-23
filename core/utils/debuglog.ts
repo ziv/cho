@@ -1,28 +1,27 @@
-import { indexed, yellow } from "./colors.ts";
+import { gray, magenta, yellow } from "./colors.ts";
+import { time } from "./utils.ts";
 
-const CONTEXT_LENGTH = 13;
+const CONTEXT_LEN = Number(Deno.env.get("CHO_DEBUGLOG_CONTEXT_LEN") ?? "15");
+// const CHO_DEBUG = Boolean(Deno.env.get("CHO_DEBUG") ?? "true");
 
-export function hash(text: string, mod = 10) {
-    return text.split("").reduce((acc, cur) => acc + cur.charCodeAt(0), 0);
-}
+let past = Date.now();
 
-export default function debuglog(context: string) {
-    if (context.length > CONTEXT_LENGTH) {
-        context = context.substring(0, CONTEXT_LENGTH) + "…";
-    }
-    const header = context.padEnd(CONTEXT_LENGTH + 3, " ");
+export function debuglog(context: string) {
+  if (context.length > CONTEXT_LEN) {
+    context = context.substring(0, CONTEXT_LEN - 1) + "…";
+  }
+  const header = context.padEnd(CONTEXT_LEN, " ");
+  function log(...args: unknown[]) {
+    const now = Date.now();
+    const diff = now - past;
+    past = now;
+    console.log(
+      yellow(time()),
+      magenta(`[ ${header} ]`),
+      ...args,
+      gray(`+${diff}ms`),
+    );
+  }
 
-    const d = new Date();
-    const h = d.getHours().toString().padStart(2, "0");
-    const m = d.getMinutes().toString().padStart(2, "0");
-    const s = d.getSeconds().toString().padStart(2, "0");
-    const ms = d.getMilliseconds().toString().padStart(3, "0");
-
-    return (...args: unknown[]) => {
-        console.log(
-            yellow(`${h}:${m}:${s}.${ms}`),
-            indexed(`[ ${header} ]`, hash(context)),
-            ...args,
-        );
-    };
+  return log;
 }

@@ -1,12 +1,12 @@
-import { Any } from "../core/di/types.ts";
-import { ProcessedFeature } from "./types.ts";
+import { Any } from "@cho/core/di";
+import { ChoFeatureDescriptor } from "./types.ts";
 
-export default abstract class ChoWebLinker {
+export abstract class ChoWebLinker {
   /**
    * Create the web application
    * @param descriptor
    */
-  abstract link(descriptor: ProcessedFeature): boolean;
+  abstract link(descriptor: ChoFeatureDescriptor): boolean;
 
   /**
    * Get the application request handler

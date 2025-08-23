@@ -1,7 +1,7 @@
-import { Context, Hono } from "hono";
-import ChoWebLinker from "@cho/web/linker.ts";
-import { ProcessedFeature } from "@cho/web/types.ts";
-import debuglog from "../../core/utils/debuglog.ts";
+import {Hono} from "hono";
+import {ChoWebLinker} from "@cho/web/linker.ts";
+import {debuglog} from "@cho/core/utils";
+import {ChoFeatureDescriptor} from "../../web/types.ts";
 
 const log = debuglog("HonorAdapter");
 
@@ -27,12 +27,12 @@ export default class HonoLinker extends ChoWebLinker {
    * Create the web application
    * @param descriptor
    */
-  override link(descriptor: ProcessedFeature): boolean {
+  override link(descriptor: ChoFeatureDescriptor): boolean {
     this.app = this.attach(descriptor);
     return true;
   }
 
-  private attach(feature: ProcessedFeature): Hono {
+  private attach(feature: ChoFeatureDescriptor): Hono {
     log(`Creating feature: "${feature.route || "/"}"`);
     const feat = new Hono();
     // recursively attach features
@@ -47,7 +47,7 @@ export default class HonoLinker extends ChoWebLinker {
     for (const c of feature.controllers) {
       log(`Linking controller: /${c.route}`);
       const controller = new Hono();
-      for (const e of c.endpoints) {
+      for (const e of c.methods) {
         const m = e.method.toLowerCase();
         if (
           // todo complete with all methods
@@ -57,11 +57,11 @@ export default class HonoLinker extends ChoWebLinker {
           m === "delete" ||
           m === "patch"
         ) {
-          log(`Link endpoint: ${e.method.toUpperCase()} /${c.route}/${e.route}`);
-          controller[m](
-            e.route,
-            (ctx: Context) => c.controller[e.name](ctx),
-          );
+          log(`Link: ${e.method.toUpperCase()} /${c.route}/${e.route}`);
+          // make sure the method keep its context
+          const f = c.controller[e.name].bind(c.controller);
+          // create the handler
+          controller[m](e.route, f);
         }
       }
       // mount controller to feature

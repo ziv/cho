@@ -1,6 +1,6 @@
 import ChoWebLinker from "./linker.ts";
 import { Ctr } from "../core/di/types.ts";
-import ChoWebBuilder from "./builder.ts";
+import { ChoWebBuilder } from "./builder.ts";
 import HonoLinker from "../vendor/hono/hono-linker.ts";
 import { showRoutes } from "hono/dev";
 

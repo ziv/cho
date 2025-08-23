@@ -1,7 +1,6 @@
-import { Injectable, Module } from "../di/decorators.ts";
-import { DependsOn, Imports, Provide } from "../di/fn.ts";
-import { GetInjector } from "../di/meta.ts";
+import { DependsOn, Imports, Injectable, Module, Provide } from "@cho/core/di";
 import { expect } from "@std/expect";
+import { Injector } from "../di/injector.ts";
 
 @Injectable(DependsOn("bar", "foo"))
 class ServiceFoo {
@@ -29,23 +28,30 @@ class ServiceBar {
 class ModuleBar {
 }
 
+const foo = new Injector(ModuleFoo);
+const bar = new Injector(ModuleBar);
+
+Deno.test("Should throw for multiple injectors", () => {
+  expect(() => new Injector(ModuleFoo)).toThrow();
+});
+
 Deno.test("DI should resolve ModuleFoo(foo) dependency", async (t) => {
-  expect(await GetInjector(ModuleFoo).resolve("foo")).toBe("Foo Value");
+  expect(await foo.resolve("foo")).toBe("Foo Value");
 });
 
 Deno.test("DI should resolve ModuleFoo(bar) dependency", async (t) => {
-  expect(await GetInjector(ModuleFoo).resolve("bar")).toBe("Bar Value");
+  expect(await foo.resolve("bar")).toBe("Bar Value");
 });
 
 Deno.test("DI should resolve ModuleFoo(ServiceFoo) dependency", async (t) => {
-  const resolved = await GetInjector(ModuleFoo).resolve(ServiceFoo);
+  const resolved = await foo.resolve(ServiceFoo);
   expect(resolved).toBeInstanceOf(ServiceFoo);
   expect(resolved).toHaveProperty("foo");
   expect(resolved).toHaveProperty("bar");
 });
 
 Deno.test("DI should resolve ModuleBar(ServiceBar) dependency", async (t) => {
-  const resolved = await GetInjector(ModuleBar).resolve<ServiceBar>(ServiceBar);
+  const resolved = await bar.resolve<ServiceBar>(ServiceBar);
   expect(resolved).toBeInstanceOf(ServiceBar);
   expect(resolved).toHaveProperty("foo");
   expect(resolved.foo).toBeInstanceOf(ServiceFoo);
