@@ -45,3 +45,37 @@ class Service {
     }
 }
 ```
+
+## Dependencies Injection
+
+Module is a logical unit to provide dependencies. Any provided item is available for importing modules.
+
+```ts
+
+@Module(
+    // provide by an async factory function
+    Provide("token", (i: Injector) => Promise.resolve("factory value")),
+
+    // provide by a class
+    Provide(MyService),
+)
+class MyModule {
+}
+```
+
+Defining a class as injectable entity:
+
+```ts
+
+@Injectable(
+    // dependencies (list of tokens for the constructor arguments)
+    DependsOn(OtherService, "foo")
+)
+class MyService {
+    constructor(
+        readonly other: OtherService,
+        readonly foo: string
+    ) {
+    }
+}
+```

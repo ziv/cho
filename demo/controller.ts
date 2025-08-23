@@ -8,7 +8,7 @@ import {
 import { controllers, route } from "../web/fn.ts";
 import { Context } from "hono";
 import ChoWebApplication from "../web/application.ts";
-import { dependsOn, Injectable, provide } from "@cho/core/di";
+import { DependsOn, Injectable, Provide } from "@cho/core/di";
 
 @Injectable()
 class ClassMiddleware {
@@ -27,7 +27,7 @@ function funcMiddlewareasync(c: Context, next: () => Promise<void>) {
 @Middlewares(ClassMiddleware, funcMiddlewareasync)
 @Controller(
   route("foo"),
-  dependsOn("foo"),
+  DependsOn("foo"),
 )
 class MyController {
   constructor(private foo: string) {
@@ -52,8 +52,8 @@ class MyController {
 @Middlewares(ClassMiddleware, funcMiddlewareasync)
 @Feature(
   controllers(MyController),
-  provide("foo", () => "bar"),
-  provide(ClassMiddleware),
+  Provide("foo", () => "bar"),
+  Provide(ClassMiddleware),
 )
 class MyFeature {
 }

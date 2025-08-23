@@ -1,30 +1,30 @@
 import { Injectable, Module } from "../di/decorators.ts";
-import { dependsOn, imports, provide } from "../di/fn.ts";
+import { DependsOn, Imports, Provide } from "../di/fn.ts";
 import { GetInjector } from "../di/meta.ts";
 import { expect } from "@std/expect";
 
-@Injectable(dependsOn("bar", "foo"))
+@Injectable(DependsOn("bar", "foo"))
 class ServiceFoo {
   constructor(readonly foo: string, readonly bar: string) {
   }
 }
 
 @Module(
-  provide("foo", () => "Foo Value"),
-  provide("bar", () => "Bar Value"),
-  provide(ServiceFoo),
+  Provide("foo", () => "Foo Value"),
+  Provide("bar", () => "Bar Value"),
+  Provide(ServiceFoo),
 )
 class ModuleFoo {
 }
 
-@Injectable(dependsOn(ServiceFoo))
+@Injectable(DependsOn(ServiceFoo))
 class ServiceBar {
   constructor(readonly foo: ServiceFoo) {
   }
 }
 @Module(
-  imports(ModuleFoo),
-  provide(ServiceBar),
+  Imports(ModuleFoo),
+  Provide(ServiceBar),
 )
 class ModuleBar {
 }
