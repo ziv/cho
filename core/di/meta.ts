@@ -1,0 +1,167 @@
+import type {
+  Any,
+  Ctr,
+  DescriptorFn,
+  InjectableDescriptor,
+  ModuleDescriptor,
+  Provider,
+  Target,
+  Token,
+} from "./types.ts";
+import { read, write } from "./utils.ts";
+import Injector from "./injector.ts";
+
+const InjectableMetadata = Symbol("InjectableDescriptor");
+const ModuleMetadata = Symbol("ModuleDescriptor");
+const InjectorMetadata = Symbol("ModuleInjector");
+
+// factories
+
+/**
+ * Create a descriptor creator function that applies a series of descriptor functions
+ * to an initial value, returning the final modified value.
+ *
+ * @param initial - The initial value to be modified by the descriptor functions.
+ * @returns A function that takes a variable number of descriptor functions and applies them to the initial value.
+ */
+export function createDescriptorCreator<T>(initial: T) {
+  return (...fns: DescriptorFn<T>[]): T => {
+    let value = structuredClone(initial);
+    for (const fn of fns) {
+      value = fn(value);
+    }
+    return value;
+  };
+}
+
+/**
+ * Create a function to retrieve metadata from a target object.
+ * @param key
+ */
+export function createGetMetadata<T>(key: symbol) {
+  return (target: Target): T => {
+    const ret = read(target, key);
+    if (!ret) {
+      throw new Error(`Metadata ${String(key)} not found on target.`);
+    }
+    return ret as T;
+  };
+}
+
+/**
+ * Create a function to set metadata on a target object.
+ * @param key
+ * @param keys
+ */
+export function createSetMetadata<T extends Record<string, unknown>>(
+  key: symbol,
+  keys: (keyof T)[],
+) {
+  return (target: Target, descriptor: T) => {
+    const reduced = keys.reduce((acc, cur) => {
+      if (cur in descriptor) {
+        acc[cur as keyof typeof cur] = descriptor[cur];
+      }
+      return acc;
+    }, {} as Record<string, Any>);
+    write(target, key, reduced);
+  };
+}
+
+// metadata accessors
+
+/**
+ * Create an injectable descriptor from a list of functions.
+ * This function can be used to create an injectable descriptor by applying a series of functions
+ * that modify the injectable descriptor.
+ *
+ * @example:
+ * ```ts
+ * const myInjectable = createInjectable(
+ *      dependsOn("foo", "bar"),
+ * );
+ * ```
+ *
+ * @param fns
+ */
+export const CreateInjectable = createDescriptorCreator<InjectableDescriptor>({
+  dependencies: [] as Token[],
+});
+
+/**
+ * Create a module descriptor from a list of functions.
+ * This function can be used to create a module descriptor by applying a series of functions
+ * that modify the module descriptor.
+ *
+ * @example:
+ * ```ts
+ * const myModule = createModule(
+ *      imports(ModuleA, ModuleB),
+ *      provide("foo", () => "Foo Value"),
+ * );
+ * ```
+ *
+ * @param fns
+ */
+export const CreateModule = createDescriptorCreator<ModuleDescriptor>({
+  dependencies: [] as Token[],
+  imports: [] as Ctr[],
+  providers: [] as Provider[],
+});
+
+/**
+ * Get the injector for a class.
+ * This function retrieves the injector associated with a class.
+ * If the class does not have an injector, it throws an error.
+ */
+export const GetInjector = createGetMetadata<Injector>(InjectorMetadata);
+
+/**
+ * Get the injectable descriptor for a class.
+ * This function retrieves the injectable descriptor associated with a class.
+ * If the class does not have an injectable descriptor, it throws an error.
+ */
+export const GetInjectable = createGetMetadata<InjectableDescriptor>(
+  InjectableMetadata,
+);
+
+export const GetModule = createGetMetadata<ModuleDescriptor>(
+  ModuleMetadata,
+);
+
+/**
+ * Set an injectable descriptor on a class.
+ *
+ * @param ctr
+ * @param descriptor
+ */
+export const SetInjectable = createSetMetadata<InjectableDescriptor>(
+  InjectableMetadata,
+  [
+    "dependencies",
+  ],
+);
+
+/**
+ * Set an injector instance on a class.
+ *
+ * @param ctr
+ * @param descriptor
+ */
+export const SetModule = createSetMetadata<ModuleDescriptor>(
+  ModuleMetadata,
+  [
+    "imports",
+    "providers",
+  ],
+);
+
+/**
+ * Can be called only after SetModule called on the class.
+ * @param ctr
+ * @param descriptor
+ * @constructor
+ */
+export function SetInjector(ctr: Target, descriptor: ModuleDescriptor) {
+  write(ctr, InjectorMetadata, new Injector(ctr as Ctr, descriptor));
+}

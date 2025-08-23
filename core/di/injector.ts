@@ -1,59 +1,62 @@
-import type { Any, Ctr, Resolver, Token } from "./types.ts";
-import { getInjector, getModule, type ModuleDescriptor } from "./fn.ts";
+/**
+ * # Dependency Injector
+ */
+import type {
+  Ctr,
+  ModuleDescriptor,
+  Provider,
+  Resolved,
+  Resolver,
+  Token,
+} from "./types.ts";
+import debuglog from "../debug.ts";
+import { GetInjector } from "./meta.ts";
+
+const log = debuglog("Injector");
 
 export default class Injector implements Resolver {
-  readonly md: ModuleDescriptor;
-  readonly cache = new Map<Token, Any>();
+  readonly name: string;
+  readonly cache = new Map<Token, Resolved>();
 
-  constructor(readonly ctr: Ctr) {
-    this.md = getModule(ctr);
+  constructor(
+    readonly ctr: Ctr,
+    readonly md: ModuleDescriptor,
+  ) {
+    this.name = `${ctr.name}Injector`;
+    log(`${this.name} created`);
   }
 
   async resolve<T>(token: Token): Promise<T> {
-    let ret = await this.search<T>(token);
-    if (ret.status) {
-      return ret.value as T;
+    const tokenName = typeof token === "function" ? token.name : String(token);
+    log(`${this.name} search for "${tokenName}"`);
+    // search in cache
+    if (this.cache.has(token)) {
+      log(`${this.name} found "${tokenName}" in cache`);
+      const resolved = this.cache.get(token) as Resolved;
+      resolved.refCount++;
+      return resolved.value as T;
     }
+
+    // search in providers
+    const p = this.provider(token);
+    if (p) {
+      log(`${this.name} found "${tokenName}" in local providers`);
+      const value = await p.factory(this);
+      this.cache.set(token, { ...p, value, refCount: 1 });
+      return value as T;
+    }
+
     // search in imports
-    for (const imp of this.md.imports) {
-      ret = await getInjector(imp).search(token);
-      if (ret.status) {
-        return ret.value as T;
+    for (const i of this.md.imports) {
+      const inj = GetInjector(i);
+      if (inj.provider(token)) {
+        return inj.resolve(token);
       }
     }
     throw new Error(`${String(token)} not found`);
   }
 
-  // search
-  async search<T>(
-    token: Token,
-  ): Promise<{ status: boolean; value: T | Error | undefined }> {
-    if (this.cache.has(token)) {
-      return {
-        status: true,
-        value: this.cache.get(token) as T,
-      };
-    }
-    for (const provider of this.md.providers) {
-      if (provider.provide === token) {
-        try {
-          const value = await provider.factory(this);
-          this.cache.set(token, value);
-          return {
-            status: true,
-            value,
-          };
-        } catch (e) {
-          return {
-            status: true,
-            value: e as Error,
-          };
-        }
-      }
-    }
-    return {
-      status: false,
-      value: undefined,
-    };
+  provider(token: Token): Provider | undefined {
+    return this.md.providers.find((p) => p.provide === token);
   }
 }
