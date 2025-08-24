@@ -5,6 +5,7 @@
   },
   "imports": {
     "@chojs/core": "./core/mod.ts",
+    "@chojs/vendor": "./vendor",
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
     "@std/expect": "jsr:@std/expect@^1.0.17",
     "@std/fmt": "jsr:@std/fmt@^1.0.8",
