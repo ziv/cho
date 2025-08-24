@@ -1,7 +1,7 @@
 import ChoWebLinker from "./linker.ts";
 import { Ctr } from "@chojs/core";
 import { ChoWebBuilder } from "./builder.ts";
-import { showRoutes } from "hono/dev";
+// import { showRoutes } from "hono/dev";
 
 export class ChoWebApplication {
   static async create(
@@ -12,7 +12,7 @@ export class ChoWebApplication {
     linker.link(app);
 
     // todo remove later, for debugging only
-    showRoutes(linker.ref());
+    // showRoutes(linker.ref());
     return new ChoWebApplication(linker);
   }
 
