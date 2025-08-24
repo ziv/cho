@@ -1,8 +1,4 @@
-/**
- * @package @chojs/core/di
- * @module @chojs/core/di
- */
-import { Ctr, type DescriptorFn, Target } from "./types.ts";
+import type { Ctr, DescriptorFn, Target } from "./types.ts";
 
 /**
  * Collect and merge multiple descriptor functions into a single descriptor object.

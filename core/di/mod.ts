@@ -1,7 +1,3 @@
-/**
- * @package @chojs/core/di
- * @module @chojs/core/di
- */
 export * from "./decorators.ts";
 export * from "./fn.ts";
 export * from "./meta.ts";

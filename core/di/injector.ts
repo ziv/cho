@@ -1,8 +1,4 @@
-/**
- * @package @chojs/core/di
- * @module @chojs/core/di
- */
-import {
+import type {
   Ctr,
   Instance,
   ModuleDescriptor,

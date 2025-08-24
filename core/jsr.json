@@ -2,7 +2,11 @@
   "name": "@chojs/core",
   "version": "0.0.8",
   "license": "MIT",
-  "exports": "./mod.ts",
+  "exports": {
+    ".": "./mod.ts",
+    "./di": "./di/mod.ts",
+    "./utils": "./utils/mod.ts"
+  },
   "imports": {
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
     "@std/fmt": "jsr:@std/fmt@^1.0.8"

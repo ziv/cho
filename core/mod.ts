@@ -1,5 +1,4 @@
 /**
  * @module @chojs/core
  */
-export * from "./di/mod.ts";
-export * from "./utils/mod.ts";
+export default { chojs: true, module: "@chojs/core" };
