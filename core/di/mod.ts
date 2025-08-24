@@ -1,6 +1,6 @@
 /**
  * @package @chojs/core/di
- * @module
+ * @module @chojs/core/di
  */
 export * from "./decorators.ts";
 export * from "./fn.ts";
