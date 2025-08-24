@@ -57,7 +57,7 @@ const errorHeader = (context: string) => {
  */
 export function debuglog(
   context: string,
-): (...args: unknown[]) => void & { error: (...args: unknown[]) => void } {
+): { (...args: unknown[]): void; error(...args: unknown[]): void } {
   function log(...args: unknown[]) {
     if (envbool("CHO_DEBUGLOG")) {
       console.log(
@@ -80,7 +80,5 @@ export function debuglog(
     }
   };
 
-  return log as (
-    ...args: unknown[]
-  ) => void & { error: (...args: unknown[]) => void };
+  return log;
 }
