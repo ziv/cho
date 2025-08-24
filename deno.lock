@@ -2,9 +2,16 @@
   "version": "5",
   "specifiers": {
     "jsr:@hono/hono@^4.9.2": "4.9.2",
+    "jsr:@std/assert@^1.0.13": "1.0.14",
     "jsr:@std/assert@^1.0.14": "1.0.14",
+    "jsr:@std/data-structures@^1.0.9": "1.0.9",
+    "jsr:@std/datetime@~0.225.5": "0.225.5",
     "jsr:@std/expect@^1.0.17": "1.0.17",
+    "jsr:@std/fmt@^1.0.8": "1.0.8",
+    "jsr:@std/fs@^1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.10": "1.0.10",
+    "jsr:@std/path@^1.1.1": "1.1.2",
+    "jsr:@std/testing@^1.0.15": "1.0.15",
     "npm:date-fns@^4.1.0": "4.1.0",
     "npm:hono@4.9.2": "4.9.2",
     "npm:mongodb@^6.18.0": "6.18.0"
@@ -19,15 +26,46 @@
         "jsr:@std/internal"
       ]
     },
+    "@std/data-structures@1.0.9": {
+      "integrity": "033d6e17e64bf1f84a614e647c1b015fa2576ae3312305821e1a4cb20674bb4d"
+    },
+    "@std/datetime@0.225.5": {
+      "integrity": "9f650f6caec546b80172e95a4edb8478d5fe060c4c937f7ede242ffceab6efc9"
+    },
     "@std/expect@1.0.17": {
       "integrity": "316b47dd65c33e3151344eb3267bf42efba17d1415425f07ed96185d67fc04d9",
       "dependencies": [
-        "jsr:@std/assert",
+        "jsr:@std/assert@^1.0.14",
         "jsr:@std/internal"
+      ]
+    },
+    "@std/fmt@1.0.8": {
+      "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
+    },
+    "@std/fs@1.0.19": {
+      "integrity": "051968c2b1eae4d2ea9f79a08a3845740ef6af10356aff43d3e2ef11ed09fb06",
+      "dependencies": [
+        "jsr:@std/path"
       ]
     },
     "@std/internal@1.0.10": {
       "integrity": "e3be62ce42cab0e177c27698e5d9800122f67b766a0bea6ca4867886cbde8cf7"
+    },
+    "@std/path@1.1.2": {
+      "integrity": "c0b13b97dfe06546d5e16bf3966b1cadf92e1cc83e56ba5476ad8b498d9e3038",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/testing@1.0.15": {
+      "integrity": "a490169f5ccb0f3ae9c94fbc69d2cd43603f2cffb41713a85f99bbb0e3087cbc",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.13",
+        "jsr:@std/data-structures",
+        "jsr:@std/fs",
+        "jsr:@std/internal",
+        "jsr:@std/path"
+      ]
     }
   },
   "npm": {
@@ -103,7 +141,10 @@
     "dependencies": [
       "jsr:@hono/hono@^4.9.2",
       "jsr:@std/assert@^1.0.14",
+      "jsr:@std/datetime@~0.225.5",
       "jsr:@std/expect@^1.0.17",
+      "jsr:@std/fmt@^1.0.8",
+      "jsr:@std/testing@^1.0.15",
       "npm:date-fns@^4.1.0",
       "npm:mongodb@^6.18.0"
     ]
