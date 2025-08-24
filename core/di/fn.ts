@@ -13,14 +13,13 @@ import type {
 } from "./types.ts";
 import { getInjectable } from "./meta.ts";
 
-// providing functions
-
 /**
  * Mark an injectable as depending on other tokens.
  * This function can be used to specify dependencies that the injectable requires to function properly.
  * It can be used in the context of an injectable descriptor to define its dependencies.
  *
- * @example:
+ * @example Usage:
+ *
  * ```ts
  * @Injectable(
  *      dependsOn("foo", "bar"),
@@ -31,6 +30,7 @@ import { getInjectable } from "./meta.ts";
  *  ```
  *
  * @param tokens
+ * @public
  */
 export function DependsOn<T extends InjectableDescriptor>(
   ...tokens: Token[]
@@ -48,9 +48,10 @@ export function DependsOn<T extends InjectableDescriptor>(
 /**
  * Create a provider for a token.
  * This function can be used to provide a value using a factory function or a class as a dependency.
- * Should be run in creating module context only.
+ * Should be run in creating module context only ([Module Decorator](./decorators.ts)).
  *
  * @example factory function:
+ *
  * ```ts
  * @Module(
  *      provide("foo", () => "Foo Value"),
@@ -59,6 +60,7 @@ export function DependsOn<T extends InjectableDescriptor>(
  * ```
  *
  * @example injectable class:
+ *
  * ```ts
  * @Module(
  *     provide(MyService),
@@ -68,12 +70,8 @@ export function DependsOn<T extends InjectableDescriptor>(
  *
  * @param token
  * @param factory
+ * @public
  */
-export function Provide<T>(token: Ctr<T>): DescriptorFn<ModuleDescriptor>;
-export function Provide<T>(
-  token: Token,
-  factory: Factory<T>,
-): DescriptorFn<ModuleDescriptor>;
 export function Provide<T, D extends ModuleDescriptor>(
   token: Token,
   factory?: Factory<T>,
@@ -121,7 +119,8 @@ export function Provide<T, D extends ModuleDescriptor>(
  * This function can be used to specify other modules that the current module depends on.
  * It can be used in the context of a module descriptor to define its imports.
  *
- * @example:
+ * @example Usage:
+ *
  * ```ts
  * @Module(
  *      imports(ModuleA, ModuleB),
@@ -130,6 +129,7 @@ export function Provide<T, D extends ModuleDescriptor>(
  * ```
  *
  * @param modules
+ * @public
  */
 export function Imports<D extends ModuleDescriptor>(
   ...modules: Ctr[]

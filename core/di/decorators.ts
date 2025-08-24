@@ -17,7 +17,7 @@ import { collect } from "./utils.ts";
  * It can be used to define dependencies that the class requires to function properly.
  * The dependencies can be specified using the `dependsOn` function.
  *
- * @example:
+ * @example
  * ```ts
  * @Injectable(DependsOn(SomeDependency))
  * class MyService {
