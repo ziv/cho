@@ -1,7 +1,7 @@
-import {Hono} from "hono";
-import {ChoWebLinker} from "@cho/web/linker.ts";
-import {debuglog} from "@cho/core/utils";
-import {ChoFeatureDescriptor} from "../../web/types.ts";
+import { Hono } from "hono";
+import { ChoWebLinker } from "@cho/web/linker.ts";
+import { debuglog } from "@cho/core/utils";
+import { ChoFeatureDescriptor } from "../../web/types.ts";
 
 const log = debuglog("HonorAdapter");
 
@@ -57,7 +57,8 @@ export default class HonoLinker extends ChoWebLinker {
           m === "delete" ||
           m === "patch"
         ) {
-          log(`Link: ${e.method.toUpperCase()} /${c.route}/${e.route}`);
+          const cRoute = c.route ? `/${c.route}` : "";
+          log(`Link: ${e.method.toUpperCase()} ${cRoute}/${e.route}`);
           // make sure the method keep its context
           const f = c.controller[e.name].bind(c.controller);
           // create the handler

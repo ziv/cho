@@ -1,9 +1,20 @@
 import { Feature } from "../web/decorators.ts";
-import { Controllers } from "../web/fn.ts";
-import { SomeController } from "./some-controller.ts";
+import { Controllers, Features } from "../web/fn.ts";
+import {
+  AnotherController,
+  SomeController,
+  YetAnotherController,
+} from "./some-controllers.ts";
 
 @Feature(
-  Controllers(SomeController),
+  Controllers(YetAnotherController),
 )
-export class SomeService {
+export class AnotherFeature {
+}
+
+@Feature(
+  Controllers(SomeController, AnotherController),
+  Features(AnotherFeature),
+)
+export class SomeFeature {
 }
