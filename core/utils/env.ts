@@ -12,7 +12,7 @@
  *
  * @param key
  */
-export function env(key: string): string {
+export function env(key: string): string | undefined {
   // @ts-ignore: used to support multiple runtimes
   if ("Deno" in globalThis && Deno?.env?.get) {
     // @ts-ignore: used to support multiple runtimes
