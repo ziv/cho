@@ -24,7 +24,7 @@ const header = (context: string) => {
   return magenta(`[ ${content} ]`);
 };
 
-const error = (context: string) => {
+const errorHeader = (context: string) => {
   context = "Error:" + context;
   if (context.length > CONTEXT_LEN) {
     context = context.substring(0, CONTEXT_LEN - 1) + "…";
@@ -73,12 +73,14 @@ export function debuglog(
     if (envbool("CHO_DEBUGLOG")) {
       console.error(
         timestamp(),
-        error(context),
+        errorHeader(context),
         ...args,
         elapsed(),
       );
     }
   };
 
-  return log;
+  return log as (
+    ...args: unknown[]
+  ) => void & { error: (...args: unknown[]) => void };
 }
