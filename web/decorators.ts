@@ -4,10 +4,9 @@ import type {
   MethodContext,
   ModuleDescriptor,
   Target,
-} from "@cho/core/di";
-import { setInjectable, setModule } from "@cho/core/di";
+} from "@chojs/core";
+import { collect, setInjectable, setModule } from "@chojs/core";
 import { setController, setFeature, setMethod } from "./meta.ts";
-import { collect } from "../core/di/utils.ts";
 import type {
   ControllerDescriptor,
   FeatureDescriptor,
@@ -75,7 +74,18 @@ export function Feature(...fns: DescriptorFn[]) {
   };
 }
 
+/**
+ * HTTP GET Method decorator
+ * @example
+ * ```ts
+ * class MyController {
+ *  @Get("path")
+ *  myMethod() {}
+ * }
+ * ```
+ */
 export const Get = createMethodDecorator("GET");
+
 export const Post = createMethodDecorator("POST");
 export const Put = createMethodDecorator("PUT");
 export const Delete = createMethodDecorator("DELETE");

@@ -1,4 +1,4 @@
-import { Any } from "@cho/core/di";
+import { Any } from  "@chojs/core";
 import { ChoFeatureDescriptor } from "./types.ts";
 
 export abstract class ChoWebLinker {

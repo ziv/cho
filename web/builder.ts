@@ -1,6 +1,5 @@
-import type { Ctr, Target } from "@cho/core/di";
-import { getInjector, Injector } from "@cho/core/di";
-import { debuglog } from "@cho/core/utils";
+import type { Ctr, Target } from "@chojs/core";
+import { getInjector, debuglog, Injector } from "@chojs/core";
 import type {
   ChoControllerDescriptor,
   ChoFeatureDescriptor,

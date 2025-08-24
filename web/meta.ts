@@ -1,5 +1,5 @@
-import type { Target } from "../core/di/types.ts";
-import { read, write } from "../core/di/utils.ts";
+import type { Target } from "@chojs/core";
+import { read, write } from "@chojs/core";
 import {
   ControllerDescriptor,
   FeatureDescriptor,

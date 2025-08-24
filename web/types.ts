@@ -1,4 +1,4 @@
-import type { Ctr, Injector, Instance, Target } from "@cho/core/di";
+import type { Ctr, Injector, Instance, Target } from  "@chojs/core";
 
 export type WithRoute = {
   /**

@@ -1,4 +1,4 @@
-import type { Ctr, DescriptorFn } from "@cho/core/di";
+import type { Ctr, DescriptorFn } from "@chojs/core";
 import { FeatureDescriptor, WithRoute } from "./types.ts";
 
 export function Route<D extends WithRoute>(
