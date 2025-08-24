@@ -1,5 +1,12 @@
 import { Ctr, type DescriptorFn, Target } from "./types.ts";
 
+/**
+ * Collect and merge multiple descriptor functions into a single descriptor object.
+ * Each function is applied in sequence, allowing for modular and reusable descriptor definitions.
+ *
+ * @param fns
+ * @internal
+ */
 export function collect<T>(fns: DescriptorFn[]) {
   return fns.reduce(
     (acc, cur) => cur(acc),
@@ -7,6 +14,15 @@ export function collect<T>(fns: DescriptorFn[]) {
   ) as T;
 }
 
+/**
+ * Safely write a property to a target using a symbol key.
+ * Throws an error if the property already exists to prevent accidental overwrites.
+ *
+ * @param target
+ * @param key
+ * @param value
+ * @internal
+ */
 export function write(
   target: Target | Ctr,
   key: symbol,
@@ -23,6 +39,14 @@ export function write(
   });
 }
 
+/**
+ * Safely read a property from a target using a symbol key.
+ * Returns undefined if the property does not exist.
+ *
+ * @param target
+ * @param key
+ * @internal
+ */
 export function read<T>(
   target: Target | Ctr,
   key: symbol,
@@ -31,10 +55,4 @@ export function read<T>(
     return target[key as keyof typeof target] as T;
   }
   return undefined;
-}
-
-export function ensureArray(value: { [key: string]: unknown }, name: string) {
-  if (!(name in value)) {
-    value[name] = [];
-  }
 }

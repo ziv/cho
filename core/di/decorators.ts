@@ -43,7 +43,7 @@ export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
  * The providers can be specified using the `provide` function, and imports can be specified using
  * the `imports` function.
  *
- * @example:
+ * @example
  * ```ts
  * @Module(
  *  Imports(SomeModule),

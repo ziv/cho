@@ -1,6 +1,6 @@
 import { DependsOn, Imports, Injectable, Module, Provide } from "@cho/core/di";
 import { expect } from "@std/expect";
-import { Injector } from "../di/injector.ts";
+import { Injector } from "../injector.ts";
 
 @Injectable(DependsOn("bar", "foo"))
 class ServiceFoo {
