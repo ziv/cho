@@ -1,5 +1,5 @@
 import ChoWebLinker from "./linker.ts";
-import { Ctr } from "@chojs/core";
+import { Ctr } from "@chojs/core/di";
 import { ChoWebBuilder } from "./builder.ts";
 // import { showRoutes } from "hono/dev";
 

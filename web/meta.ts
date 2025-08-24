@@ -1,5 +1,5 @@
-import type { Target } from "@chojs/core";
-import { read, write } from "@chojs/core";
+import type { Target } from "@chojs/core/di";
+import { read, write } from "@chojs/core/di";
 import {
   ControllerDescriptor,
   FeatureDescriptor,

@@ -4,8 +4,8 @@ import type {
   MethodContext,
   ModuleDescriptor,
   Target,
-} from "@chojs/core";
-import { collect, setInjectable, setModule } from "@chojs/core";
+} from "@chojs/core/di";
+import { collect, setInjectable, setModule } from "@chojs/core/di";
 import { setController, setFeature, setMethod } from "./meta.ts";
 import type {
   ControllerDescriptor,
