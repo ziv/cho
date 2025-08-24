@@ -12,7 +12,7 @@
  *
  * @param key
  */
-export function env(key: string) {
+export function env(key: string): string {
   // @ts-ignore: used to support multiple runtimes
   if ("Deno" in globalThis && Deno?.env?.get) {
     // @ts-ignore: used to support multiple runtimes
@@ -41,7 +41,7 @@ export function env(key: string) {
  *
  * @param key
  */
-export function envnum(key: string) {
+export function envnum(key: string): number {
   return Number(env(key));
 }
 
@@ -51,7 +51,7 @@ export function envnum(key: string) {
  *
  * @param key
  */
-export function envbool(key: string) {
+export function envbool(key: string): boolean {
   const val = env(key);
   if (!val) return false;
   return ["1", "true", "yes", "on"].includes(val.toLowerCase());
