@@ -1,9 +1,8 @@
-import {gray, magenta, yellow} from "./colors.ts";
-import {time} from "./date-time.ts";
-import {env} from "./env.ts";
+import { gray, magenta, yellow } from "./colors.ts";
+import { env } from "./env.ts";
+import { format } from "date-fns";
 
 const CONTEXT_LEN = Number(env("CHO_DEBUGLOG_CONTEXT_LEN") ?? "15");
-// const CHO_DEBUG = Boolean(Deno.env.get("CHO_DEBUG") ?? "true");
 
 let past = Date.now();
 
@@ -36,7 +35,7 @@ export function debuglog(context: string) {
     const diff = now - past;
     past = now;
     console.log(
-      yellow(time()),
+      yellow(format(new Date(), "HH:MM:SS.mmm")),
       magenta(`[ ${header} ]`),
       ...args,
       gray(`+${diff}ms`),

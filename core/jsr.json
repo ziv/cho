@@ -2,5 +2,8 @@
   "name": "@chojs/core",
   "version": "0.0.3",
   "license": "MIT",
-  "exports": "./mod.ts"
+  "exports": "./mod.ts",
+  "imports": {
+    "date-fns": "npm:date-fns@^4.1.0"
+  }
 }
