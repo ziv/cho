@@ -10,14 +10,14 @@ import {
   Resolver,
   Token,
 } from "./types.ts";
-import { debuglog } from "@cho/core/utils";
+import { debuglog } from "../utils/debuglog.ts";
 import { getInjectable, getInjector, getModule, setInjector } from "./meta.ts";
 
 export class Injector implements Resolver {
   readonly name: string;
   readonly desc: ModuleDescriptor;
   readonly log: (...args: unknown[]) => void;
-  readonly cache = new Map<Token, Resolved>();
+  readonly #cache = new Map<Token, Resolved>();
 
   constructor(
     readonly ctr: Ctr,
@@ -42,9 +42,9 @@ export class Injector implements Resolver {
     this.log(`search for "${tokenName}"`);
 
     // search in cache
-    if (this.cache.has(token)) {
+    if (this.#cache.has(token)) {
       this.log(`"${tokenName}" found in cache`);
-      const resolved = this.cache.get(token) as Resolved;
+      const resolved = this.#cache.get(token) as Resolved;
       resolved.refCount++;
       return Promise.resolve(resolved.value as T);
     }
@@ -53,7 +53,7 @@ export class Injector implements Resolver {
     if (token === this.ctr) {
       const value = await this.create(token);
       this.log(`module ref created`);
-      this.cache.set(token, {
+      this.#cache.set(token, {
         value,
         refCount: 1,
       });
@@ -65,7 +65,7 @@ export class Injector implements Resolver {
     if (p) {
       this.log(`"${tokenName}"found in local providers`);
       const value = await p.factory(this);
-      this.cache.set(token, {
+      this.#cache.set(token, {
         value,
         refCount: 1,
       });
@@ -106,7 +106,7 @@ export class Injector implements Resolver {
    * @param ctr
    * @param deps
    */
-  async create(ctr: Ctr, deps?: Token[]): Instance {
+  async create(ctr: Ctr, deps?: Token[]): Promise<Instance> {
     if (!deps) {
       deps = getInjectable(ctr)?.dependencies ?? [];
     }
