@@ -7,7 +7,7 @@ import { Ctr, type DescriptorFn, Target } from "./types.ts";
  * @param fns
  * @internal
  */
-export function collect<T>(fns: DescriptorFn[]) {
+export function collect<T>(fns: DescriptorFn[]): T {
   return fns.reduce(
     (acc, cur) => cur(acc),
     {} as Partial<T>,
