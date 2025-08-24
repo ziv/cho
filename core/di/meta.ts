@@ -1,3 +1,7 @@
+/**
+ * @package @chojs/core/di
+ * @module @chojs/core/di
+ */
 import type {
   InjectableDescriptor,
   ModuleDescriptor,

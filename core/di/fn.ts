@@ -1,5 +1,6 @@
 /**
- * # Functional API for Dependency Injection
+ * @package @chojs/core/di
+ * @module @chojs/core/di
  */
 import type {
   Ctr,

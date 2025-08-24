@@ -1,5 +1,6 @@
 /**
- * # Dependency Injector
+ * @package @chojs/core/di
+ * @module @chojs/core/di
  */
 import {
   Ctr,
