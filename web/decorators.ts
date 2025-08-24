@@ -1,30 +1,14 @@
-import {
+import type {
   DescriptorFn,
   InjectableDescriptor,
   MethodContext,
-  type ModuleDescriptor,
+  ModuleDescriptor,
   Target,
-} from "../core/di/types.ts";
-import {
-  CreateInjectable,
-  CreateModule,
-  SetInjectable,
-  setInjectable,
-  SetInjector,
-  SetModule,
-  setModule,
-} from "../core/di/meta.ts";
-import {
-  CreateFeature,
-  CreateMethod,
-  setController,
-  SetFeature,
-  setFeature,
-  SetMethod,
-  setMethod,
-} from "./meta.ts";
+} from "@cho/core/di";
+import { setInjectable, setModule } from "@cho/core/di";
+import { setController, setFeature, setMethod } from "./meta.ts";
 import { collect } from "../core/di/utils.ts";
-import {
+import type {
   ControllerDescriptor,
   FeatureDescriptor,
   MethodDescriptor,
@@ -35,6 +19,7 @@ import {
  * @param method
  */
 function createMethodDecorator(method: string) {
+  // todo should be supported TS decorators too
   return function (
     route: string | DescriptorFn,
     ...fns: DescriptorFn[]

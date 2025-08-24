@@ -1,8 +1,9 @@
 /**
  * # Dependency Injector
  */
-import type {
+import {
   Ctr,
+  Instance,
   ModuleDescriptor,
   Provider,
   Resolved,
@@ -105,11 +106,11 @@ export class Injector implements Resolver {
    * @param ctr
    * @param deps
    */
-  async create(ctr: Ctr, deps?: Token[]) {
+  async create(ctr: Ctr, deps?: Token[]): Instance {
     if (!deps) {
       deps = getInjectable(ctr)?.dependencies ?? [];
     }
     const args = await Promise.all(deps.map((d) => this.resolve(d)));
-    return Reflect.construct(ctr, args) as T;
+    return Reflect.construct(ctr, args) as Instance;
   }
 }

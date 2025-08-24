@@ -10,6 +10,19 @@ export function Route<D extends WithRoute>(
   };
 }
 
+export function Middlewares<D extends FeatureDescriptor>(
+  ...middlewares: (Ctr | Token)[]
+): DescriptorFn {
+  return (d: Partial<D>) => {
+    if (d.middlewares) {
+      d.middlewares.push(...middlewares);
+    } else {
+      d.middlewares = [...middlewares];
+    }
+    return d;
+  };
+}
+
 export function Controllers<D extends FeatureDescriptor>(
   ...controllers: Ctr[]
 ): DescriptorFn {
@@ -26,7 +39,7 @@ export function Controllers<D extends FeatureDescriptor>(
 export function Features<D extends FeatureDescriptor>(
   ...features: Ctr[]
 ): DescriptorFn {
-  return (d: D) => {
+  return (d: Partial<D>) => {
     if (d.features) {
       d.features.push(...features);
     } else {

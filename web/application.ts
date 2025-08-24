@@ -10,14 +10,14 @@ export type ChoWebApplicationOptions = {
 
 export default class ChoWebApplication {
   static async create(
-    app: Ctr,
+    feature: Ctr,
     options: Partial<ChoWebApplicationOptions> = {},
   ): Promise<ChoWebApplication> {
     // todo create currently only hono is supported
     const linker = options.linker ?? new HonoLinker();
     const builder = new ChoWebBuilder();
-    const feature = await builder.build(app);
-    linker.link(feature);
+    const app = await builder.build(feature);
+    linker.link(app);
 
     // todo remove later, for debugging only
     showRoutes(linker.ref());

@@ -1,4 +1,6 @@
 /**
+ * MetaTypes
+ * =========
  * Sometimes we need to use `any` type or `Function` type in TypeScript,
  * but it's generally discouraged.
  * However, in the context of dependency injection and dynamic resolution,
@@ -9,6 +11,7 @@
 export type Any = any;
 // deno-lint-ignore ban-types
 export type Target = Function;
+export type Instance<T extends object = object> = T;
 
 /**
  * Constructor type for classes.

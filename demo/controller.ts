@@ -2,33 +2,11 @@ import { Controller, Feature, Get, Post } from "../web/decorators.ts";
 import { Controllers, Route } from "../web/fn.ts";
 import { Context } from "hono";
 import ChoWebApplication from "../web/application.ts";
-import { DependsOn, Injectable, Provide } from "@cho/core/di";
+import { DependsOn, Provide } from "@cho/core/di";
 
-@Injectable()
-class ClassMiddleware {
-  constructor(private foo: string) {
-  }
-  handle(c: Context, next: () => Promise<void>) {
-    console.log("ClassMiddleware", this.foo);
-    return next();
-  }
-}
-
-function funcMiddlewareasync(c: Context, next: () => Promise<void>) {
-  next().catch(console.error);
-}
-
-@Controller(
-  Route("foo"),
-  DependsOn("foo"),
-)
+@Controller()
 class MyController {
-  constructor(private foo: string) {
-  }
-
-  @Get(
-    "bar",
-  )
+  @Get("bar")
   myMethod(c: Context) {
     return c.json({
       foo: "1",
@@ -45,8 +23,6 @@ class MyController {
 
 @Feature(
   Controllers(MyController),
-  Provide("foo", () => "bar"),
-  Provide(ClassMiddleware),
 )
 class MyFeature {
 }

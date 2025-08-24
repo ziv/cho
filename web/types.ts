@@ -1,4 +1,4 @@
-import type { Any, Ctr, Injector, Target } from "@cho/core/di";
+import type { Ctr, Injector, Instance, Target } from "@cho/core/di";
 
 export type WithRoute = {
   /**
@@ -29,72 +29,34 @@ export type ControllerDescriptor = WithRoute;
 export type FeatureDescriptor =
   & WithRoute
   & {
+    /**
+     * List of controller classes within this feature.
+     */
     controllers: Ctr[];
+
+    /**
+     * List of sub-feature classes within this feature.
+     */
     features: Ctr[];
   };
 
+export type ChoMiddlewareDescriptor = Target; // todo fix with the right signature
+
+export type ChoMethodDescriptor = MethodDescriptor & {
+  middlewares: ChoMiddlewareDescriptor[];
+};
 export type ChoControllerDescriptor = ControllerDescriptor & {
   /**
    * The instance of the controller.
    */
-  controller: Any;
-  methods: MethodDescriptor[];
+  controller: Instance;
+  methods: ChoMethodDescriptor[];
+  middlewares: ChoMiddlewareDescriptor[];
 };
 
 export type ChoFeatureDescriptor = FeatureDescriptor & {
   injector: Injector;
   controllers: ChoControllerDescriptor[];
   features: ChoFeatureDescriptor[];
+  middlewares: ChoMiddlewareDescriptor[];
 };
-
-/**
- * a
- * a
- * ----
- * a
- * a
- */
-
-/** */
-
-/** */
-// export type EndPointDescriptor = WithRouteAndMiddlewares & {
-//   /**
-//    * The name of the method on the controller (property key).
-//    */
-//   name: string;
-//
-//   /**
-//    * The HTTP method of the endpoint (e.g. "GET", "POST", "PUT", "DELETE").
-//    */
-//   method: string;
-// };
-//
-// export type ProcessedController = WithRouteAndMiddlewares & {
-//   /**
-//    * The instance of the controller.
-//    */
-//   controller: Any;
-//
-//   /**
-//    * List of endpoints.
-//    */
-//   endpoints: MethodDescriptor[];
-// };
-
-// export type ProcessedFeature = WithRouteAndMiddlewares & {
-//   /**
-//    * The module injector of the feature.
-//    */
-//   injector: Injector;
-//
-//   /**
-//    * List of sub-features.
-//    */
-//   features: ProcessedFeature[];
-//
-//   /**
-//    * List of controllers.
-//    */
-//   controllers: ProcessedController[];
-// };
