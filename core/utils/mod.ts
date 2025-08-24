@@ -5,3 +5,4 @@
 export * from "./debuglog.ts";
 export * from "./colors.ts";
 export * from "./date-time.ts";
+export * from "./env.ts";

@@ -1,7 +1,8 @@
-import { gray, magenta, yellow } from "./colors.ts";
-import { time } from "./date-time.ts";
+import {gray, magenta, yellow} from "./colors.ts";
+import {time} from "./date-time.ts";
+import {env} from "./env.ts";
 
-const CONTEXT_LEN = Number(Deno.env.get("CHO_DEBUGLOG_CONTEXT_LEN") ?? "15");
+const CONTEXT_LEN = Number(env("CHO_DEBUGLOG_CONTEXT_LEN") ?? "15");
 // const CHO_DEBUG = Boolean(Deno.env.get("CHO_DEBUG") ?? "true");
 
 let past = Date.now();
