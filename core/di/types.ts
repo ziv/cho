@@ -104,7 +104,6 @@ export type ModuleDescriptor = InjectableDescriptor & {
  */
 export type DescriptorFn<T = Any> = (d: Partial<T>) => Partial<T>;
 
-
 /**
  * Class decorator context (decorators stage 3, TC39)
  * This is used in class decorators to provide metadata and utilities.

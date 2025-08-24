@@ -13,19 +13,19 @@
  * @param key
  */
 export function env(key: string) {
-  // @ts-ignore
+  // @ts-ignore: used to support multiple runtimes
   if ("Deno" in globalThis && Deno?.env?.get) {
-    // @ts-ignore
+    // @ts-ignore: used to support multiple runtimes
     return globalThis.Deno.env.get(key);
   }
-  // @ts-ignore
+  // @ts-ignore: used to support multiple runtimes
   if ("Bun" in globalThis && globalThis.Bun?.env) {
-    // @ts-ignore
+    // @ts-ignore: used to support multiple runtimes
     return globalThis.Bun.env[key];
   }
-  // @ts-ignore
+  // @ts-ignore: used to support multiple runtimes
   if ("process" in globalThis && globalThis.process?.env) {
-    // @ts-ignore
+    // @ts-ignore: used to support multiple runtimes
     return globalThis.process.env[key];
   }
   return undefined;

@@ -27,26 +27,25 @@ Deno.test("should read environment variables as bool true (1)", () => {
 });
 
 Deno.test("should read environment variables as bool true (true)", () => {
-    const envStub = stub(Deno.env, "get", () => "true");
-    expect(envbool("key")).toBe(true);
-    envStub.restore();
+  const envStub = stub(Deno.env, "get", () => "true");
+  expect(envbool("key")).toBe(true);
+  envStub.restore();
 });
 
 Deno.test("should read environment variables as bool true (yes)", () => {
-    const envStub = stub(Deno.env, "get", () => "yes");
-    expect(envbool("key")).toBe(true);
-    envStub.restore();
+  const envStub = stub(Deno.env, "get", () => "yes");
+  expect(envbool("key")).toBe(true);
+  envStub.restore();
 });
 
 Deno.test("should read environment variables as bool true (on)", () => {
-    const envStub = stub(Deno.env, "get", () => "on");
-    expect(envbool("key")).toBe(true);
-    envStub.restore();
+  const envStub = stub(Deno.env, "get", () => "on");
+  expect(envbool("key")).toBe(true);
+  envStub.restore();
 });
 
-
 Deno.test("should read environment variables as bool false (any)", () => {
-    const envStub = stub(Deno.env, "get", () => "any value");
-    expect(envbool("key")).toBe(false);
-    envStub.restore();
+  const envStub = stub(Deno.env, "get", () => "any value");
+  expect(envbool("key")).toBe(false);
+  envStub.restore();
 });

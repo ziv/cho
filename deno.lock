@@ -12,7 +12,6 @@
     "jsr:@std/internal@^1.0.10": "1.0.10",
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/testing@^1.0.15": "1.0.15",
-    "npm:date-fns@^4.1.0": "4.1.0",
     "npm:hono@4.9.2": "4.9.2",
     "npm:mongodb@^6.18.0": "6.18.0"
   },
@@ -87,9 +86,6 @@
     "bson@6.10.4": {
       "integrity": "sha512-WIsKqkSC0ABoBJuT1LEX+2HEvNmNKKgnTAyd0fL8qzK4SH2i9NXg+t08YtdZp/V9IZ33cxe3iV4yM0qg8lMQng=="
     },
-    "date-fns@4.1.0": {
-      "integrity": "sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg=="
-    },
     "hono@4.9.2": {
       "integrity": "sha512-UG2jXGS/gkLH42l/1uROnwXpkjvvxkl3kpopL3LBo27NuaDPI6xHNfuUSilIHcrBkPfl4y0z6y2ByI455TjNRw=="
     },
@@ -145,7 +141,6 @@
       "jsr:@std/expect@^1.0.17",
       "jsr:@std/fmt@^1.0.8",
       "jsr:@std/testing@^1.0.15",
-      "npm:date-fns@^4.1.0",
       "npm:mongodb@^6.18.0"
     ]
   }
