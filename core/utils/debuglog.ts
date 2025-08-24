@@ -55,7 +55,9 @@ const error = (context: string) => {
  * @private
  * @param context
  */
-export function debuglog(context: string) {
+export function debuglog(
+  context: string,
+): (...args: unknown[]) => void & { error: (...args: unknown[]) => void } {
   function log(...args: unknown[]) {
     if (envbool("CHO_DEBUGLOG")) {
       console.log(
