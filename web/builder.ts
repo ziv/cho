@@ -1,6 +1,6 @@
 import type { Ctr, Target, Token } from "@chojs/core/di";
 import { getController, getFeature, getMethods } from "./meta.ts";
-import { getInjectable } from "../core/di/meta.ts";
+import { getInjectable } from "@chojs/core/di";
 
 export type WithRoute<T> = T & {
   /**

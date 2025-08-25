@@ -1,8 +1,8 @@
-import type { Ctr, DescriptorFn, Token } from "@chojs/core/di";
-import { FeatureDescriptor, WithRoute } from "./types.ts";
-import { Target } from "../core/di/mod.ts";
+import type { Any, Ctr, DescriptorFn, Target, Token } from "@chojs/core/di";
+import { FeatureDescriptor, WithRoute } from "./builder.ts";
+import { FeatureMeta } from "./meta.ts";
 
-export function Route<D extends WithRoute>(
+export function Route<D extends { route: string }>(
   route: string,
 ): DescriptorFn {
   return (d: Partial<D>) => {
@@ -11,7 +11,7 @@ export function Route<D extends WithRoute>(
   };
 }
 
-export function Middlewares<D extends FeatureDescriptor>(
+export function Middlewares<D extends { middlewares: Target[] }>(
   ...middlewares: (Ctr | Token)[]
 ): DescriptorFn {
   return (d: Partial<D>) => {
@@ -24,7 +24,7 @@ export function Middlewares<D extends FeatureDescriptor>(
   };
 }
 
-export function Controllers<D extends FeatureDescriptor>(
+export function Controllers<D extends FeatureMeta>(
   ...controllers: Ctr[]
 ): DescriptorFn {
   return (d: Partial<D>) => {
@@ -37,7 +37,7 @@ export function Controllers<D extends FeatureDescriptor>(
   };
 }
 
-export function Features<D extends FeatureDescriptor>(
+export function Features<D extends FeatureMeta>(
   ...features: Ctr[]
 ): DescriptorFn {
   return (d: Partial<D>) => {

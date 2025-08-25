@@ -6,12 +6,13 @@ import type {
   Target,
 } from "@chojs/core/di";
 import { collect, setInjectable, setModule } from "@chojs/core/di";
-import { setController, setFeature, setMethod } from "./meta.ts";
-import type {
-  ControllerDescriptor,
-  FeatureDescriptor,
-  MethodDescriptor,
-} from "./types.ts";
+import { FeatureMeta, setController, setFeature, setMethod } from "./meta.ts";
+import { ControllerDescriptor, MethodDescriptor } from "./builder.ts";
+
+export type MethodDecoratorFn = (
+  route: string | DescriptorFn,
+  ...fns: DescriptorFn[]
+) => MethodDecorator;
 
 /**
  * Creates a method decorator for the given HTTP method.
@@ -20,22 +21,24 @@ import type {
  *
  * @param method
  */
-function createMethodDecorator(method: string) {
+function createMethodDecorator(
+  method: string,
+): MethodDecoratorFn {
   /** */
   return function (
     route: string | DescriptorFn,
     ...fns: DescriptorFn[]
   ) {
     return function (
-      target: Target,
-      context: MethodContext | string,
+      target: Object,
+      context: MethodContext | string | symbol,
     ) {
+      const name = typeof context === "string"
+        ? context
+        : (context as MethodContext).name;
+
       // make sure to add the method and name to the fns array
-      fns.push((d) => ({
-        ...d,
-        method,
-        name: typeof context === "string" ? context : context.name,
-      }));
+      fns.push((d) => ({ ...d, method, name }));
       if (typeof route === "function") {
         // if route is a function, add it to the front of the fns array
         fns.unshift(route);
@@ -46,12 +49,12 @@ function createMethodDecorator(method: string) {
         throw new Error("Route must be a string or a function");
       }
       const data = collect<MethodDescriptor>(fns);
-      setMethod(target, data);
+      setMethod(target as Target, data);
     };
   };
 }
 
-export function Controller(...fns: DescriptorFn[]) {
+export function Controller(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
     const data = collect<InjectableDescriptor & ControllerDescriptor>(fns);
     setInjectable(target, data);
@@ -59,10 +62,10 @@ export function Controller(...fns: DescriptorFn[]) {
   };
 }
 
-export function Feature(...fns: DescriptorFn[]) {
+export function Feature(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
     const data = collect<
-      InjectableDescriptor & ModuleDescriptor & FeatureDescriptor
+      InjectableDescriptor & ModuleDescriptor & FeatureMeta
     >(fns);
     setInjectable(target, data);
     setModule(target, data);
@@ -80,11 +83,52 @@ export function Feature(...fns: DescriptorFn[]) {
  * }
  * ```
  */
-export const Get = createMethodDecorator("GET");
+export const Get: MethodDecoratorFn = createMethodDecorator("GET");
 
-export const Post = createMethodDecorator("POST");
-export const Put = createMethodDecorator("PUT");
-export const Delete = createMethodDecorator("DELETE");
-export const Patch = createMethodDecorator("PATCH");
-export const Head = createMethodDecorator("HEAD");
-export const Options = createMethodDecorator("OPTIONS");
+/**
+ * HTTP POST Method decorator
+ * @example
+ * ```ts
+ * class MyController {
+ *  @Post("path")
+ *  myMethod() {}
+ * }
+ * ```
+ */
+export const Post: MethodDecoratorFn = createMethodDecorator("POST");
+
+/**
+ * HTTP PUT Method decorator
+ * @example
+ * ```ts
+ * class MyController {
+ *  @Put("path")
+ *  myMethod() {}
+ * }
+ * ```
+ */
+export const Put: MethodDecoratorFn = createMethodDecorator("PUT");
+
+/**
+ * HTTP DELETE Method decorator
+ * @example
+ * ```ts
+ * class MyController {
+ *  @Delete("path")
+ *  myMethod() {}
+ * }
+ * ```
+ */
+export const Delete: MethodDecoratorFn = createMethodDecorator("DELETE");
+
+/**
+ * HTTP PATCH Method decorator
+ * @example
+ * ```ts
+ * class MyController {
+ *  @Patch("path")
+ *  myMethod() {}
+ * }
+ * ```
+ */
+export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");

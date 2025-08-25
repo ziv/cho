@@ -1,10 +1,5 @@
 import type { Ctr, Target } from "@chojs/core/di";
 import { read, write } from "@chojs/core/di";
-import {
-  ControllerDescriptor,
-  FeatureDescriptor,
-  MethodDescriptor,
-} from "./types.ts";
 
 const MethodMetadata = Symbol("MethodMetadata");
 const ControllerMetadata = Symbol("ControllerMetadata");
@@ -82,11 +77,11 @@ export function getMethod(
 export function getMethods(ctr: Ctr): MethodMeta[] {
   const props = Object.getOwnPropertyNames(
     ctr.prototype,
-  ) as (string & keyof typeof instance)[];
+  ) as (string & keyof typeof ctr.prototype)[];
 
   return props
     .filter((name) => name !== "constructor")
     .filter((name) => typeof ctr.prototype[name] === "function")
     .map((name) => getMethod(ctr.prototype[name]))
-    .filter(Boolean);
+    .filter(Boolean) as MethodMeta[];
 }

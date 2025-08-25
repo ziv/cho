@@ -3,9 +3,12 @@ import {
   FeatureDescriptor,
   MethodDescriptor,
 } from "./builder.ts";
-import { Injector } from "../core/di/injector.ts";
-import { Instance } from "../core/di/types.ts";
-import { Target } from "@chojs/core/di";
+import { getInjector, Injector } from "@chojs/core/di";
+import type { Instance, Target, Token } from "@chojs/core/di";
+
+export interface Middleware {
+  handle(...args: any[]): any;
+}
 
 export class MethodRef {
   constructor(
@@ -51,7 +54,7 @@ async function buildMiddleware(
     middleware.prototype && typeof middleware.prototype.handle === "function"
   ) {
     // class middleware, resolve instance and bind handle method
-    const instance = await injector.resolve(middleware as Target);
+    const instance = await injector.resolve(middleware as Token) as Middleware;
     if (!instance || typeof instance.handle !== "function") {
       throw new Error(
         `Cannot create instance of middleware ${middleware.name}`,
@@ -75,7 +78,8 @@ async function buildMethod(
   for (const mw of desc.middlewares) {
     middlewares.push(await buildMiddleware(injector, mw));
   }
-  const handler = controller[desc.name].bind(controller);
+  const handler = (controller[desc.name as keyof typeof controller] as Target)
+    .bind(controller);
   return new MethodRef(desc, handler, middlewares);
 }
 
@@ -102,8 +106,8 @@ async function buildController(injector: Injector, desc: ControllerDescriptor) {
  * ready for linking and serving.
  * @param desc
  */
-export async function buildRef(desc: FeatureDescriptor) {
-  const injector = getInjector(desc.ctr) ?? new Injector(descriptor.ctr);
+export async function buildRef(desc: FeatureDescriptor): Promise<FeatureRef> {
+  const injector = getInjector(desc.ctr) ?? new Injector(desc.ctr);
   const instance = await injector.resolve(desc.ctr);
   if (!instance) {
     throw new Error(`Cannot create instance of ${desc.ctr.name}`);
@@ -115,7 +119,7 @@ export async function buildRef(desc: FeatureDescriptor) {
     middlewares.push(await buildMiddleware(injector, mw));
   }
 
-  const features: FeatureRef = [];
+  const features: FeatureRef[] = [];
   for (const f of desc.features) {
     features.push(await buildRef(f));
   }
