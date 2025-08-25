@@ -1,6 +1,3 @@
-/**
- * @category @chojs/core/di
- */
 import type {
   Ctr,
   Instance,
@@ -13,6 +10,7 @@ import type {
 import { debuglog } from "../utils/debuglog.ts";
 import { getInjectable, getInjector, getModule, setInjector } from "./meta.ts";
 
+const log = debuglog("di:injector");
 /**
  * Dependency Injector
  * This class is responsible for resolving dependencies and managing the lifecycle of instances.
@@ -22,7 +20,6 @@ import { getInjectable, getInjector, getModule, setInjector } from "./meta.ts";
 export class Injector implements Resolver {
   readonly name: string;
   readonly desc: ModuleDescriptor;
-  readonly log: (...args: unknown[]) => void;
   readonly #cache = new Map<Token, Resolved>();
 
   constructor(
@@ -38,8 +35,7 @@ export class Injector implements Resolver {
     }
     this.desc = desc;
     this.name = `${ctr.name}Injector`;
-    this.log = debuglog(this.name);
-    this.log(`created`);
+    log(`${this.name} created`);
     setInjector(ctr, this);
   }
 
@@ -50,11 +46,11 @@ export class Injector implements Resolver {
    */
   async resolve<T>(token: Token): Promise<T> {
     const tokenName = typeof token === "function" ? token.name : String(token);
-    this.log(`search for "${tokenName}"`);
+    log(`${this.name}: search for "${tokenName}"`);
 
     // search in cache
     if (this.#cache.has(token)) {
-      this.log(`"${tokenName}" found in cache`);
+      log(`"${this.name}: ${tokenName}" found in cache`);
       const resolved = this.#cache.get(token) as Resolved;
       resolved.refCount++;
       return Promise.resolve(resolved.value as T);
@@ -63,7 +59,7 @@ export class Injector implements Resolver {
     // create self
     if (token === this.ctr) {
       const value = await this.create(token);
-      this.log(`module ref created`);
+      log(`${this.name}: module ref created`);
       this.#cache.set(token, {
         value,
         refCount: 1,
@@ -74,7 +70,7 @@ export class Injector implements Resolver {
     // search in providers
     const p = this.provider(token);
     if (p) {
-      this.log(`"${tokenName}"found in local providers`);
+      log(`${this.name}: "${tokenName}"found in local providers`);
       const value = await p.factory(this);
       this.#cache.set(token, {
         value,
@@ -97,11 +93,11 @@ export class Injector implements Resolver {
         await injector.resolve(im);
       }
       if (injector.provider(token)) {
-        this.log(`"${tokenName}"found in imported ${im.name}`);
+        log(`${this.name}: "${tokenName}"found in imported ${im.name}`);
         return injector.resolve(token);
       }
     }
-    throw new Error(`${String(token)} not found`);
+    throw new Error(`${this.name}: ${String(token)} not found`);
   }
 
   /**

@@ -1,7 +1,3 @@
-/**
- * @category @chojs/core/utils
- */
-
 // declare var Deno: any;
 // declare var Bun: any;
 // declare var process: any;
@@ -16,6 +12,7 @@
  *
  * @param key
  * @return The value of the environment variable, or `undefined` if not set.
+ * @category @chojs/core/utils
  */
 export function env(key: string): string | undefined {
   // @ts-ignore: used to support multiple runtimes
@@ -46,6 +43,7 @@ export function env(key: string): string | undefined {
  *
  * @param key
  * @return The value of the environment variable as a number, or `NaN` if not set or not a valid number.
+ * @category @chojs/core/utils
  */
 export function envnum(key: string): number {
   return Number(env(key));
@@ -57,6 +55,7 @@ export function envnum(key: string): number {
  *
  * @param key
  * @return The value of the environment variable as a boolean, or `false` if not set or not recognized as true.
+ * @category @chojs/core/utils
  */
 export function envbool(key: string): boolean {
   const val = env(key);

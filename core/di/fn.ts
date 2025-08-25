@@ -1,6 +1,3 @@
-/**
- * @category @chojs/core/di
- */
 import type {
   Ctr,
   DescriptorFn,

@@ -8,38 +8,56 @@ Deno.test("debuglog should return a function", () => {
 
 Deno.test("debuglog function should not log", () => {
   const logSpy = spy(console, "log");
+  const errSpy = spy(console, "error");
+
+  Deno.env.set("CHO_DEBUGLOG", "none");
   const log = debuglog("test");
   log("This is a test message");
   assertSpyCalls(logSpy, 0);
+  assertSpyCalls(errSpy, 0);
+
   logSpy.restore();
+  errSpy.restore();
 });
 
 Deno.test("debuglog function should log", () => {
-  const envStub = stub(Deno.env, "get", () => "true");
   const logSpy = spy(console, "log");
+  const errSpy = spy(console, "error");
 
+  Deno.env.set("CHO_DEBUGLOG", "test");
   const log = debuglog("test");
   log("This is a test message");
   assertSpyCalls(logSpy, 1);
-  envStub.restore();
+  assertSpyCalls(errSpy, 0);
+
   logSpy.restore();
+  errSpy.restore();
 });
 
 Deno.test("debuglog function should not log errors", () => {
-  const logSpy = spy(console, "error");
+  const logSpy = spy(console, "log");
+  const errSpy = spy(console, "error");
+
+  Deno.env.set("CHO_DEBUGLOG", "none");
   const log = debuglog("test");
   log.error("This is a test message");
   assertSpyCalls(logSpy, 0);
+  assertSpyCalls(errSpy, 0);
+
   logSpy.restore();
+  errSpy.restore();
 });
 
 Deno.test("debuglog function should log error", () => {
-  const envStub = stub(Deno.env, "get", () => "true");
-  const logSpy = spy(console, "error");
+  const logSpy = spy(console, "log");
+  const errSpy = spy(console, "error");
 
+  Deno.env.set("CHO_DEBUGLOG", "test");
   const log = debuglog("test");
   log.error("This is a test message");
-  assertSpyCalls(logSpy, 1);
-  envStub.restore();
+  assertSpyCalls(logSpy, 0);
+  assertSpyCalls(errSpy, 1);
+
   logSpy.restore();
+  errSpy.restore();
 });

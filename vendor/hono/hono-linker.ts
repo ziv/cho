@@ -46,7 +46,7 @@ export class HonoLinker extends ChoWebLinker<Hono> {
     for (const ctrl of desc.controllers) {
       const controller = new Hono();
 
-      // link middlewares
+      // link controller middlewares
       for (const mw of ctrl.middlewares) {
         controller.use(mw as Any);
       }
