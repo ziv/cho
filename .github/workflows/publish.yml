@@ -25,7 +25,7 @@ jobs:
 
       - name: setup version
         run: |
-          ./scripts/next-version.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
+          ./scripts/next.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
           cat ${{ github.event.inputs.lib }}/jsr.json
           cd ${{ github.event.inputs.lib }}
           npx jsr publish --dry-run
