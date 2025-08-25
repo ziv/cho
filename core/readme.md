@@ -10,7 +10,7 @@ Core modules for `cho` framework.
 ## Installation
 
 ```
-deno add @chojs/core
+deno add jsr:@chojs/core
 ```
 
 ## Usage
