@@ -14,7 +14,11 @@ let last = Date.now();
  * Returns a logging function that prefixes messages with a timestamp and context.
  * The logging function has an `error` method for error messages.
  *
- * The logging is enabled if the `CHO_DEBUGLOG` environment variable includes the context string.
+ * The logging configured using the following environment variables:
+ * - `CHO_DEBUG`: Enable all debug logging if set to a truthy value.
+ * - `CHO_DEBUGLOG`: Comma-separated list of contexts to enable logging for, or `*` for all contexts.
+ * - `CHO_DEBUGLOG_TIMESTAMP`: Timestamp format (default: `HH:MM:SS.mmm`).
+ * - `CHO_DEBUGLOG_CONTEXT_LEN`: Maximum length of the context string (default: `15`).
  *
  * @example Usage:
  * ```ts
@@ -22,8 +26,6 @@ let last = Date.now();
  * log("This is a debug message");
  * log.error("This is an error message");
  * ```
- * Context length is limited to 10 characters by default, but can be adjusted
- * by setting the `CHO_DEBUGLOG_CONTEXT_LEN` environment variable.
  *
  * @example Output:
  * ```
