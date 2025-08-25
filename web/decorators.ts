@@ -7,8 +7,13 @@ import type {
   Target,
 } from "@chojs/core/di";
 import { collect, setInjectable, setModule } from "@chojs/core/di";
-import { FeatureMeta, setController, setFeature, setMethod } from "./meta.ts";
-import { ControllerDescriptor, MethodDescriptor } from "./builder.ts";
+import {
+  type FeatureMeta,
+  setController,
+  setFeature,
+  setMethod,
+} from "./meta.ts";
+import type { ControllerDescriptor, MethodDescriptor } from "./types.ts";
 
 export type MethodDecoratorFn = (
   route: string | DescriptorFn,

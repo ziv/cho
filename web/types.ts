@@ -1,4 +1,4 @@
-import type {Target, Token} from "@chojs/core";
+import type {Ctr, Target, Token} from "@chojs/core";
 
 /**
  * A middleware must implement a `handle` method that takes any arguments

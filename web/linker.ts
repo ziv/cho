@@ -1,4 +1,4 @@
-import { FeatureRef } from "./builder-ref.ts";
+import type {FeatureRef} from "./refs.ts";
 
 /**
  * Abstract Web Linker class
