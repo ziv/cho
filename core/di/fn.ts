@@ -18,7 +18,7 @@ import { getInjectable } from "./meta.ts";
  * @example Usage:
  *
  * ```ts
- * @Injectable(
+ * 〇Injectable(
  *      dependsOn("foo", "bar"),
  * )
  * class MyService {
@@ -50,7 +50,7 @@ export function DependsOn<T extends InjectableDescriptor>(
  * @example factory function:
  *
  * ```ts
- * @Module(
+ * 〇Module(
  *      provide("foo", () => "Foo Value"),
  * )
  * class MyModule {}
@@ -59,7 +59,7 @@ export function DependsOn<T extends InjectableDescriptor>(
  * @example injectable class:
  *
  * ```ts
- * @Module(
+ * 〇Module(
  *     provide(MyService),
  * )
  * class MyModule {}
@@ -119,7 +119,7 @@ export function Provide<T, D extends ModuleDescriptor>(
  * @example Usage:
  *
  * ```ts
- * @Module(
+ * 〇Module(
  *      imports(ModuleA, ModuleB),
  * )
  * class MyModule {}

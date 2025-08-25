@@ -1,4 +1,4 @@
-import { envbool, envnum } from "./env.ts";
+import { env, envnum } from "./env.ts";
 import { gray, magenta, red, yellow } from "@std/fmt/colors";
 import { format } from "@std/datetime";
 import { format as duration } from "@std/fmt/duration";
@@ -35,12 +35,15 @@ const errorHeader = (context: string) => {
 
 /**
  * Debug log function factory.
+ *
  * Returns a logging function that prefixes messages with a timestamp and context.
  * The logging function has an `error` method for error messages.
  *
+ * The logging is enabled if the `CHO_DEBUGLOG` environment variable includes the context string.
+ *
  * @example Usage:
  * ```ts
- * const log = debuglog("MyContext");
+ * const log = debuglog("context");
  * log("This is a debug message");
  * log.error("This is an error message");
  * ```
@@ -58,8 +61,13 @@ const errorHeader = (context: string) => {
 export function debuglog(
   context: string,
 ): { (...args: unknown[]): void; error(...args: unknown[]): void } {
+  const canLog = () => {
+    const debuglog: string = env("CHO_DEBUGLOG") ?? "";
+    return debuglog.includes(context);
+  };
+
   function log(...args: unknown[]) {
-    if (envbool("CHO_DEBUGLOG")) {
+    if (canLog()) {
       console.log(
         timestamp(),
         header(context),
@@ -70,7 +78,7 @@ export function debuglog(
   }
 
   log.error = (...args: unknown[]) => {
-    if (envbool("CHO_DEBUGLOG")) {
+    if (canLog()) {
       console.error(
         timestamp(),
         errorHeader(context),

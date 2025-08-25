@@ -17,7 +17,7 @@ import { collect } from "./utils.ts";
  * @example Usage
  *
  * ```ts
- * @Injectable(DependsOn(SomeDependency))
+ * 〇Injectable(DependsOn(SomeDependency))
  * class MyService {
  *    constructor(private someDependency: SomeDependency) {}
  * }
@@ -43,7 +43,7 @@ export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
  *
  * @example
  * ```ts
- * @Module(
+ * 〇Module(
  *      Imports(SomeModule),
  *      Provide(SomeService, () => new SomeService()),
  *      Provide(SomeOtherService, (inj) => inj.resolve(SomeDependency)),

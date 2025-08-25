@@ -37,3 +37,9 @@ Provide a shallow set of features, enough to build a modular application.
 ---
 
 Soon...
+
+### Notes about documentation
+
+I'm using `deno doc` to generate the documentation. It has a bug that identifies decorators as jsdoc.
+So I'm using `〇Injectable` instead of `@Injectable` in the comments to avoid this issue.
+`fix-docs.sh` script fix the generated documentation.
