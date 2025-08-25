@@ -1,7 +1,14 @@
 #!/bin/bash
 
 # generate the docs
-deno doc --html  core/di/mod.ts core/utils/mod.ts web/mod.ts
+rm -rf docs
+mkdir -p docs
+deno doc --html --name="@chojs/core/di" --output="./docs/core-di" core/di/mod.ts
+deno doc --html --name="@chojs/core/utils" --output="./docs/core-utils" core/utils/mod.ts
+deno doc --html --name="@chojs/web" --output="./docs/web" web/mod.ts
+deno doc --html --name="@chojs/vendor" --output="./docs/vendor" vendor/mod.ts
+cp assets/index.html docs/index.html
+
 
 # fix the generated docs (replace 〇 with @)
 # shellcheck disable=SC2164
