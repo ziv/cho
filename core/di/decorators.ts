@@ -14,16 +14,16 @@ import { collect } from "./utils.ts";
  * It can be used to define dependencies that the class requires to function properly.
  * The dependencies can be specified using the `dependsOn` function.
  *
- * @example
+ * @example Usage
+ *
  * ```ts
- * @Injectable(DependsOn(SomeDependency))
+ * \@Injectable(DependsOn(SomeDependency))
  * class MyService {
- *   constructor(private someDependency: SomeDependency) {}
+ *    constructor(private someDependency: SomeDependency) {}
  * }
  * ```
  *
  * @param fns
- * @constructor
  */
 export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
@@ -42,10 +42,10 @@ export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
  *
  * @example
  * ```ts
- * @Module(
- *  Imports(SomeModule),
- *  Provide(SomeService, () => new SomeService()),
- *  Provide(SomeOtherService, (inj) => inj.resolve(SomeDependency)),
+ *  ⓪Module(
+ *      Imports(SomeModule),
+ *      Provide(SomeService, () => new SomeService()),
+ *      Provide(SomeOtherService, (inj) => inj.resolve(SomeDependency)),
  * )
  * class MyModule {
  *  constructor(private someService: SomeService) {}

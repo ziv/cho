@@ -1,6 +1,7 @@
 {
   "tasks": {
     "test": "deno test --allow-env",
+    "docs": "deno doc --html  core/di/mod.ts core/utils/mod.ts web/mod.ts",
     "dev": "deno run --watch main.ts"
   },
   "imports": {
