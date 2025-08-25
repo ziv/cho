@@ -164,7 +164,13 @@
       </code><div class="space-y-7" id=""><div class="markdown"><p>Debug log function factory.</p>
 <p>Returns a logging function that prefixes messages with a timestamp and context.
 The logging function has an <code>error</code> method for error messages.</p>
-<p>The logging is enabled if the <code>CHO_DEBUGLOG</code> environment variable includes the context string.</p>
+<p>The logging configured using the following environment variables:</p>
+<ul>
+<li><code>CHO_DEBUG</code>: Enable all debug logging if set to a truthy value.</li>
+<li><code>CHO_DEBUGLOG</code>: Comma-separated list of contexts to enable logging for, or <code>*</code> for all contexts.</li>
+<li><code>CHO_DEBUGLOG_TIMESTAMP</code>: Timestamp format (default: <code>HH:MM:SS.mmm</code>).</li>
+<li><code>CHO_DEBUGLOG_CONTEXT_LEN</code>: Maximum length of the context string (default: <code>15</code>).</li>
+</ul>
 </div><section class="section"  id="examples"><div>
       <h2 class="anchorable mb-1"><a href="#examples" class="anchor" aria-label="Anchor" tabIndex="-1"><svg
   width="16"
@@ -249,8 +255,6 @@ log.error(&quot;This is an error message&quot;);
   <path d="M5 12l5 5l10 -10" />
 </svg>
 </button><code></code></pre>
-<p>Context length is limited to 10 characters by default, but can be adjusted
-by setting the <code>CHO_DEBUGLOG_CONTEXT_LEN</code> environment variable.</p>
 </div></div>
 </div>
 <div class="border-b border-gray-300 dark:border-gray-700"></div><div class="anchorable"><a href="#example_1" class="anchor" aria-label="Anchor" tabIndex="-1"><svg
