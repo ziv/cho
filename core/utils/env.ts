@@ -11,6 +11,7 @@
  * ```
  *
  * @param key
+ * @return The value of the environment variable, or `undefined` if not set.
  */
 export function env(key: string): string | undefined {
   // @ts-ignore: used to support multiple runtimes
@@ -40,6 +41,7 @@ export function env(key: string): string | undefined {
  * ```
  *
  * @param key
+ * @return The value of the environment variable as a number, or `NaN` if not set or not a valid number.
  */
 export function envnum(key: string): number {
   return Number(env(key));
@@ -50,6 +52,7 @@ export function envnum(key: string): number {
  * Recognizes "1", "true", "yes", "on" (case-insensitive) as true.
  *
  * @param key
+ * @return The value of the environment variable as a boolean, or `false` if not set or not recognized as true.
  */
 export function envbool(key: string): boolean {
   const val = env(key);

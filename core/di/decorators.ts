@@ -17,13 +17,14 @@ import { collect } from "./utils.ts";
  * @example Usage
  *
  * ```ts
- * \@Injectable(DependsOn(SomeDependency))
+ * @Injectable(DependsOn(SomeDependency))
  * class MyService {
  *    constructor(private someDependency: SomeDependency) {}
  * }
  * ```
  *
  * @param fns
+ * @return ClassDecorator
  */
 export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
@@ -42,7 +43,7 @@ export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
  *
  * @example
  * ```ts
- *  ⓪Module(
+ * @Module(
  *      Imports(SomeModule),
  *      Provide(SomeService, () => new SomeService()),
  *      Provide(SomeOtherService, (inj) => inj.resolve(SomeDependency)),
@@ -53,7 +54,7 @@ export function Injectable(...fns: DescriptorFn[]): ClassDecorator {
  * ```
  *
  * @param fns
- * @constructor
+ * @return ClassDecorator
  */
 export function Module(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {

@@ -10,6 +10,12 @@ import type {
 import { debuglog } from "../utils/debuglog.ts";
 import { getInjectable, getInjector, getModule, setInjector } from "./meta.ts";
 
+/**
+ * Dependency Injector
+ * This class is responsible for resolving dependencies and managing the lifecycle of instances.
+ * It implements the Resolver interface and provides methods to resolve tokens, create instances,
+ * and manage providers.
+ */
 export class Injector implements Resolver {
   readonly name: string;
   readonly desc: ModuleDescriptor;
@@ -34,6 +40,11 @@ export class Injector implements Resolver {
     setInjector(ctr, this);
   }
 
+  /**
+   * Resolve a token to its corresponding instance.
+   * @param token
+   * @returns Promise of the resolved instance
+   */
   async resolve<T>(token: Token): Promise<T> {
     const tokenName = typeof token === "function" ? token.name : String(token);
     this.log(`search for "${tokenName}"`);
@@ -92,7 +103,9 @@ export class Injector implements Resolver {
 
   /**
    * Get a provider by its token.
+   *
    * @param token
+   * @returns Provider or undefined if not found
    */
   provider(token: Token): Provider | undefined {
     return this.desc.providers.find((p) => p.provide === token);
@@ -100,8 +113,10 @@ export class Injector implements Resolver {
 
   /**
    * Create an instance of a class with its dependencies resolved.
+   *
    * @param ctr
    * @param deps
+   * @returns Promise of the created instance
    */
   async create(ctr: Ctr, deps?: Token[]): Promise<Instance> {
     if (!deps) {

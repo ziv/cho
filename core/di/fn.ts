@@ -27,7 +27,7 @@ import { getInjectable } from "./meta.ts";
  *  ```
  *
  * @param tokens
- * @public
+ * @return DescriptorFn<T>
  */
 export function DependsOn<T extends InjectableDescriptor>(
   ...tokens: Token[]
@@ -67,7 +67,7 @@ export function DependsOn<T extends InjectableDescriptor>(
  *
  * @param token
  * @param factory
- * @public
+ * @return DescriptorFn<D>
  */
 export function Provide<T, D extends ModuleDescriptor>(
   token: Token,
@@ -126,7 +126,7 @@ export function Provide<T, D extends ModuleDescriptor>(
  * ```
  *
  * @param modules
- * @public
+ * @return DescriptorFn<D>
  */
 export function Imports<D extends ModuleDescriptor>(
   ...modules: Ctr[]

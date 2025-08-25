@@ -1,6 +1,9 @@
 /**
- * @package @chojs/core/utils
- * @module @chojs/core/utils
+ * # Utilities
+ *
+ * Core utility functions.
+ *
+ * @module
  */
 export * from "./debuglog.ts";
 export * from "./env.ts";

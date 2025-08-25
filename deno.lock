@@ -12,6 +12,7 @@
     "jsr:@std/fs@^1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.10": "1.0.10",
     "jsr:@std/path@^1.1.1": "1.1.2",
+    "jsr:@std/semver@^1.0.5": "1.0.5",
     "jsr:@std/testing@^1.0.15": "1.0.15",
     "npm:hono@4.9.2": "4.9.2",
     "npm:mongodb@^6.18.0": "6.18.0"
@@ -63,6 +64,9 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/semver@1.0.5": {
+      "integrity": "529f79e83705714c105ad0ba55bec0f9da0f24d2f726b6cc1c15e505cc2c0624"
     },
     "@std/testing@1.0.15": {
       "integrity": "a490169f5ccb0f3ae9c94fbc69d2cd43603f2cffb41713a85f99bbb0e3087cbc",
@@ -149,6 +153,7 @@
       "jsr:@std/datetime@~0.225.5",
       "jsr:@std/expect@^1.0.17",
       "jsr:@std/fmt@^1.0.8",
+      "jsr:@std/semver@^1.0.5",
       "jsr:@std/testing@^1.0.15",
       "npm:mongodb@^6.18.0"
     ]

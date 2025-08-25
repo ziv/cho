@@ -1,4 +1,6 @@
 /**
+ * Cho.js Core Module
+ *
  * @module
  */
 export * from "./di/mod.ts";

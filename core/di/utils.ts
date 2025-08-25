@@ -6,6 +6,7 @@ import type { Ctr, DescriptorFn, Target } from "./types.ts";
  *
  * @param fns
  * @internal
+ * @return T The merged descriptor object.
  */
 export function collect<T>(fns: DescriptorFn[]): T {
   return fns.reduce(
@@ -22,6 +23,8 @@ export function collect<T>(fns: DescriptorFn[]): T {
  * @param key
  * @param value
  * @internal
+ * @throws {Error} If the property already exists on the target.
+ * @return void
  */
 export function write(
   target: Target | Ctr,
@@ -46,6 +49,7 @@ export function write(
  * @param target
  * @param key
  * @internal
+ * @return T | undefined The value of the property, or undefined if it does not exist.
  */
 export function read<T>(
   target: Target | Ctr,
