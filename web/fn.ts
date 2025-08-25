@@ -1,21 +1,26 @@
-import type {Ctr, DescriptorFn, Target, Token} from "@chojs/core/di";
-import {FeatureMeta} from "./meta.ts";
+import type { Ctr, DescriptorFn, Target, Token } from "@chojs/core/di";
+import { FeatureMeta } from "./meta.ts";
 
 /**
  * Create a descriptor that sets the route field on a controller, feature, or method.
  * Works with both class-level decorators (Controller/Feature) and method decorators (Get/Post/etc.).
- * @param route The relative route (without leading slash), e.g. "users" or ":id".
- * @returns A descriptor function that assigns the route.
- * @example
+ *
+ * @example Usage
+ *
+ * ```ts
  * // As a class-level route on a controller or feature
- * @Controller(Route("users"))
+ * 〇Controller(Route("users"))
  * class UsersController {}
  *
  * // As a method-level route
  * class UsersController {
- *   @Get(Route(":id"))
+ *   〇Get(Route(":id"))
  *   getUser() {}
  * }
+ * ```
+ *
+ * @param route The relative route (without leading slash), e.g. "users" or ":id".
+ * @returns A descriptor function that assigns the route.
  */
 export function Route<D extends { route: string }>(
   route: string,
@@ -29,18 +34,23 @@ export function Route<D extends { route: string }>(
 /**
  * Add one or more middlewares to a controller, feature, or method.
  * Middlewares can be classes or tokens that resolve to middleware handlers in your runtime.
- * @param middlewares One or more middleware identifiers (classes or tokens).
- * @returns A descriptor function that appends middlewares.
- * @example
+ *
+ * @example Usage
+ *
+ * ```ts
  * // Apply middlewares to a controller
- * @Controller(Route("users"), Middlewares(AuthMiddleware, RateLimitToken))
+ * 〇Controller(Route("users"), Middlewares(AuthMiddleware, RateLimitToken))
  * class UsersController {}
  *
  * // Apply middlewares to a specific endpoint
  * class UsersController {
- *   @Get("profile", Middlewares(AuthMiddleware))
+ *   〇Get("profile", Middlewares(AuthMiddleware))
  *   me() {}
  * }
+ * ```
+ *
+ * @param middlewares One or more middleware identifiers (classes or tokens).
+ * @returns A descriptor function that appends middlewares.
  */
 export function Middlewares<D extends { middlewares: Target[] }>(
   ...middlewares: (Ctr | Token)[]
@@ -56,16 +66,54 @@ export function Middlewares<D extends { middlewares: Target[] }>(
 }
 
 /**
+ * Add one or more guards to a controller, feature, or method.
+ * Guards are similar to middlewares but are typically used for authorization checks.
+ *
+ * @example
+ *
+ * ```ts
+ * // Apply guards to a controller
+ * 〇Controller(Route("admin"), Guards(AdminGuard))
+ * class AdminController {}
+ * // Apply guards to a specific endpoint
+ * class UsersController {
+ *  〇Get("settings", Guards(AuthGuard, SettingsGuard))
+ *  settings() {}
+ *  }
+ * ```
+ *
+ * @param guards One or more guard identifiers (classes or tokens).
+ * @returns A descriptor function that appends guards.
+ */
+export function Guards<D extends { guards: Target[] }>(
+  ...guards: (Ctr | Token)[]
+): DescriptorFn {
+  return (d: Partial<D>) => {
+    if (d.guards) {
+      d.guards.push(...guards as Target[]);
+    } else {
+      d.guards = [...guards] as Target[];
+    }
+    return d;
+  };
+}
+
+/**
  * Register controller classes under a feature.
  * Useful with the Feature decorator to declare which controllers belong to the feature.
- * @param controllers One or more controller classes.
- * @returns A descriptor function that appends controllers.
- * @example
- * @Feature(
+ *
+ * @example Usage
+ *
+ * ```ts
+ * 〇Feature(
  *   Route("api"),
  *   Controllers(UsersController, AdminController),
  * )
  * class ApiFeature {}
+ * ```
+ *
+ * @param controllers One or more controller classes.
+ * @returns A descriptor function that appends controllers.
  */
 export function Controllers<D extends FeatureMeta>(
   ...controllers: Ctr[]
@@ -83,14 +131,19 @@ export function Controllers<D extends FeatureMeta>(
 /**
  * Register sub-feature classes under a feature.
  * Use to build nested feature trees with their own routes and middlewares.
- * @param features One or more feature classes.
- * @returns A descriptor function that appends features.
+
  * @example
- * @Feature(
+ *
+ * ```ts
+ * 〇Feature(
  *   Route("v1"),
  *   Features(AuthFeature, UsersFeature),
  * )
  * class V1Feature {}
+ * ```
+ *
+ * @param features One or more feature classes.
+ * @returns A descriptor function that appends features.
  */
 export function Features<D extends FeatureMeta>(
   ...features: Ctr[]

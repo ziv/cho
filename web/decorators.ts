@@ -1,4 +1,5 @@
 import type {
+  Any,
   DescriptorFn,
   InjectableDescriptor,
   MethodContext,
@@ -12,7 +13,7 @@ import { ControllerDescriptor, MethodDescriptor } from "./builder.ts";
 export type MethodDecoratorFn = (
   route: string | DescriptorFn,
   ...fns: DescriptorFn[]
-) => MethodDecorator;
+) => Any; // to avoid TS strict mode error on decorators
 
 /**
  * Creates a method decorator for the given HTTP method.
@@ -20,6 +21,7 @@ export type MethodDecoratorFn = (
  * & TS experimental decorators (Bun, TS < 5.0).
  *
  * @param method
+ * @return {MethodDecoratorFn}
  */
 function createMethodDecorator(
   method: string,
@@ -56,6 +58,7 @@ function createMethodDecorator(
 
 /**
  * Marks a class as a web controller.
+ *
  * @param fns
  * @return {ClassDecorator}
  */
@@ -69,6 +72,18 @@ export function Controller(...fns: DescriptorFn[]): ClassDecorator {
 
 /**
  * Marks a class as a web feature module.
+ *
+ * @example Usage
+ *
+ * ```ts
+ * 〇Feature(
+ *    Route("api"),
+ *    Controllers(UsersController, AdminController),
+ *    Imports(SomeModule),
+ *    Provide(SomeService, () => new SomeService()),
+ * )
+ * class ApiFeature {}
+ * ```
  *
  * @param fns
  * @return {ClassDecorator}
@@ -86,10 +101,12 @@ export function Feature(...fns: DescriptorFn[]): ClassDecorator {
 
 /**
  * HTTP GET Method decorator
- * @example
+ *
+ * @example Usage
+ *
  * ```ts
  * class MyController {
- *  @Get("path")
+ *  〇Get("path")
  *  myMethod() {}
  * }
  * ```
@@ -100,10 +117,12 @@ export const Get: MethodDecoratorFn = createMethodDecorator("GET");
 
 /**
  * HTTP POST Method decorator
- * @example
+ *
+ * @example Usage
+ *
  * ```ts
  * class MyController {
- *  @Post("path")
+ *  〇Post("path")
  *  myMethod() {}
  * }
  * ```
@@ -114,10 +133,12 @@ export const Post: MethodDecoratorFn = createMethodDecorator("POST");
 
 /**
  * HTTP PUT Method decorator
- * @example
+ *
+ * @example Usage
+ *
  * ```ts
  * class MyController {
- *  @Put("path")
+ *  〇Put("path")
  *  myMethod() {}
  * }
  * ```
@@ -128,10 +149,12 @@ export const Put: MethodDecoratorFn = createMethodDecorator("PUT");
 
 /**
  * HTTP DELETE Method decorator
- * @example
+ *
+ * @example Usage
+ *
  * ```ts
  * class MyController {
- *  @Delete("path")
+ *  〇Delete("path")
  *  myMethod() {}
  * }
  * ```
@@ -142,10 +165,12 @@ export const Delete: MethodDecoratorFn = createMethodDecorator("DELETE");
 
 /**
  * HTTP PATCH Method decorator
- * @example
+ *
+ * @example Usage
+ *
  * ```ts
  * class MyController {
- *  @Patch("path")
+ *  〇Patch("path")
  *  myMethod() {}
  * }
  * ```

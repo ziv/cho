@@ -5,11 +5,11 @@ import {
 } from "./builder.ts";
 import { getInjector, Injector } from "@chojs/core/di";
 import type { Instance, Target, Token } from "@chojs/core/di";
+import { Middleware } from "./types.ts";
 
-export interface Middleware {
-  handle(...args: any[]): any;
-}
-
+/**
+ * A reference to a method, including its descriptor, handler function, and middlewares.
+ */
 export class MethodRef {
   constructor(
     readonly desc: MethodDescriptor,
@@ -19,6 +19,9 @@ export class MethodRef {
   }
 }
 
+/**
+ * A reference to a controller, including its descriptor, instance, middlewares, and methods.
+ */
 export class ControllerRef {
   constructor(
     readonly desc: ControllerDescriptor,
@@ -29,6 +32,9 @@ export class ControllerRef {
   }
 }
 
+/**
+ * A reference to a feature, including its descriptor, instance, middlewares, injector, sub-features, and controllers.
+ */
 export class FeatureRef {
   constructor(
     readonly desc: FeatureDescriptor,
@@ -41,6 +47,13 @@ export class FeatureRef {
   }
 }
 
+/**
+ * Builds a middleware function from a class or function.
+ *
+ * @param injector
+ * @param middleware
+ * @returns The middleware function
+ */
 async function buildMiddleware(
   injector: Injector,
   middleware: Target,
@@ -69,11 +82,19 @@ async function buildMiddleware(
   }
 }
 
+/**
+ * Builds a MethodRef from a MethodDescriptor by resolving its middlewares and binding its handler.
+ *
+ * @param injector
+ * @param controller
+ * @param desc
+ * @returns The constructed MethodRef
+ */
 async function buildMethod(
   injector: Injector,
   controller: Instance,
   desc: MethodDescriptor,
-) {
+): Promise<MethodRef> {
   const middlewares: Target[] = [];
   for (const mw of desc.middlewares) {
     middlewares.push(await buildMiddleware(injector, mw));
@@ -83,7 +104,19 @@ async function buildMethod(
   return new MethodRef(desc, handler, middlewares);
 }
 
-async function buildController(injector: Injector, desc: ControllerDescriptor) {
+/**
+ * Builds a ControllerRef from a ControllerDescriptor by creating its instance,
+ * resolving its middlewares, and building its methods.
+ *
+ * @param injector
+ * @param desc
+ * @returns The constructed ControllerRef
+ * @throws Error if the controller instance cannot be created
+ */
+async function buildController(
+  injector: Injector,
+  desc: ControllerDescriptor,
+): Promise<ControllerRef> {
   const instance = await injector.create(desc.ctr);
   if (!instance) {
     throw new Error(`Cannot create instance of ${desc.ctr.name}`);

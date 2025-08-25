@@ -2,6 +2,9 @@ import type { Ctr, Target, Token } from "@chojs/core/di";
 import { getController, getFeature, getMethods } from "./meta.ts";
 import { getInjectable } from "@chojs/core/di";
 
+/**
+ * A type that extends another type T with routing information.
+ */
 export type WithRoute<T> = T & {
   /**
    * The relative route of the endpoint (e.g. "/users" or "/:id").
@@ -15,6 +18,9 @@ export type WithRoute<T> = T & {
   middlewares: Target[];
 };
 
+/**
+ * Descriptor for a single method (endpoint) within a controller.
+ */
 export type MethodDescriptor = WithRoute<{
   /**
    * The HTTP method of the endpoint (e.g. "GET", "POST", "PUT", "DELETE").
@@ -27,6 +33,9 @@ export type MethodDescriptor = WithRoute<{
   name: string;
 }>;
 
+/**
+ * Descriptor for a controller class, including its methods (endpoints) and dependencies.
+ */
 export type ControllerDescriptor = WithRoute<{
   /**
    * The class of the controller.
@@ -44,6 +53,9 @@ export type ControllerDescriptor = WithRoute<{
   methods: MethodDescriptor[];
 }>;
 
+/**
+ * Descriptor for a feature class, including its controllers, sub-features, and dependencies.
+ */
 export type FeatureDescriptor = WithRoute<{
   /**
    * The class of the feature.
