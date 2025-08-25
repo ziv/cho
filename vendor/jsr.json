@@ -1,0 +1,10 @@
+{
+  "name": "@chojs/vendor",
+  "version": "0.0.1",
+  "license": "MIT",
+  "exports": "./mod.ts",
+  "imports": {
+    "hono": "jsr:@hono/hono@^4.9.2",
+    "@chojs/web": "jsr:@chojs/web@^0.0.2"
+  }
+}

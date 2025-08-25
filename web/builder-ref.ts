@@ -84,7 +84,7 @@ async function buildMethod(
 }
 
 async function buildController(injector: Injector, desc: ControllerDescriptor) {
-  const instance = await injector.resolve(desc.ctr);
+  const instance = await injector.create(desc.ctr);
   if (!instance) {
     throw new Error(`Cannot create instance of ${desc.ctr.name}`);
   }
