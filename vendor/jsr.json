@@ -5,6 +5,7 @@
   "exports": "./mod.ts",
   "imports": {
     "hono": "jsr:@hono/hono@^4.9.2",
-    "@chojs/web": "jsr:@chojs/web@^0.0.2"
+    "@chojs/web": "jsr:@chojs/web@^0.1.0",
+    "@chojs/core": "jsr:@chojs/core@^0.1.0"
   }
 }
