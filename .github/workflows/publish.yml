@@ -1,6 +1,13 @@
 name: Publish
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.0 or major/minor/patch)'
+        required: true
+      lib:
+        description: 'Library to publish (core or web)'
+        required: true
 #  push:
 #    branches:
 #      - main
@@ -13,5 +20,13 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Publish package
-        run: cd core && npx jsr publish
+        with:
+          fetch-depth: 0
+
+      - name: setup version
+        run: |
+          ./scripts/next-version.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
+          cat ${{ github.event.inputs.lib }}/jsr.json
+          cd ${{ github.event.inputs.lib }}
+          npx jsr publish --dry-run
+          cd ..

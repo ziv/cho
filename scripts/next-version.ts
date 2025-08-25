@@ -1,25 +1,32 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-run
-import { format, increment, parse } from "@std/semver";
+
+const USAGE =
+  `Usage: ./scripts/next-version.ts <path-to-jsr.json> <new-version>`;
+
+function bail(message: string, code: number) {
+  console.error(message);
+  Deno.exit(code);
+}
 
 const path = Deno.args[0];
 if (!path) {
-  console.error(
-    "Usage: ./scripts/next-version.ts <path-to-jsr.json>",
-  );
-  Deno.exit(1);
+  bail(USAGE, 1);
+}
+
+const version = Deno.args[1];
+if (!version) {
+  bail(USAGE, 2);
 }
 
 const raw = await Deno.readTextFile(path).catch(() => "");
 if (!raw) {
-  console.error(`Cannot read file: ${path}`);
-  Deno.exit(2);
+  bail(`Cannot read file: ${path}`, 3);
 }
 
 const data = JSON.parse(raw);
 if (!data.version) {
-  console.error("No version field in jsr.json");
-  Deno.exit(3);
+  bail("No version field in jsr.json", 4);
 }
 
-data.version = format(increment(parse(data.version), "patch"));
+data.version = version;
 await Deno.writeTextFile(path, JSON.stringify(data, null, 2));
