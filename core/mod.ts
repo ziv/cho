@@ -27,7 +27,6 @@
  * const value = await injector.resolve(ServiceFoo);
  * ```
  *
- *
  * ## Utilities
  *
  * Environment variable utilities to seamlessly work across Deno, Bun, and Node.js runtimes.

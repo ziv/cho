@@ -1,6 +1,6 @@
 import { getInjector, Injector } from "@chojs/core/di";
 import type { Instance, Target, Token } from "@chojs/core/di";
-import {ControllerDescriptor, FeatureDescriptor, MethodDescriptor, Middleware} from "./types.ts";
+import { ControllerDescriptor, FeatureDescriptor, MethodDescriptor, Middleware } from "./types.ts";
 import { ControllerRef, FeatureRef, MethodRef } from "./refs.ts";
 
 /**

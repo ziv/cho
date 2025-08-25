@@ -1,12 +1,4 @@
-import type {
-  Ctr,
-  Instance,
-  ModuleDescriptor,
-  Provider,
-  Resolved,
-  Resolver,
-  Token,
-} from "./types.ts";
+import type { Ctr, Instance, ModuleDescriptor, Provider, Resolved, Resolver, Token } from "./types.ts";
 import { debuglog } from "../utils/debuglog.ts";
 import { getInjectable, getInjector, getModule, setInjector } from "./meta.ts";
 

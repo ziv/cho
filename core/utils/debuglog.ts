@@ -1,11 +1,10 @@
-import { env, envnum } from "./env.ts";
+import { env, envbool, envnum } from "./env.ts";
 import { gray, magenta, red, yellow } from "@std/fmt/colors";
 import { format } from "@std/datetime";
 import { format as duration } from "@std/fmt/duration";
 
-const CONTEXT_LEN = isNaN(envnum("CHO_DEBUGLOG_CONTEXT_LEN"))
-  ? 15
-  : envnum("CHO_DEBUGLOG_CONTEXT_LEN");
+const TIMESTAMP = env("CHO_DEBUGLOG_TIMESTAMP") ?? "HH:MM:SS.mmm";
+const CONTEXT_LEN = isNaN(envnum("CHO_DEBUGLOG_CONTEXT_LEN")) ? 15 : envnum("CHO_DEBUGLOG_CONTEXT_LEN");
 
 let last = Date.now();
 
@@ -40,6 +39,11 @@ export function debuglog(
   context: string,
 ): { (...args: unknown[]): void; error(...args: unknown[]): void } {
   const canLog = () => {
+    // system-wide debug logging
+    if (envbool("CHO_DEBUG")) {
+      return true;
+    }
+    // context-specific debug logging
     const debuglog: string = env("CHO_DEBUGLOG") ?? "";
     return debuglog.includes(context) || debuglog.includes("*");
   };
@@ -52,14 +56,12 @@ export function debuglog(
   };
 
   const header = () =>
-    (context.length > CONTEXT_LEN)
-      ? context.substring(0, CONTEXT_LEN - 1) + "…"
-      : context.padEnd(CONTEXT_LEN, " ");
+    (context.length > CONTEXT_LEN) ? context.substring(0, CONTEXT_LEN - 1) + "…" : context.padEnd(CONTEXT_LEN, " ");
 
   function log(...args: unknown[]) {
     if (canLog()) {
       console.log(
-        yellow(format(new Date(), "HH:MM:SS.mmm")),
+        yellow(format(new Date(), TIMESTAMP)),
         magenta(`[ ${header()} ]`),
         ...args,
         gray(duration(elapsed(), { ignoreZero: true }) || "+0ms"),
@@ -70,7 +72,7 @@ export function debuglog(
   log.error = (...args: unknown[]) => {
     if (canLog()) {
       console.error(
-        yellow(format(new Date(), "HH:MM:SS.mmm")),
+        yellow(format(new Date(), TIMESTAMP)),
         red(`[ ${header()} ]`),
         ...args,
         gray(duration(elapsed(), { ignoreZero: true }) || "+0ms"),

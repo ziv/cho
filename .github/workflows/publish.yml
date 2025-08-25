@@ -3,10 +3,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g., 1.0.0 or major/minor/patch)'
+        description: "Version to publish (e.g., 1.0.0 or major/minor/patch)"
         required: true
       lib:
-        description: 'Library to publish (core or web)'
+        description: "Library to publish (core or web)"
         required: true
 #  push:
 #    branches:

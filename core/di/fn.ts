@@ -105,9 +105,7 @@ export function Provide<T, D extends ModuleDescriptor>(
     };
   }
   throw new Error(
-    `Provider token error: ${
-      String(token)
-    }. It must be a function or a factory.`,
+    `Provider token error: ${String(token)}. It must be a function or a factory.`,
   );
 }
 

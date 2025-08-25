@@ -1,9 +1,4 @@
-import type {
-  DescriptorFn,
-  InjectableDescriptor,
-  ModuleDescriptor,
-  Target,
-} from "./types.ts";
+import type { DescriptorFn, InjectableDescriptor, ModuleDescriptor, Target } from "./types.ts";
 import { setInjectable, setModule } from "./meta.ts";
 import { collect } from "./utils.ts";
 

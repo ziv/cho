@@ -1,18 +1,6 @@
-import type {
-  Any,
-  DescriptorFn,
-  InjectableDescriptor,
-  MethodContext,
-  ModuleDescriptor,
-  Target,
-} from "@chojs/core/di";
+import type { Any, DescriptorFn, InjectableDescriptor, MethodContext, ModuleDescriptor, Target } from "@chojs/core/di";
 import { collect, setInjectable, setModule } from "@chojs/core/di";
-import {
-  type FeatureMeta,
-  setController,
-  setFeature,
-  setMethod,
-} from "./meta.ts";
+import { type FeatureMeta, setController, setFeature, setMethod } from "./meta.ts";
 import type { ControllerDescriptor, MethodDescriptor } from "./types.ts";
 
 export type MethodDecoratorFn = (
@@ -40,9 +28,7 @@ function createMethodDecorator(
       target: Object,
       context: MethodContext | string | symbol,
     ) {
-      const name = typeof context === "string"
-        ? context
-        : (context as MethodContext).name;
+      const name = typeof context === "string" ? context : (context as MethodContext).name;
 
       // make sure to add the method and name to the fns array
       fns.push((d) => ({ ...d, method, name }));

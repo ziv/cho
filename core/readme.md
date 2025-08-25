@@ -2,8 +2,8 @@
 
 Core modules for `cho` framework.
 
-| Modules                                | 
-|----------------------------------------|
+| Modules                                |
+| -------------------------------------- |
 | [Dependency Injection](./di/readme.md) |
 | [Utilities](./utils/readme.md)         |
 

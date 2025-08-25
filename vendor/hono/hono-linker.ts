@@ -1,6 +1,6 @@
-import {Hono} from "hono";
-import {ChoWebLinker, FeatureRef} from "@chojs/web";
-import {Any} from "@chojs/core/di";
+import { Hono } from "hono";
+import { ChoWebLinker, FeatureRef } from "@chojs/web";
+import { Any } from "@chojs/core/di";
 
 export class HonoLinker extends ChoWebLinker<Hono> {
   app!: Hono;

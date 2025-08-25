@@ -1,7 +1,7 @@
-import type {Ctr} from "@chojs/core/di";
-import {getInjectable} from "@chojs/core/di";
-import {getController, getFeature, getMethods} from "./meta.ts";
-import {FeatureDescriptor} from "./types.ts";
+import type { Ctr } from "@chojs/core/di";
+import { getInjectable } from "@chojs/core/di";
+import { getController, getFeature, getMethods } from "./meta.ts";
+import { FeatureDescriptor } from "./types.ts";
 
 /**
  * Convert feature class into a processed FeatureDescriptor

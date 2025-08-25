@@ -1,11 +1,7 @@
 /**
  * @category @chojs/core/di
  */
-import type {
-  InjectableDescriptor,
-  ModuleDescriptor,
-  Target,
-} from "./types.ts";
+import type { InjectableDescriptor, ModuleDescriptor, Target } from "./types.ts";
 import { read, write } from "./utils.ts";
 import type { Injector } from "./injector.ts";
 

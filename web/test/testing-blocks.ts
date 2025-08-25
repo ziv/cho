@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Controllers,
-  Feature,
-  Get,
-  Middlewares,
-  Post,
-  Route,
-} from "@chojs/web";
+import { Controller, Controllers, Feature, Get, Middlewares, Post, Route } from "@chojs/web";
 
 function mw() {
 }

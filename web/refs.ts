@@ -1,9 +1,5 @@
 import type { Injector, Instance, Target } from "@chojs/core";
-import type {
-  ControllerDescriptor,
-  FeatureDescriptor,
-  MethodDescriptor,
-} from "./types.ts";
+import type { ControllerDescriptor, FeatureDescriptor, MethodDescriptor } from "./types.ts";
 
 /**
  * A reference to a method, including its descriptor, handler function, and middlewares.
