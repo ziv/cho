@@ -71,6 +71,10 @@ export type FeatureDescriptor = WithRoute<{
  * - Feature can contain sub-features and controllers
  * - Controllers contain methods (endpoints)
  * - Each level can have its own middlewares
+ *
+ * @param ctr The feature class to build the descriptor from
+ * @returns The constructed FeatureDescriptor
+ * @throws Error if the provided class is not a feature or if any controller has no endpoints
  */
 export function build(ctr: Ctr): FeatureDescriptor {
   const meta = getFeature(ctr);

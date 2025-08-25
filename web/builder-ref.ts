@@ -104,7 +104,10 @@ async function buildController(injector: Injector, desc: ControllerDescriptor) {
  * Takes a FeatureDescriptor (abstract representation of a feature)
  * and builds a FeatureRef (concrete representation with instances),
  * ready for linking and serving.
+ *
  * @param desc
+ * @return The constructed FeatureRef
+ * @throws Error if any instance cannot be created
  */
 export async function buildRef(desc: FeatureDescriptor): Promise<FeatureRef> {
   const injector = getInjector(desc.ctr) ?? new Injector(desc.ctr);

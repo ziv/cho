@@ -54,6 +54,11 @@ function createMethodDecorator(
   };
 }
 
+/**
+ * Marks a class as a web controller.
+ * @param fns
+ * @return {ClassDecorator}
+ */
 export function Controller(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
     const data = collect<InjectableDescriptor & ControllerDescriptor>(fns);
@@ -62,6 +67,12 @@ export function Controller(...fns: DescriptorFn[]): ClassDecorator {
   };
 }
 
+/**
+ * Marks a class as a web feature module.
+ *
+ * @param fns
+ * @return {ClassDecorator}
+ */
 export function Feature(...fns: DescriptorFn[]): ClassDecorator {
   return (target: Target) => {
     const data = collect<
@@ -82,6 +93,8 @@ export function Feature(...fns: DescriptorFn[]): ClassDecorator {
  *  myMethod() {}
  * }
  * ```
+ *
+ * @type {MethodDecoratorFn}
  */
 export const Get: MethodDecoratorFn = createMethodDecorator("GET");
 
@@ -94,6 +107,8 @@ export const Get: MethodDecoratorFn = createMethodDecorator("GET");
  *  myMethod() {}
  * }
  * ```
+ *
+ * @type {MethodDecoratorFn}
  */
 export const Post: MethodDecoratorFn = createMethodDecorator("POST");
 
@@ -106,6 +121,8 @@ export const Post: MethodDecoratorFn = createMethodDecorator("POST");
  *  myMethod() {}
  * }
  * ```
+ *
+ * @type {MethodDecoratorFn}
  */
 export const Put: MethodDecoratorFn = createMethodDecorator("PUT");
 
@@ -118,6 +135,8 @@ export const Put: MethodDecoratorFn = createMethodDecorator("PUT");
  *  myMethod() {}
  * }
  * ```
+ *
+ * @type {MethodDecoratorFn}
  */
 export const Delete: MethodDecoratorFn = createMethodDecorator("DELETE");
 
@@ -130,5 +149,7 @@ export const Delete: MethodDecoratorFn = createMethodDecorator("DELETE");
  *  myMethod() {}
  * }
  * ```
+ *
+ * @type {MethodDecoratorFn}
  */
 export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");
