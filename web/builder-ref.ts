@@ -6,46 +6,7 @@ import {
 import { getInjector, Injector } from "@chojs/core/di";
 import type { Instance, Target, Token } from "@chojs/core/di";
 import { Middleware } from "./types.ts";
-
-/**
- * A reference to a method, including its descriptor, handler function, and middlewares.
- */
-export class MethodRef {
-  constructor(
-    readonly desc: MethodDescriptor,
-    readonly handler: Target,
-    readonly middlewares: Target[],
-  ) {
-  }
-}
-
-/**
- * A reference to a controller, including its descriptor, instance, middlewares, and methods.
- */
-export class ControllerRef {
-  constructor(
-    readonly desc: ControllerDescriptor,
-    readonly instance: Instance,
-    readonly middlewares: Target[],
-    readonly methods: MethodRef[],
-  ) {
-  }
-}
-
-/**
- * A reference to a feature, including its descriptor, instance, middlewares, injector, sub-features, and controllers.
- */
-export class FeatureRef {
-  constructor(
-    readonly desc: FeatureDescriptor,
-    readonly instance: Instance,
-    readonly middlewares: Target[],
-    readonly injector: Injector,
-    readonly features: FeatureRef[],
-    readonly controllers: ControllerRef[],
-  ) {
-  }
-}
+import { ControllerRef, FeatureRef, MethodRef } from "./refs.ts";
 
 /**
  * Builds a middleware function from a class or function.
