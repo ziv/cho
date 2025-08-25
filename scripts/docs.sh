@@ -7,8 +7,12 @@ deno doc --html  core/di/mod.ts core/utils/mod.ts web/mod.ts
 # shellcheck disable=SC2164
 cd ./docs
 
-# this is mac version
-#find . -type f -name "*.html" -exec sed -i '' 's/〇/@/g' {} +
+OS_NAME=$(uname -s)
 
-# this is linux version
-find . -type f -name "*.html" -exec sed -i 's/〇/@/g' {} +
+if [[ "$OS_NAME" == "Linux" ]]; then
+    find . -type f -name "*.html" -exec sed -i 's/〇/@/g' {} +
+elif [[ "$OS_NAME" == "Darwin" ]]; then
+    find . -type f -name "*.html" -exec sed -i '' 's/〇/@/g' {} +
+else
+    echo "This machine is running an unknown OS: $OS_NAME"
+fi

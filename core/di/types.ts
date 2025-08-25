@@ -1,4 +1,8 @@
 /**
+ * @category @chojs/core/di
+ */
+
+/**
  * MetaTypes
  * =========
  * Sometimes we need to use `any` type or `Function` type in TypeScript,

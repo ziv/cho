@@ -1,3 +1,7 @@
+/**
+ * @category @chojs/core/utils
+ */
+
 import { env, envnum } from "./env.ts";
 import { gray, magenta, red, yellow } from "@std/fmt/colors";
 import { format } from "@std/datetime";

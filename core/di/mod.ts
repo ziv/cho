@@ -19,6 +19,7 @@
  * its own injector. The injector caches instances/values of providers.
  *
  * @module
+ * @category @chojs/core/di
  */
 export * from "./decorators.ts";
 export * from "./fn.ts";

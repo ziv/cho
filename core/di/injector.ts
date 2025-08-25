@@ -1,3 +1,6 @@
+/**
+ * @category @chojs/core/di
+ */
 import type {
   Ctr,
   Instance,

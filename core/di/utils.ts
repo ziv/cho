@@ -1,3 +1,7 @@
+/**
+ * @category @chojs/core/di
+ */
+
 import type { Ctr, DescriptorFn, Target } from "./types.ts";
 
 /**
