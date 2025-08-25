@@ -1,5 +1,5 @@
 import { expect } from "@std/expect";
-import { assertSpyCalls, spy, stub } from "@std/testing/mock";
+import { assertSpyCalls, spy } from "@std/testing/mock";
 import { debuglog } from "./debuglog.ts";
 
 Deno.test("debuglog should return a function", () => {
