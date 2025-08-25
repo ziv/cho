@@ -4,7 +4,7 @@
     "dev": "deno run --watch main.ts"
   },
   "imports": {
-    "@chojs/core": "./core/mod.ts",
+    "@chojs/core": "jsr:@chojs/core@^0.0.9",
     "@chojs/vendor": "./vendor",
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
     "@std/expect": "jsr:@std/expect@^1.0.17",

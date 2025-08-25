@@ -1,5 +1,6 @@
-import type { Ctr, DescriptorFn } from "@chojs/core/di";
+import type { Ctr, DescriptorFn, Token } from "@chojs/core/di";
 import { FeatureDescriptor, WithRoute } from "./types.ts";
+import { Target } from "../core/di/mod.ts";
 
 export function Route<D extends WithRoute>(
   route: string,
@@ -15,9 +16,9 @@ export function Middlewares<D extends FeatureDescriptor>(
 ): DescriptorFn {
   return (d: Partial<D>) => {
     if (d.middlewares) {
-      d.middlewares.push(...middlewares);
+      d.middlewares.push(...middlewares as Target[]);
     } else {
-      d.middlewares = [...middlewares];
+      d.middlewares = [...middlewares] as Target[];
     }
     return d;
   };

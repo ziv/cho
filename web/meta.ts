@@ -1,4 +1,4 @@
-import type { Target } from "@chojs/core/di";
+import type { Ctr, Target } from "@chojs/core/di";
 import { read, write } from "@chojs/core/di";
 import {
   ControllerDescriptor,
@@ -10,9 +10,14 @@ const MethodMetadata = Symbol("MethodMetadata");
 const ControllerMetadata = Symbol("ControllerMetadata");
 const FeatureMetadata = Symbol("Feature");
 
+export type ControllerMeta = {
+  route: string;
+  middlewares: Target[];
+};
+
 export function setController(
   target: Target,
-  data: Partial<ControllerDescriptor>,
+  data: Partial<ControllerMeta>,
 ) {
   write(target, ControllerMetadata, {
     route: data.route ?? "",
@@ -20,9 +25,16 @@ export function setController(
   });
 }
 
+export type FeatureMeta = {
+  route: string;
+  middlewares: Target[];
+  controllers: Ctr[];
+  features: Ctr[];
+};
+
 export function setFeature(
   target: Target,
-  data: Partial<FeatureDescriptor>,
+  data: Partial<FeatureMeta>,
 ) {
   write(target, FeatureMetadata, {
     route: data.route ?? "",
@@ -32,9 +44,16 @@ export function setFeature(
   });
 }
 
+export type MethodMeta = {
+  name: string;
+  route: string;
+  method: string;
+  middlewares: Target[];
+};
+
 export function setMethod(
   target: Target,
-  data: Partial<MethodDescriptor>,
+  data: Partial<MethodMeta>,
 ) {
   write(target, MethodMetadata, {
     name: data.name ?? "",
@@ -44,38 +63,30 @@ export function setMethod(
   });
 }
 
-export function getFeature(target: Target): FeatureDescriptor | undefined {
-  return read<FeatureDescriptor>(target, FeatureMetadata);
+export function getFeature(target: Target): FeatureMeta | undefined {
+  return read<FeatureMeta>(target, FeatureMetadata);
 }
 
 export function getController(
   target: Target,
-): ControllerDescriptor | undefined {
-  return read<ControllerDescriptor>(target, ControllerMetadata);
+): ControllerMeta | undefined {
+  return read<ControllerMeta>(target, ControllerMetadata);
 }
 
-export function getMethods(instance: object): MethodDescriptor[] {
+export function getMethod(
+  target: Target,
+): MethodMeta | undefined {
+  return read<MethodMeta>(target, MethodMetadata);
+}
+
+export function getMethods(ctr: Ctr): MethodMeta[] {
   const props = Object.getOwnPropertyNames(
-    Object.getPrototypeOf(instance),
+    ctr.prototype,
   ) as (string & keyof typeof instance)[];
 
-  const methods: MethodDescriptor[] = [];
-  for (const name of props) {
-    if (name === "constructor") {
-      continue;
-    }
-
-    const func = instance[name];
-    if (typeof func !== "function") {
-      continue;
-    }
-
-    const metadata = read<MethodDescriptor>(func, MethodMetadata);
-    if (!metadata) {
-      continue;
-    }
-
-    methods.push(metadata);
-  }
-  return methods;
+  return props
+    .filter((name) => name !== "constructor")
+    .filter((name) => typeof ctr.prototype[name] === "function")
+    .map((name) => getMethod(ctr.prototype[name]))
+    .filter(Boolean);
 }

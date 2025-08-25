@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@chojs/core@^0.0.9": "0.0.9",
     "jsr:@hono/hono@^4.9.2": "4.9.2",
     "jsr:@std/assert@^1.0.13": "1.0.14",
     "jsr:@std/assert@^1.0.14": "1.0.14",
@@ -16,6 +17,13 @@
     "npm:mongodb@^6.18.0": "6.18.0"
   },
   "jsr": {
+    "@chojs/core@0.0.9": {
+      "integrity": "1cd39e5808f716853fff1b68a7eeae0fef16f32adfe17a31ed6ef6d7afcf66f5",
+      "dependencies": [
+        "jsr:@std/datetime",
+        "jsr:@std/fmt"
+      ]
+    },
     "@hono/hono@4.9.2": {
       "integrity": "1a8ae7b0d9e4fecef440f991c604e032d5548dc313d1961073ac5d94809be52b"
     },
@@ -135,6 +143,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@chojs/core@^0.0.9",
       "jsr:@hono/hono@^4.9.2",
       "jsr:@std/assert@^1.0.14",
       "jsr:@std/datetime@~0.225.5",

@@ -20,22 +20,23 @@ the controller.
 Example:
 
 ```ts
+
 @Controller(Route("api"))
 export class MyController {
-  @Get("hello")
-  hello(ctx: ChoContext) {
-    return ctx.json({ message: "Hello, World!" });
-  }
+    @Get("hello")
+    hello(ctx: ChoContext) {
+        return ctx.json({message: "Hello, World!"});
+    }
 
-  @Get(
-    Route("data"),
-  )
-  getData(ctx: ChoContext) {
-  }
+    @Get(
+        Route("data"),
+    )
+    getData(ctx: ChoContext) {
+    }
 
-  @Post("data")
-  saceData(ctx: ChoContext) {
-  }
+    @Post("data")
+    saceData(ctx: ChoContext) {
+    }
 }
 ```
 
@@ -53,24 +54,32 @@ function foo(req, res, next) {
 }
 
 class Bar implements ChoMiddleware {
-  handle(req, res, next) {
-    // Do something
-    next();
-  }
+    handle(req, res, next) {
+        // Do something
+        next();
+    }
 }
 
 @Middlewares(foo, Bar)
 @Controller("api")
 class MyController {
-  @Get("")
-  example(ctx: ChoContext) {
-    return "Hello, World!";
-  }
+    @Get("")
+    example(ctx: ChoContext) {
+        return "Hello, World!";
+    }
 
-  @Middlewares(foo)
-  @Post("")
-  examplePost(ctx: ChoContext) {
-    return `Received: ${JSON.stringify(body)}`;
-  }
+    @Middlewares(foo)
+    @Post("")
+    examplePost(ctx: ChoContext) {
+        return `Received: ${JSON.stringify(body)}`;
+    }
 }
 ```
+
+## Internals
+
+* Phase 1: Define Controllers and Features (decorators)
+* Phase 2: Create abstract feature tree (builder)
+* Phase 3: Create concrete representation with instances (builder-ref)
+* Phase 4: Linking (linker)
+* Phase 5: Ready to serve

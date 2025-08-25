@@ -1,20 +1,19 @@
-import { Any } from  "@chojs/core/di";
-import { ChoFeatureDescriptor } from "./types.ts";
+import { FeatureRef } from "./builder-ref.ts";
 
-export abstract class ChoWebLinker {
-  /**
-   * Create the web application
-   * @param descriptor
-   */
-  abstract link(descriptor: ChoFeatureDescriptor): boolean;
-
-  /**
-   * Get the application request handler
-   */
-  abstract handler(): (req: Request) => Promise<Response> | Response;
-
+export abstract class ChoWebLinker<Router> {
   /**
    * Get a reference to the underlying application instance
    */
-  abstract ref(): Any;
+  abstract ref(): Router;
+
+  /**
+   * Get the application request handlers
+   */
+  abstract handler(): (request: Request) => Promise<Response>;
+
+  /**
+   * Create the web application
+   * @param ref
+   */
+  abstract link(ref: FeatureRef): boolean;
 }

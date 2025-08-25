@@ -15,23 +15,26 @@ import type {
 
 /**
  * Creates a method decorator for the given HTTP method.
+ * The function supports TC39 stage 3 proposal decorators (ESM/Deno/TS)
+ * & TS experimental decorators (Bun, TS < 5.0).
+ *
  * @param method
  */
 function createMethodDecorator(method: string) {
-  // todo should be supported TS decorators too
+  /** */
   return function (
     route: string | DescriptorFn,
     ...fns: DescriptorFn[]
-  ): ClassDecorator {
+  ) {
     return function (
       target: Target,
-      context: MethodContext,
+      context: MethodContext | string,
     ) {
       // make sure to add the method and name to the fns array
       fns.push((d) => ({
         ...d,
         method,
-        name: context.name,
+        name: typeof context === "string" ? context : context.name,
       }));
       if (typeof route === "function") {
         // if route is a function, add it to the front of the fns array
@@ -44,14 +47,7 @@ function createMethodDecorator(method: string) {
       }
       const data = collect<MethodDescriptor>(fns);
       setMethod(target, data);
-      /**
-       * We are using TC39 stage 3 proposal decorators (ESM/Deno)
-       * While TypeScript decorators are TS specific and do not
-       * support the same API.
-       * This type assertion is only for TypeScript to understand
-       * that this is a class decorator.
-       */
-    } as unknown as ClassDecorator;
+    };
   };
 }
 

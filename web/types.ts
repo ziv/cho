@@ -1,44 +1,6 @@
-import type { Ctr, Injector, Instance, Target } from  "@chojs/core/di";
+import type { Any, Ctr, Injector, Instance, Target } from "@chojs/core/di";
 
-export type WithRoute = {
-  /**
-   * The relative route of the endpoint (e.g. "/users" or "/:id").
-   */
-  route: string;
 
-  /**
-   * Middlewares applied to this route.
-   */
-  middlewares: Target[];
-};
-
-export type MethodDescriptor = WithRoute & {
-  /**
-   * The HTTP method of the endpoint (e.g. "GET", "POST", "PUT", "DELETE").
-   */
-  method: string;
-
-  /**
-   * The name of the method on the controller (property key).
-   */
-  name: string;
-};
-
-export type ControllerDescriptor = WithRoute;
-
-export type FeatureDescriptor =
-  & WithRoute
-  & {
-    /**
-     * List of controller classes within this feature.
-     */
-    controllers: Ctr[];
-
-    /**
-     * List of sub-feature classes within this feature.
-     */
-    features: Ctr[];
-  };
 
 export type ChoMiddlewareDescriptor = Target; // todo fix with the right signature
 
@@ -60,3 +22,15 @@ export type ChoFeatureDescriptor = FeatureDescriptor & {
   features: ChoFeatureDescriptor[];
   middlewares: ChoMiddlewareDescriptor[];
 };
+
+export interface ModuleInit {
+  init(): Promise<void>;
+}
+
+export interface ModuleMount {
+  mount(): Promise<void>;
+}
+
+export interface MiddlewareClass {
+  handle(ctx: Any, next: Target): Promise<void> | void;
+}

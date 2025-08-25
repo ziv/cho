@@ -1,11 +1,7 @@
 import { Hono } from "hono";
-import { ChoWebLinker } from "@cho/web/linker.ts";
-import { debuglog } from "@cho/core/utils";
-import { ChoFeatureDescriptor } from "../../web/types.ts";
+import { ChoWebLinker, FeatureRef } from "@chojs/web";
 
-const log = debuglog("HonorAdapter");
-
-export default class HonoLinker extends ChoWebLinker {
+export default class HonoLinker extends ChoWebLinker<Hono> {
   app!: Hono;
 
   /**
@@ -25,49 +21,46 @@ export default class HonoLinker extends ChoWebLinker {
 
   /**
    * Create the web application
-   * @param descriptor
+   * @param ref
    */
-  override link(descriptor: ChoFeatureDescriptor): boolean {
-    this.app = this.attach(descriptor);
+  override link(ref: FeatureRef): boolean {
+    this.app = this.attach(ref);
     return true;
   }
 
-  private attach(feature: ChoFeatureDescriptor): Hono {
-    log(`Creating feature: "${feature.route || "/"}"`);
-    const feat = new Hono();
-    // recursively attach features
-    for (const f of feature.features) {
-      log(`Attaching feature: ${f.route}`);
-      feat.route(
-        f.route,
-        this.attach(f),
-      );
+  private attach(desc: FeatureRef): Hono {
+    const feature = new Hono();
+
+    // link middlewares
+    for (const mw of desc.middlewares) {
+      feature.use(mw);
     }
+
+    // link sub-features
+    for (const feat of desc.features) {
+      feature.route(feat.route, this.attach(feat));
+    }
+
     // link controllers
-    for (const c of feature.controllers) {
-      log(`Linking controller: /${c.route}`);
+    for (const ctrl of desc.controllers) {
       const controller = new Hono();
-      for (const e of c.methods) {
-        const m = e.method.toLowerCase();
-        if (
-          // todo complete with all methods
-          m === "get" ||
-          m === "post" ||
-          m === "put" ||
-          m === "delete" ||
-          m === "patch"
-        ) {
-          const cRoute = c.route ? `/${c.route}` : "";
-          log(`Link: ${e.method.toUpperCase()} ${cRoute}/${e.route}`);
-          // make sure the method keep its context
-          const f = c.controller[e.name].bind(c.controller);
-          // create the handler
-          controller[m](e.route, f);
-        }
+
+      // link middlewares
+      for (const mw of ctrl.middlewares) {
+        controller.use(mw);
       }
-      // mount controller to feature
-      feat.route(c.route, controller);
+
+      // link methods with their middlewares
+      for (const e of ctrl.methods) {
+        const method = e.desc.method.toLowerCase() as keyof Hono;
+        const mw = e.middlewares || [];
+        controller[method](e.desc.route, ...mw, e.handler);
+      }
+
+      // attach the controller to the feature
+      feature.route(ctrl.desc.route, controller);
     }
-    return feat;
+
+    return feature;
   }
 }
