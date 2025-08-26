@@ -1,8 +1,9 @@
+import { Ctr, Instance, Provide, Target, Token } from "@chojs/core/di";
 import { getInjector, Injector } from "@chojs/core/di";
-import type { Ctr, Instance, Target, Token } from "@chojs/core/di";
 import {
   ControllerDescriptor,
   FeatureDescriptor,
+  Guard,
   MethodDescriptor,
   Middleware,
   NextFunction,
@@ -27,14 +28,15 @@ async function buildMiddleware(
       `Middleware must be a function or a class, got ${typeof middleware}`,
     );
   }
-  const create = async () => {
+  const create = async <T>(key: keyof T) => {
     // class middleware, resolve instance and bind handle method
     // first, make sure the middleware is added to providers to allow self-injection
     // and caching the instance for future use
-    injector.desc.providers.push({ provide: middleware as Ctr });
+    // injector.desc.providers.push({ provide: middleware as Ctr });
+    Provide(middleware as Token)(injector.desc);
     // now we can resolve the instance
-    const instance = await injector.resolve(middleware as Token) as Middleware;
-    if (!instance || typeof instance.handle !== "function") {
+    const instance = await injector.resolve(middleware as Token) as T;
+    if (!instance || typeof instance[key] !== "function") {
       throw new Error(
         `Cannot create instance of middleware ${middleware.name}`,
       );
@@ -46,7 +48,7 @@ async function buildMiddleware(
   if (
     middleware.prototype && typeof middleware.prototype.handle === "function"
   ) {
-    const instance = await create();
+    const instance = await create<Middleware>("handle");
     return instance.handle.bind(instance);
   }
 
@@ -54,7 +56,7 @@ async function buildMiddleware(
   if (
     middleware.prototype && typeof middleware.prototype.canActivate === "function"
   ) {
-    const instance = await create();
+    const instance = await create<Guard>("canActivate");
     const canActivate = instance.canActivate.bind(instance);
 
     // return a middleware function that calls canActivate
@@ -113,7 +115,8 @@ async function buildController(
   // const instance = await injector.create(desc.ctr);
 
   // add to providers to allow self-injection
-  injector.desc.providers.push({ provide: desc.ctr });
+  Provide(desc.ctr)(injector.desc);
+  // injector.desc.providers.push({ provide: desc.ctr });
   const instance = await injector.resolve(desc.ctr);
 
   if (!instance) {
