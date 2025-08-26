@@ -1,7 +1,15 @@
 import { getInjector, Injector } from "@chojs/core/di";
-import type { Instance, Target, Token } from "@chojs/core/di";
-import { ControllerDescriptor, FeatureDescriptor, MethodDescriptor, Middleware } from "./types.ts";
+import type { Ctr, Instance, Target, Token } from "@chojs/core/di";
+import {
+  ControllerDescriptor,
+  FeatureDescriptor,
+  MethodDescriptor,
+  Middleware,
+  NextFunction,
+  RequestContext,
+} from "./types.ts";
 import { ControllerRef, FeatureRef, MethodRef } from "./refs.ts";
+import { HttpError } from "./errors.ts";
 
 /**
  * Builds a middleware function from a class or function.
@@ -19,23 +27,51 @@ async function buildMiddleware(
       `Middleware must be a function or a class, got ${typeof middleware}`,
     );
   }
-  if (
-    middleware.prototype && typeof middleware.prototype.handle === "function"
-  ) {
+  const create = async () => {
     // class middleware, resolve instance and bind handle method
+    // first, make sure the middleware is added to providers to allow self-injection
+    // and caching the instance for future use
+    injector.desc.providers.push({ provide: middleware as Ctr });
+    // now we can resolve the instance
     const instance = await injector.resolve(middleware as Token) as Middleware;
     if (!instance || typeof instance.handle !== "function") {
       throw new Error(
         `Cannot create instance of middleware ${middleware.name}`,
       );
     }
+    return instance;
+  };
+
+  // if instanceof Middleware
+  if (
+    middleware.prototype && typeof middleware.prototype.handle === "function"
+  ) {
+    const instance = await create();
     return instance.handle.bind(instance);
-  } else if (typeof middleware === "function") {
+  }
+
+  // if instanceof Guard
+  if (
+    middleware.prototype && typeof middleware.prototype.canActivate === "function"
+  ) {
+    const instance = await create();
+    const canActivate = instance.canActivate.bind(instance);
+
+    // return a middleware function that calls canActivate
+    return async function (ctx: RequestContext, next: NextFunction) {
+      if (await canActivate(ctx, next)) {
+        await next();
+      } else {
+        throw new HttpError(403, "Forbidden");
+      }
+    };
+    // return instance.handle.bind(instance);
+  }
+  if (typeof middleware === "function") {
     // function middleware, use as is
     return middleware;
-  } else {
-    throw new Error(`Invalid middleware type: ${typeof middleware}`);
   }
+  throw new Error(`Invalid middleware type: ${typeof middleware}`);
 }
 
 /**
@@ -73,7 +109,13 @@ async function buildController(
   injector: Injector,
   desc: ControllerDescriptor,
 ): Promise<ControllerRef> {
-  const instance = await injector.create(desc.ctr);
+  // the below method is simpler but does not allow self-injection
+  // const instance = await injector.create(desc.ctr);
+
+  // add to providers to allow self-injection
+  injector.desc.providers.push({ provide: desc.ctr });
+  const instance = await injector.resolve(desc.ctr);
+
   if (!instance) {
     throw new Error(`Cannot create instance of ${desc.ctr.name}`);
   }
