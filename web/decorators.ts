@@ -193,3 +193,15 @@ export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");
  * @type {MethodDecoratorFn}
  */
 export const Sse: MethodDecoratorFn = createMethodDecorator("SSE");
+
+/**
+ * HTTP Stream Method decorator
+ * The endpoint method must return a ReadableStream
+ */
+export const Stream: MethodDecoratorFn = createMethodDecorator("STREAM");
+
+/**
+ * HTTP WebSocket Method decorator
+ * The endpoint method must return a WebSocket or a promise that resolves to a WebSocket
+ */
+export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");

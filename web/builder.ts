@@ -1,8 +1,10 @@
 import type { Ctr } from "@chojs/core/di";
 import { getInjectable } from "@chojs/core/di";
+import { debuglog } from "@chojs/core/utils";
 import { getController, getFeature, getMethods } from "./meta.ts";
 import { FeatureDescriptor } from "./types.ts";
 
+const log = debuglog("web:builder");
 /**
  * Convert feature class into a processed FeatureDescriptor
  * - Feature can contain sub-features and controllers
@@ -52,5 +54,6 @@ export function build(ctr: Ctr): FeatureDescriptor {
     });
   }
 
+  log(`feature "${ctr.name}" built`);
   return feature;
 }

@@ -55,6 +55,17 @@ export class HonoLinker extends ChoWebLinker<Hono> {
       for (const e of ctrl.methods) {
         const method = e.desc.method.toLowerCase();
         const mw = e.middlewares || [];
+
+        // server-sent-events handling
+        if ("sse" === method) {
+          continue;
+        }
+
+        // web-socket handling
+        if ("ws" === method) {
+          continue;
+        }
+
         if (
           method === "get" ||
           method === "post" ||
@@ -73,4 +84,8 @@ export class HonoLinker extends ChoWebLinker<Hono> {
 
     return feature;
   }
+
+    upgradeWebsocket(handler: (ws: WebSocket) => void) {
+
+    }
 }

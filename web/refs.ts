@@ -8,7 +8,7 @@ export class MethodRef {
   constructor(
     readonly desc: MethodDescriptor,
     readonly handler: Target,
-    readonly middlewares: Target[],
+    readonly middlewares: Target[] = [],
   ) {
   }
 }
@@ -20,8 +20,8 @@ export class ControllerRef {
   constructor(
     readonly desc: ControllerDescriptor,
     readonly instance: Instance,
-    readonly middlewares: Target[],
-    readonly methods: MethodRef[],
+    readonly middlewares: Target[] = [],
+    readonly methods: MethodRef[] = [],
   ) {
   }
 }
@@ -33,10 +33,10 @@ export class FeatureRef {
   constructor(
     readonly desc: FeatureDescriptor,
     readonly instance: Instance,
-    readonly middlewares: Target[],
     readonly injector: Injector,
-    readonly features: FeatureRef[],
-    readonly controllers: ControllerRef[],
+    readonly middlewares: Target[] = [],
+    readonly features: FeatureRef[] = [],
+    readonly controllers: ControllerRef[] = [],
   ) {
   }
 }

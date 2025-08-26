@@ -7,6 +7,7 @@
   "imports": {
     "@chojs/core": "./core/mod.ts",
     "@chojs/core/di": "./core/di/mod.ts",
+    "@chojs/core/utils": "./core/utils/mod.ts",
     "@chojs/vendor": "./vendor/mod.ts",
     "@chojs/web": "./web/mod.ts",
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
