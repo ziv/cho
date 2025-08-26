@@ -10,7 +10,7 @@ The concept is inspired by Angular, NestJS, and Spring but with a different appr
 
 ### Standard
 
-Use the language standard features (or in our case, stage 3 decorators proposal by TS).
+Use the language standard features (or in our case, stage 3 decorators proposal).
 
 ### Engine Agnostic
 
