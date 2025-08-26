@@ -1,10 +1,20 @@
-import type { Ctr, Target, Token } from "@chojs/core";
+import type { Any, Ctr, Target, Token } from "@chojs/core/di";
+
+export type RequestContext = Any;
+export type NextFunction = () => Promise<void> | void;
 
 /**
  * A middleware must implement a `handle` method that takes any arguments
  */
-export interface Middleware {
-  handle(...args: any[]): any;
+export interface Middleware<C = RequestContext, N = NextFunction> {
+  handle(ctx: C, next?: N): void | Promise<void>;
+}
+
+/**
+ * A guard must implement a `canActivate` method that returns a boolean or Promise<boolean>
+ */
+export interface Guard<C = RequestContext, N = NextFunction> {
+  canActivate(ctx: C, next?: N): boolean | Promise<boolean>;
 }
 
 /**

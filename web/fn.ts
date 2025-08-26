@@ -1,5 +1,6 @@
 import type { Ctr, DescriptorFn, Target, Token } from "@chojs/core/di";
 import { FeatureMeta } from "./meta.ts";
+import { Guard } from "./types.ts";
 
 /**
  * Create a descriptor that sets the route field on a controller, feature, or method.
@@ -56,6 +57,7 @@ export function Middlewares<D extends { middlewares: Target[] }>(
   ...middlewares: (Ctr | Token)[]
 ): DescriptorFn {
   return (d: Partial<D>) => {
+    // todo validate middlewares
     if (d.middlewares) {
       d.middlewares.push(...middlewares as Target[]);
     } else {
@@ -75,6 +77,7 @@ export function Middlewares<D extends { middlewares: Target[] }>(
  * // Apply guards to a controller
  * 〇Controller(Route("admin"), Guards(AdminGuard))
  * class AdminController {}
+ *
  * // Apply guards to a specific endpoint
  * class UsersController {
  *  〇Get("settings", Guards(AuthGuard, SettingsGuard))
@@ -86,13 +89,14 @@ export function Middlewares<D extends { middlewares: Target[] }>(
  * @returns A descriptor function that appends guards.
  */
 export function Guards<D extends { guards: Target[] }>(
-  ...guards: (Ctr | Token)[]
+  ...guards: (Ctr | Token | Guard)[]
 ): DescriptorFn {
   return (d: Partial<D>) => {
-    if (d.guards) {
-      d.guards.push(...guards as Target[]);
+    // todo validate guards
+    if (d.middlewares) {
+      d.middlewares.push(...guards as Target[]);
     } else {
-      d.guards = [...guards] as Target[];
+      d.middlewares = [...guards] as Target[];
     }
     return d;
   };
