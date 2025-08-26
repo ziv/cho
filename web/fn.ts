@@ -88,7 +88,7 @@ export function Middlewares<D extends { middlewares: Target[] }>(
  * @param guards One or more guard identifiers (classes or tokens).
  * @returns A descriptor function that appends guards.
  */
-export function Guards<D extends { guards: Target[] }>(
+export function Guards<D extends { middlewares: Target[] }>(
   ...guards: (Ctr | Token | Guard)[]
 ): DescriptorFn {
   return (d: Partial<D>) => {
