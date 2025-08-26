@@ -169,3 +169,27 @@ export const Delete: MethodDecoratorFn = createMethodDecorator("DELETE");
  * @type {MethodDecoratorFn}
  */
 export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");
+
+/**
+ * HTTP SSE (Server-Sent Events) Method decorator
+ * The endpoint method must return async iterator of string or Uint8Array
+ *
+ * For more information on Server-Sent Events, see:
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
+ *
+ * For more information on async iterators, see:
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator
+ *
+ * @example Usage
+ *
+ * ```ts
+ * class MyController {
+ *  〇Sse("path")
+ *  * async myMethod():  {}
+ * }
+ * ```
+ *
+ * @type {MethodDecoratorFn}
+ */
+export const Sse: MethodDecoratorFn = createMethodDecorator("SSE");

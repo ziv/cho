@@ -1,5 +1,4 @@
-import { Ctr, Instance, Provide, Target, Token } from "@chojs/core/di";
-import { getInjector, Injector } from "@chojs/core/di";
+import { getInjector, Injector, Instance, Provide, Target, Token } from "@chojs/core/di";
 import {
   ControllerDescriptor,
   FeatureDescriptor,
@@ -32,8 +31,9 @@ async function buildMiddleware(
     // class middleware, resolve instance and bind handle method
     // first, make sure the middleware is added to providers to allow self-injection
     // and caching the instance for future use
-    // injector.desc.providers.push({ provide: middleware as Ctr });
+
     Provide(middleware as Token)(injector.desc);
+
     // now we can resolve the instance
     const instance = await injector.resolve(middleware as Token) as T;
     if (!instance || typeof instance[key] !== "function") {
