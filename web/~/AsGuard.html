@@ -146,7 +146,7 @@
   </defs>
 </svg>
 </a>
-<span class="font-bold">AsGuard</span><span class="font-medium">(<span><span>fn<span>: (<span><span><span>...args</span><span>: <span>unknown</span>[]</span></span></span>) =&gt; <span><span>boolean</span><span> | </span><span>Promise</span>&lt;<span>boolean</span>&gt;</span></span></span></span>)<span>: <span>MiddlewareHandler</span></span> </span>
+<span class="font-bold">AsGuard</span><span class="font-medium">(<span><span>fn<span>: (<span><span><span>...args</span><span>: <span>unknown</span>[]</span></span></span>) =&gt; <span><span>boolean</span><span> | </span><span>Promise</span>&lt;<span>boolean</span>&gt;</span></span></span></span>)<span>: <span>Middleware</span></span> </span>
       </code><div class="space-y-7" id=""><div class="markdown"><p>Convert a simple function into a Guard middleware.
 The function should return a boolean or a Promise that resolves to a boolean.
 If it returns true, the request proceeds; if false, a &quot;Forbidden&quot; error is thrown.</p>
@@ -253,7 +253,7 @@ Parameters</h2></div><div class="space-y-8"><div class="anchorable docEntry" id=
 Return Type</h2></div><div class="space-y-8"><div class=" docEntry" id="function_AsGuard_0_return">
 
   <div class="docEntryHeader">
-    <div><code><span class="font-medium text-stone-500 dark:text-stone-200"><span>MiddlewareHandler</span></span>
+    <div><code><span class="font-medium text-stone-500 dark:text-stone-200"><span>Middleware</span></span>
       </code>
     </div><a
   class="sourceButton"
