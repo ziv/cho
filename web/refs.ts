@@ -1,5 +1,4 @@
 import type { Ctr, Target, Token } from "@chojs/core/di";
-import { Any } from "../core/di/types.ts";
 
 /**
  * A type that extends another type T with routing information.
