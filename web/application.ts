@@ -3,17 +3,17 @@ import type { Any, Ctr } from "@chojs/core/di";
 import { debuglog } from "@chojs/core/utils";
 import { Compiler } from "./compiler.ts";
 
-export type ChoWebApplicationOptions<T = Any> = {
-  linker: ChoLinker<T>;
+export type ChoWebApplicationOptions = {
+  linker: ChoLinker;
 };
 
 const log = debuglog("web:application");
 
 export class ApplicationRef<T = Any> {
-  constructor(protected readonly link: ChoLinker<T>) {
+  constructor(protected readonly link: ChoLinker) {
   }
 
-  handler() {
+  handler(): (request: Request) => Promise<Response> {
     return this.link.handler();
   }
 
@@ -24,7 +24,7 @@ export class ApplicationRef<T = Any> {
 
 export async function createApplication<T>(
   app: Ctr,
-  options: Partial<ChoWebApplicationOptions<T>> = {},
+  options: Partial<ChoWebApplicationOptions> = {},
 ): Promise<ApplicationRef<T>> {
   if (!options.linker) {
     try {

@@ -1,9 +1,10 @@
-import type { Ctr, Instance, Target } from "@chojs/core/di";
-import type { LinkedController, LinkedFeature, LinkedMethod, Middleware } from "@chojs/vendor";
+import type { Ctr, Instance, Target, Token } from "@chojs/core/di";
 import { getInjector, Injector, Provide } from "@chojs/core/di";
+import type { LinkedController, LinkedFeature, LinkedMethod, MethodType, Middleware } from "@chojs/vendor";
 import { debuglog } from "@chojs/core/utils";
 import { getController, getFeature, getMethods } from "./meta.ts";
 import { ChoGuard, ChoMiddleware } from "./refs.ts";
+import { Any } from "../core/di/types.ts";
 
 const isMiddlewareClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.handle === "function";
 const isGuardClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.canActivate === "function";
@@ -16,7 +17,7 @@ export class Compiler {
    * The result is a tree of linked features, controllers and methods,
    * with all dependencies resolved and ready to be used by a web framework.
    */
-  compile(ctr: Ctr) {
+  compile(ctr: Ctr): Promise<LinkedFeature> {
     return this.linkFeature(ctr);
   }
 
@@ -56,12 +57,12 @@ export class Compiler {
     log(`linking controller ${ctr.name}`);
     const controller = getController(ctr);
     if (!controller) {
-      throw new Error(`${ctrl.name} is not a controller`);
+      throw new Error(`${ctr.name} is not a controller`);
     }
 
     const metaMethods = getMethods(ctr);
     if (metaMethods.length === 0) {
-      throw new Error(`Controller ${ctrl.name} has no endpoints`);
+      throw new Error(`Controller ${ctr.name} has no endpoints`);
     }
 
     // create the controller
@@ -72,7 +73,7 @@ export class Compiler {
     }
 
     // resolve the controller instance
-    const instance = await injector.resolve(ctr);
+    const instance = await injector.resolve(ctr) as Instance;
 
     const methods: LinkedMethod[] = [];
     for (const m of metaMethods) {
@@ -80,9 +81,9 @@ export class Compiler {
       // compiled  methods
       methods.push({
         route: m.route,
-        type: m.method,
+        type: m.method as MethodType,
         middlewares: await this.buildMiddlewares(m.middlewares, injector),
-        handler: instance[m.name].bind(instance),
+        handler: (instance[m.name as keyof typeof instance] as Target).bind(instance),
       });
     }
 
@@ -119,16 +120,16 @@ export class Compiler {
         continue;
       }
       const key = isMiddlewareClass(mw) ? "handle" : "canActivate";
-      if (!injector.provider(mw)) {
+      if (!injector.provider(mw as Token)) {
         // before instancing, make sure the middleware is added to the injector
         // providers list to allow self-injection and caching of the instance
-        Provide(mw)(injector.desc);
+        Provide(mw as Token)(injector.desc);
       }
 
-      const instance = await injector.resolve(mw) as ChoGuard & ChoMiddleware;
+      const instance = await injector.resolve(mw as Token) as ChoGuard & ChoMiddleware;
       if (!instance || typeof instance[key] !== "function") {
         throw new Error(
-          `Cannot create instance of middleware ${middleware.name}`,
+          `Cannot create instance of middleware ${mw.name}`,
         );
       }
 
