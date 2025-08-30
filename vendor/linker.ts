@@ -1,3 +1,4 @@
+import { Any } from "@chojs/core/di";
 import type { LinkedFeature } from "./types.ts";
 
 /**
@@ -10,9 +11,9 @@ export interface ChoLinker {
   /**
    * Get a reference to the underlying application instance
    *
-   * @return Router> The application instance
+   * @return Router The application instance
    */
-  ref<T>(): T;
+  ref(): Any;
 
   /**
    * Get the application request handlers
