@@ -43,7 +43,7 @@ export class OakLinker implements ChoLinker {
     return true;
   }
 
-  createController(ref: LinkedController): Router {
+  protected createController(ref: LinkedController): Router {
     const controller = withMiddlewares(ref.middlewares);
 
     // link methods with their middlewares
@@ -72,7 +72,7 @@ export class OakLinker implements ChoLinker {
           async (c) => {
             const res = await endpoint.handler(new OakContext(c));
             if (res instanceof Response) {
-              c.response = res;
+              c.response.body = res.body;
             } else {
               // in order to make default behavior
               // consistent, we set body as json
@@ -89,7 +89,7 @@ export class OakLinker implements ChoLinker {
     return (ref.route === "") ? controller : new Router().use("/" + ref.route, controller.routes());
   }
 
-  createFeature(ref: LinkedFeature): Router {
+  protected createFeature(ref: LinkedFeature): Router {
     const feature = withMiddlewares(ref.middlewares);
 
     // attach controllers

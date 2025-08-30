@@ -20,7 +20,7 @@ const withMiddlewares = (mws: Middleware[]): Hono => {
 export class HonoLinker implements ChoLinker {
   app!: Hono;
 
-  ref() {
+  ref(): Hono {
     if (!this.app) {
       throw new Error("Feature not linked yet");
     }
@@ -37,7 +37,7 @@ export class HonoLinker implements ChoLinker {
     return true;
   }
 
-  createController(ref: LinkedController) {
+  protected createController(ref: LinkedController): Hono {
     const controller = withMiddlewares(ref.middlewares);
 
     for (const endpoint of ref.methods) {
@@ -66,7 +66,7 @@ export class HonoLinker implements ChoLinker {
     return controller;
   }
 
-  createFeature(ref: LinkedFeature): Hono {
+  protected createFeature(ref: LinkedFeature): Hono {
     const feature = withMiddlewares(ref.middlewares);
 
     for (const ctrl of ref.controllers) {

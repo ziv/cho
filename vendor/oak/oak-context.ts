@@ -22,7 +22,7 @@ export class OakContext implements ChoContext<RouterContext<Any>> {
     return this.raw.params[key];
   }
 
-  query(key?: string): URLSearchParams | string | null {
+  query(key?: string): URLSearchParams | string | Record<string, string> | null {
     return key ? this.raw.request.url.searchParams.get(key) : this.raw.request.url.searchParams;
   }
 

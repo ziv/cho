@@ -1,5 +1,6 @@
-import type {Context} from "hono";
-import {ChoContext} from "../context.ts";
+import type { Context } from "hono";
+import type { StatusCode } from "hono/utils/http-status";
+import { ChoContext } from "../context.ts";
 
 /**
  * HonoContext is a wrapper around Hono's Context to provide a unified interface.
@@ -8,32 +9,32 @@ export class HonoContext implements ChoContext<Context> {
   constructor(readonly raw: Context) {
   }
 
-  override rawContext() {
+  rawContext() {
     return this.raw;
   }
 
-  override status(code: number): this {
-    this.raw.status(code);
+  status(code: number): this {
+    this.raw.status(code as StatusCode);
     return this;
   }
 
-  override param(key: string): string | undefined {
+  param(key: string): string | undefined {
     return this.raw.req.param(key);
   }
 
-  override query(key?: string): URLSearchParams | string | undefined {
-    return this.raw.req.query(key);
+  query(key?: string): URLSearchParams | string | Record<string, string> | null {
+    return (key ? this.raw.req.query(key) : this.raw.req.query()) ?? null;
   }
 
-  override queries(key: string): string[] {
-    return this.raw.req.queries(key);
+  queries(key: string): string[] {
+    return this.raw.req.queries(key) ?? [];
   }
 
-  override header(key: string): string | undefined {
-    return this.raw.header(key);
+  header(key: string): string | null {
+    return this.raw.header(key) ?? null;
   }
 
-  override json<T>(): Promise<T> {
+  json<T>(): Promise<T> {
     return this.raw.req.json() as Promise<T>;
   }
 }

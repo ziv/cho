@@ -13,7 +13,7 @@ export interface ChoContext<Ctx> {
    * Get a query parameter or all query parameters.
    * @param key
    */
-  query(key?: string): URLSearchParams | string | null;
+  query(key?: string): URLSearchParams | string | Record<string, string> | null;
 
   /**
    * Get query parameters as an array of strings for a given key.
