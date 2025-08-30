@@ -14,12 +14,12 @@ Use the language standard features (or in our case, stage 3 decorators proposal)
 
 ### Engine Agnostic
 
-The framework does not depend on any engine and on the environment (Node.js, Deno, Bun, Browser, etc.).
+The framework does not depend on any engine and on the environment (Node.js, Deno, Bun, Cloudflare Workers, etc.).
 
 ### Minimal
 
-Provide a shallow set of decorators, and provide a set functions to extend the decorators functionality. Enough to build
-a modular application.
+Provide a shallow set of decorators, and provide a set of functions to extend the decorators functionality. Enough to
+build a modular application.
 
 ---
 
@@ -39,7 +39,6 @@ more information, see:
 I'm using `deno doc` to generate the documentation. It has a bug that identifies decorators as jsdoc. So I'm using
 `〇Injectable` instead of `@Injectable` in the comments to avoid this issue. `fix-docs.sh` script fix the generated
 documentation.
-
 
 <img src="./assets/cho.svg"  alt="CHO" width="200"/>
 

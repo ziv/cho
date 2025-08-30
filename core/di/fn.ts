@@ -92,7 +92,9 @@ export function Provide<T, D extends ModuleDescriptor>(
         provide: token,
         factory: async (i: Resolver) => {
           const deps = getInjectable(token)?.dependencies ?? [];
-          const args = await Promise.all(deps.map((d) => i.resolve(d)));
+          const args = await Promise.all(
+            deps.map((d) => i.resolve(d)),
+          );
           return Reflect.construct(token, args);
         },
       };

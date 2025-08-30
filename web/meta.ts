@@ -82,6 +82,9 @@ export type MethodMeta = {
   route: string;
   method: string;
   middlewares: Target[];
+  // validators
+  // body?: any;
+  // query?: any;
 };
 
 /**

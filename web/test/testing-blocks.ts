@@ -1,7 +1,4 @@
-import { Controller, Controllers, Feature, Get, Middlewares, Post, Route } from "@chojs/web";
-
-function mw() {
-}
+import { Controller, Controllers, Feature, Get, Post, Route } from "@chojs/web";
 
 @Controller(Route("test0"))
 export class Ctr0 {

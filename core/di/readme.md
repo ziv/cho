@@ -9,8 +9,8 @@ Provider is recipe for creating or accessing a specific value/instance.
 
 ### Module
 
-Module is used to encapsulate dependencies injection. Module declares providers. Module can access providers declared by
-other modules by importing them.
+Module is used to encapsulate dependencies injection context. Module declares providers. Module can access providers
+declared by other modules by importing them.
 
 ### Injector
 
@@ -24,16 +24,15 @@ instances/values of providers.
 Classic DI mechanism does not instantiate the module classes. In Cho the module classes are instantiated before you can
 access their injector.
 
-```
-+----------+              +----------+
-| ModuleA  | --imports--> | ModuleB  |
-+----------+              +----------+ 
-| ServiceA |              | ServiceB |
-+----------+              +----------+
-```
+The resolving process is as follows:
 
-If `ServiceA` depends on `ServiceB`, the injector of `ModuleA` will resolve `ModuleB` to access its injector, and then
-it can ask for `ServiceB`.
+- Search for resolved value in injector cache
+  - If found, return it
+- Search for provider
+  - Search for provider in current context
+  - Search for provider in imported contexts
+- When provider is found, create the instance/value in the **current** context and cache it
+- Return the resolved value
 
 ---
 

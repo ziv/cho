@@ -1,6 +1,6 @@
 import type { Ctr, DescriptorFn, Target, Token } from "@chojs/core/di";
 import { FeatureMeta } from "./meta.ts";
-import { Guard } from "./types.ts";
+import { ChoGuard, Context, MiddlewareHandler, Next } from "./types.ts";
 
 /**
  * Create a descriptor that sets the route field on a controller, feature, or method.
@@ -89,7 +89,7 @@ export function Middlewares<D extends { middlewares: Target[] }>(
  * @returns A descriptor function that appends guards.
  */
 export function Guards<D extends { middlewares: Target[] }>(
-  ...guards: (Ctr | Token | Guard)[]
+  ...guards: (Ctr | Token | ChoGuard)[]
 ): DescriptorFn {
   return (d: Partial<D>) => {
     // todo validate guards
@@ -159,5 +159,26 @@ export function Features<D extends FeatureMeta>(
       d.features = [...features];
     }
     return d;
+  };
+}
+
+// transformation functions
+
+/**
+ * Convert a simple function into a Guard middleware.
+ * The function should return a boolean or a Promise that resolves to a boolean.
+ * If it returns true, the request proceeds; if false, a "Forbidden" error is thrown.
+ *
+ * @param fn
+ * @return MiddlewareHandler middleware function
+ */
+export function AsGuard(fn: (...args: unknown[]) => boolean | Promise<boolean>): MiddlewareHandler {
+  return async function (ctx: Context, next: Next) {
+    const ret = await fn(ctx, next);
+    if (ret) {
+      return next();
+    } else {
+      throw new Error("Forbidden");
+    }
   };
 }

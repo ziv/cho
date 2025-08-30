@@ -10,6 +10,7 @@
     "@chojs/core/utils": "./core/utils/mod.ts",
     "@chojs/vendor": "./vendor/mod.ts",
     "@chojs/web": "./web/mod.ts",
+    "@oak/oak": "jsr:@oak/oak@^17.1.6",
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
     "@std/expect": "jsr:@std/expect@^1.0.17",
     "@std/fmt": "jsr:@std/fmt@^1.0.8",

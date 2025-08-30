@@ -1,7 +1,7 @@
 import type { Any, DescriptorFn, InjectableDescriptor, MethodContext, ModuleDescriptor, Target } from "@chojs/core/di";
 import { collect, setInjectable, setModule } from "@chojs/core/di";
 import { type FeatureMeta, setController, setFeature, setMethod } from "./meta.ts";
-import type { ControllerDescriptor, MethodDescriptor } from "./types.ts";
+import type { ControllerDescriptor, MethodDescriptor } from "./refs.ts";
 
 export type MethodDecoratorFn = (
   route: string | DescriptorFn,
@@ -24,14 +24,17 @@ function createMethodDecorator(
     route: string | DescriptorFn,
     ...fns: DescriptorFn[]
   ) {
+    // decorator starts here
     return function (
-      target: Object,
+      target: Any,
+      // string | symbol for TS experimental decorators (Bun, TS < 5.0, reflect-metadata, etc.)
       context: MethodContext | string | symbol,
     ) {
       const name = typeof context === "string" ? context : (context as MethodContext).name;
 
       // make sure to add the method and name to the fns array
       fns.push((d) => ({ ...d, method, name }));
+
       if (typeof route === "function") {
         // if route is a function, add it to the front of the fns array
         fns.unshift(route);
@@ -41,6 +44,7 @@ function createMethodDecorator(
       } else {
         throw new Error("Route must be a string or a function");
       }
+
       const data = collect<MethodDescriptor>(fns);
       setMethod(target as Target, data);
     };
@@ -172,6 +176,26 @@ export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");
 
 /**
  * HTTP SSE (Server-Sent Events) Method decorator
+ * The endpoint accept writable stream as parameter to write the events to
+ *
+ * For more information on Server-Sent Events, see:
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
+ *
+ * @example Usage
+ *
+ * ```ts
+ * class MyController {
+ *  〇Sse("path")
+ *  async myMethod(c: Context, stream: WritableStream)  {}
+ * }
+ * ```
+ *
+ * @type {MethodDecoratorFn}
+ */
+export const Sse: MethodDecoratorFn = createMethodDecorator("SSE");
+
+/**
+ * HTTP SSE (Server-Sent Events) Method decorator
  * The endpoint method must return async iterator of string or Uint8Array
  *
  * For more information on Server-Sent Events, see:
@@ -186,13 +210,13 @@ export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");
  * ```ts
  * class MyController {
  *  〇Sse("path")
- *  * async myMethod():  {}
+ *  * async myMethod(c: Context): AsyncGenerator  {}
  * }
  * ```
  *
  * @type {MethodDecoratorFn}
  */
-export const Sse: MethodDecoratorFn = createMethodDecorator("SSE");
+export const Sseit: MethodDecoratorFn = createMethodDecorator("SSEIT");
 
 /**
  * HTTP Stream Method decorator

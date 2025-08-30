@@ -35,21 +35,21 @@ export abstract class ChoWebLinker<Router> {
   /**
    * Upgrade the HTTP server to handle WebSocket connections
    */
-  upgradeWebsocket(handler: (ws: WebSocket) => void) {
-    throw new Error("Method not implemented.");
-  }
+  // upgradeWebsocket(handler: (ws: WebSocket) => void) {
+  //   throw new Error("Method not implemented.");
+  // }
 
   /**
    * Upgrade the HTTP server to handle WebTransport connections
    */
-  upgradeStream() {
-    throw new Error("Method not implemented.");
-  }
+  // upgradeStream() {
+  //   throw new Error("Method not implemented.");
+  // }
 
   /**
    * Upgrade the HTTP server to handle Server-Sent Events (SSE) connections
    */
-  upgradeSSE() {
-    throw new Error("Method not implemented.");
-  }
+  // upgradeSSE() {
+  //   throw new Error("Method not implemented.");
+  // }
 }
