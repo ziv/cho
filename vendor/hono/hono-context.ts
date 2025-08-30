@@ -6,7 +6,6 @@ import {ChoContext} from "../context.ts";
  */
 export class HonoContext implements ChoContext<Context> {
   constructor(readonly raw: Context) {
-    super();
   }
 
   override rawContext() {

@@ -70,22 +70,22 @@ export class OakLinker implements ChoLinker {
           // @ts-ignore
           ...middlewares,
           async (c) => {
-            // const res = await endpoint.handler(new OakContext(c));
-            // if (res instanceof Response) {
-            //   return res;
-            // }
-            // need to be more careful here
-            // oak auto convert to json if res is object.
-            // any other type sent as plain text
-            // **should find a better way to handle this**
-            c.response.body = await endpoint.handler(new OakContext(c));
+            const res = await endpoint.handler(new OakContext(c));
+            if (res instanceof Response) {
+              c.response = res;
+            } else {
+              // in order to make default behavior
+              // consistent, we set body as json
+              c.response.headers.set("content-type", "application/json");
+              c.response.body = res;
+            }
           },
         );
         continue;
       }
       throw new Error(`Unsupported method detected "${type}"`);
     }
-    // if route is not empty, create a new router for use it
+    // if route is not empty, create a new router to mount the controller
     return (ref.route === "") ? controller : new Router().use("/" + ref.route, controller.routes());
   }
 
@@ -96,11 +96,7 @@ export class OakLinker implements ChoLinker {
     for (const ctrl of ref.controllers) {
       const controller = this.createController(ctrl);
       log(`attaching controller at route "${ctrl.route}"`);
-
-      feature.use(
-        // ctrl.route,
-        controller.routes(),
-      );
+      feature.use(controller.routes());
     }
 
     // attach sub-features

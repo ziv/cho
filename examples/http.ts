@@ -1,5 +1,5 @@
 import { Controller, Controllers, createApplication, Feature, Get, Route } from "@chojs/web";
-import { OakLinker } from "@chojs/vendor/oak";
+import {HonoLinker, OakLinker} from "@chojs/vendor";
 import { Application } from "@oak/oak";
 
 @Controller(Route(""))
@@ -37,5 +37,5 @@ class DataController {
 class AppFeature {
 }
 
-const app = await createApplication<Application>(AppFeature, { linker: new OakLinker() });
+const app = await createApplication<Application>(AppFeature, { linker: new HonoLinker() });
 Deno.serve(app.handler());
