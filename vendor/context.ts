@@ -13,7 +13,7 @@ export interface ChoContext<Ctx> {
    * Get a query parameter or all query parameters.
    * @param key
    */
-  query(key?: string): URLSearchParams | string | undefined;
+  query(key?: string): URLSearchParams | string | null;
 
   /**
    * Get query parameters as an array of strings for a given key.
@@ -24,7 +24,7 @@ export interface ChoContext<Ctx> {
   /**
    * Get a header value by key.
    */
-  header(key: string): string | undefined;
+  header(key: string): string | null;
 
   /**
    * Get the request body parsed as JSON.

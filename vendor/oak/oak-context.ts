@@ -1,12 +1,12 @@
-import type { Context } from "@oak/oak";
-import { ChoContext } from "../context.ts";
+import type { RouterContext } from "@oak/oak/router";
+import type { ChoContext } from "../context.ts";
+import { Any } from "@chojs/core/di";
 
 /**
  * OakContext is a wrapper around Oak's Context to provide a unified interface.
  */
-export class OakContext implements ChoContext<Context> {
-  constructor(readonly raw: Context) {
-    super();
+export class OakContext implements ChoContext<RouterContext<Any>> {
+  constructor(readonly raw: RouterContext<Any>) {
   }
 
   rawContext() {
@@ -19,14 +19,10 @@ export class OakContext implements ChoContext<Context> {
   }
 
   param(key: string): string | undefined {
-    return raw.param[key];
+    return this.raw.params[key];
   }
 
-  body<T = unknown>(): Promise<T> {
-    return Promise.resolve(undefined);
-  }
-
-  query(key?: string): URLSearchParams | string | undefined {
+  query(key?: string): URLSearchParams | string | null {
     return key ? this.raw.request.url.searchParams.get(key) : this.raw.request.url.searchParams;
   }
 
@@ -34,11 +30,11 @@ export class OakContext implements ChoContext<Context> {
     return this.raw.request.url.searchParams.getAll(key);
   }
 
-  header(key: string): string | undefined {
-    return this.raw.request.headers.get(key);
+  header(key: string): string | null {
+    return this.raw.request.headers.get(key) ?? null;
   }
 
   json<T>(): Promise<T> {
-    return this.raw.request.json() as Promise<T>;
+    return this.raw.request.body.json() as Promise<T>;
   }
 }

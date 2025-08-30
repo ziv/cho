@@ -1,43 +1,42 @@
 import { debuglog } from "@chojs/core/utils";
-import type { LinkedController, LinkedFeature } from "@chojs/web";
-import { Application } from "@oak/oak";
-import { Router } from "@oak/oak/router";
+import { Router, RouterContext, RouterMiddleware } from "@oak/oak/router";
+import type { LinkedController, LinkedFeature, Middleware } from "../types.ts";
 import { OakContext } from "./oak-context.ts";
-import { Middleware } from "@chojs/vendor";
 import { ChoLinker } from "../linker.ts";
+import { Any, Target } from "@chojs/core/di";
+import { Application, Next } from "@oak/oak";
 
 const log = debuglog("vendor:oak-linker");
 
-function toMiddleware(mw: Target) {
-  return (c, next) => mw(new OakContext(c), next);
-}
+const toMiddleware = (mw: Target): RouterMiddleware<Any> => (c: RouterContext<Any>, next: Next) =>
+  mw(new OakContext(c), next);
 
-function withMiddlewares(mws: Middleware[]): Router {
+const withMiddlewares = (mws: Middleware[]): Router => {
   const c = new Router();
   for (const mw of mws) {
     c.use(toMiddleware(mw));
   }
   return c;
-}
+};
 
 export class OakLinker implements ChoLinker<Application> {
   app!: Application;
 
-  override ref(): Application {
+  ref(): Application {
     if (!this.app) {
       throw new Error("Feature not linked yet");
     }
     return this.app;
   }
 
-  override handler(): (request: Request) => Promise<Response> {
-    return async (request: Request, info) => {
-      const res = await this.app.handle(request, info.remoteAddr);
+  handler(): (request: Request) => Promise<Response> {
+    return async (request: Request) => {
+      const res = await this.app.handle(request);
       return res ?? Response.error();
     };
   }
 
-  override link(ref: LinkedFeature): boolean {
+  link(ref: LinkedFeature): boolean {
     log("linking oak application");
     this.app = new Application();
     this.app.use(this.createFeature(ref).routes());
@@ -68,6 +67,7 @@ export class OakLinker implements ChoLinker<Application> {
         controller[type](
           // todo handle root route properly
           "/" + endpoint.route,
+          // @ts-ignore
           ...middlewares,
           async (c) => {
             // const res = await endpoint.handler(new OakContext(c));
@@ -83,7 +83,7 @@ export class OakLinker implements ChoLinker<Application> {
         );
         continue;
       }
-      throw new Error(`Unsupported method detected "${method}"`);
+      throw new Error(`Unsupported method detected "${type}"`);
     }
     // if route is not empty, create a new router for use it
     return (ref.route === "") ? controller : new Router().use("/" + ref.route, controller.routes());

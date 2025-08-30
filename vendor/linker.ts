@@ -1,4 +1,4 @@
-import type { LinkedFeature } from "./compiler.ts";
+import type { LinkedFeature } from "./types.ts";
 
 /**
  * Abstract Web Linker class

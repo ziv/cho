@@ -23,6 +23,7 @@
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/semver@^1.0.5": "1.0.5",
     "jsr:@std/testing@^1.0.15": "1.0.15",
+    "npm:@types/node@*": "24.2.0",
     "npm:hono@4.9.2": "4.9.2",
     "npm:mongodb@^6.18.0": "6.18.0",
     "npm:path-to-regexp@^6.3.0": "6.3.0"
@@ -130,6 +131,12 @@
         "sparse-bitfield"
       ]
     },
+    "@types/node@24.2.0": {
+      "integrity": "sha512-3xyG3pMCq3oYCNg7/ZP+E1ooTaGB4cG8JWRsqqOYQdbWNY4zbaV0Ennrd7stjiJEFZCaybcIgpTjJWHRfBSIDw==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
     "@types/webidl-conversions@7.0.3": {
       "integrity": "sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA=="
     },
@@ -180,6 +187,9 @@
       "dependencies": [
         "punycode"
       ]
+    },
+    "undici-types@7.10.0": {
+      "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
     },
     "webidl-conversions@7.0.0": {
       "integrity": "sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g=="
