@@ -1,10 +1,10 @@
-import type { Context } from "hono";
-import { ChoContext } from "../cho/context.ts";
+import type {Context} from "hono";
+import {ChoContext} from "../context.ts";
 
 /**
  * HonoContext is a wrapper around Hono's Context to provide a unified interface.
  */
-export class HonoContext extends ChoContext<Context> {
+export class HonoContext implements ChoContext<Context> {
   constructor(readonly raw: Context) {
     super();
   }

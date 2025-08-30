@@ -37,8 +37,13 @@ export class Compiler {
     return this.linkFeature(ctr);
   }
 
+  /**
+   * Recursively link a feature, its controllers, methods and sub-features.
+   * @param ctr
+   */
   private async linkFeature(ctr: Ctr): Promise<LinkedFeature> {
     log(`linking feature ${ctr.name}`);
+
     const meta = getFeature(ctr);
     if (!meta) {
       throw new Error(`${ctr.name} is not a feature`);

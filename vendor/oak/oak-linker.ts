@@ -1,10 +1,10 @@
-import { ChoWebLinker, Target } from "@chojs/web";
 import { debuglog } from "@chojs/core/utils";
 import type { LinkedController, LinkedFeature } from "@chojs/web";
 import { Application } from "@oak/oak";
 import { Router } from "@oak/oak/router";
 import { OakContext } from "./oak-context.ts";
 import { Middleware } from "@chojs/vendor";
+import { ChoLinker } from "../linker.ts";
 
 const log = debuglog("vendor:oak-linker");
 
@@ -20,7 +20,7 @@ function withMiddlewares(mws: Middleware[]): Router {
   return c;
 }
 
-export class OakLinker extends ChoWebLinker<Application> {
+export class OakLinker implements ChoLinker<Application> {
   app!: Application;
 
   override ref(): Application {
@@ -85,7 +85,8 @@ export class OakLinker extends ChoWebLinker<Application> {
       }
       throw new Error(`Unsupported method detected "${method}"`);
     }
-    return new Router().use("/" + ref.route, controller.routes());
+    // if route is not empty, create a new router for use it
+    return (ref.route === "") ? controller : new Router().use("/" + ref.route, controller.routes());
   }
 
   createFeature(ref: LinkedFeature): Router {

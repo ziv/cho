@@ -1,4 +1,4 @@
-import {LinkedFeature} from "./compiler.ts";
+import type { LinkedFeature } from "./compiler.ts";
 
 /**
  * Abstract Web Linker class
@@ -6,27 +6,27 @@ import {LinkedFeature} from "./compiler.ts";
  *
  * @abstract
  */
-export abstract class ChoWebLinker<Router> {
+export interface ChoLinker<Router> {
   /**
    * Get a reference to the underlying application instance
    *
-   * @return {Router} The application instance
+   * @return Router> The application instance
    */
-  abstract ref(): Router;
+  ref(): Router;
 
   /**
    * Get the application request handlers
    *
    * @return {(request: Request) => Promise<Response>} The request handler
    */
-  abstract handler(): (request: Request) => Promise<Response>;
+  handler(): (request: Request) => Promise<Response>;
 
   /**
    * Create the web application
    * @param ref
    * @return {boolean} true if successful
    */
-  abstract link(ref: LinkedFeature): boolean;
+  link(ref: LinkedFeature): boolean;
 
   // extend HTTP server
 

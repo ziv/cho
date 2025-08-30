@@ -95,7 +95,7 @@ export class Injector implements Resolver {
         value: this.#cache.get(token),
       };
     }
-    const provider = this.desc.providers.find((p) => p.provide === token);
+    const provider = this.provider(token);
     if (provider) {
       log(`${this.name} found provider for "${tokenName(token)}" locally`);
       return {
@@ -126,7 +126,6 @@ export class Injector implements Resolver {
   /**
    * Get a provider by its token.
    *
-   * @deprecated
    * @param token
    * @returns Provider or undefined if not found
    */

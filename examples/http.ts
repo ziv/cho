@@ -1,47 +1,41 @@
-import { Controller, Controllers, Feature, Get, Route } from "@chojs/web";
-import { Compiler } from "../web/compiler.ts";
-import { OakLinker } from "../vendor/oak/oak-linker.ts";
+import { Controller, Controllers, createApplication, Feature, Get, Route } from "@chojs/web";
+import { OakLinker } from "@chojs/vendor/oak";
+import { Application } from "@oak/oak";
 
-@Controller(Route("aaa"))
+@Controller(Route(""))
 class RootController {
   @Get("")
-  index() {
-    console.log("hello world!");
-    return "Hello, World!";
+  data() {
+    console.log("A");
+    return "A";
   }
 
   @Get("foo")
   foo() {
-    console.log("hello foo!");
-    return "Hello, foo!";
+    console.log("B");
+    return "B";
   }
 }
 
-// @Controller(Route("api"))
-// class DataController {
-//   @Get("/data")
-//   getData() {
-//     console.log("data");
-//     return { data: [1, 2, 3, 4, 5] };
-//   }
-// }
+@Controller(Route("api"))
+class DataController {
+  @Get("")
+  data() {
+    console.log("D");
+    return { data: [1, 2, 3, 4, 5] };
+  }
+  @Get("data")
+  getData() {
+    console.log("data");
+    return { data: [1, 2, 3, 4, 5] };
+  }
+}
 
 @Feature(
-  Controllers(RootController),
+  Controllers(RootController, DataController),
 )
 class AppFeature {
 }
 
-const compiler = new Compiler();
-const compiled = await compiler.compile(AppFeature);
-const linker = new OakLinker();
-console.log(compiled);
-console.log(linker.link(compiled));
-// Deno.serve(linker.handler())
-
-await linker.ref().listen({ port: 8000 });
-//
-// const app = await ChoWebApplication.create(AppFeature);
-//
-// showRoutes(app.link.ref());
-// Deno.serve(app.link.handler());
+const app = await createApplication<Application>(AppFeature, { linker: new OakLinker() });
+Deno.serve(app.handler());
