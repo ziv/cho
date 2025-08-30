@@ -4,7 +4,6 @@ import type { LinkedController, LinkedFeature, LinkedMethod, MethodType, Middlew
 import { debuglog } from "@chojs/core/utils";
 import { getController, getFeature, getMethods } from "./meta.ts";
 import { ChoGuard, ChoMiddleware } from "./refs.ts";
-import { Any } from "../core/di/types.ts";
 
 const isMiddlewareClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.handle === "function";
 const isGuardClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.canActivate === "function";
