@@ -1,17 +1,16 @@
-import { Ctr } from "@chojs/core";
-import { ChoWebLinker } from "./linker.ts";
+import type { ChoLinker } from "@chojs/vendor";
+import type { Any, Ctr } from "@chojs/core/di";
 import { debuglog } from "@chojs/core/utils";
-import { Any } from "@chojs/core/di";
 import { Compiler } from "./compiler.ts";
 
 export type ChoWebApplicationOptions<T = Any> = {
-  linker: ChoWebLinker<T>;
+  linker: ChoLinker<T>;
 };
 
 const log = debuglog("web:application");
 
 export class ApplicationRef<T = Any> {
-  constructor(protected readonly link: ChoWebLinker<T>) {
+  constructor(protected readonly link: ChoLinker<T>) {
   }
 
   handler() {
@@ -29,9 +28,9 @@ export async function createApplication<T>(
 ): Promise<ApplicationRef<T>> {
   if (!options.linker) {
     try {
-      log("no linker provided, trying to load @chojs/vendor and use HonoLinker");
+      log("no linker provided, trying to load @chojs/vendor and use OakLinker as default");
       const vendor = await import("@chojs/vendor");
-      options.linker = new vendor.HonoLinker();
+      options.linker = new vendor.OakLinker();
     } catch (e) {
       log.error(e);
       throw new Error("no linker provided and @chojs/vendor not installed");

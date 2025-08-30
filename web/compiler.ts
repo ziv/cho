@@ -1,26 +1,8 @@
 import type { Ctr, Target } from "@chojs/core/di";
+import type {LinkedController, LinkedFeature, LinkedMethod, Middleware} from "@chojs/vendor";
 import { getInjector, Injector, Provide } from "@chojs/core/di";
 import { debuglog } from "@chojs/core/utils";
 import { getController, getFeature, getMethods } from "./meta.ts";
-import { Middleware } from "@chojs/vendor";
-
-export type MethodType =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "PATCH"
-  | "OPTIONS"
-  | "HEAD"
-  | "SSE"
-  | "SSEIT"
-  | "WS"
-  | "STREAM";
-
-export type Linked<T> = T & { route: string; middlewares: Middleware[] };
-export type LinkedMethod = Linked<{ handler: Target; type: MethodType }>;
-export type LinkedController = Linked<{ methods: LinkedMethod[] }>;
-export type LinkedFeature = Linked<{ controllers: LinkedController[]; features: LinkedFeature[] }>;
 
 const isMiddlewareClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.handle === "function";
 const isGuardClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.canActivate === "function";

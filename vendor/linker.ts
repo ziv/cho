@@ -27,29 +27,4 @@ export interface ChoLinker<Router> {
    * @return {boolean} true if successful
    */
   link(ref: LinkedFeature): boolean;
-
-  // extend HTTP server
-
-  // not abstract as not all web frameworks support them
-
-  /**
-   * Upgrade the HTTP server to handle WebSocket connections
-   */
-  // upgradeWebsocket(handler: (ws: WebSocket) => void) {
-  //   throw new Error("Method not implemented.");
-  // }
-
-  /**
-   * Upgrade the HTTP server to handle WebTransport connections
-   */
-  // upgradeStream() {
-  //   throw new Error("Method not implemented.");
-  // }
-
-  /**
-   * Upgrade the HTTP server to handle Server-Sent Events (SSE) connections
-   */
-  // upgradeSSE() {
-  //   throw new Error("Method not implemented.");
-  // }
 }

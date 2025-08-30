@@ -1,10 +1,10 @@
 import { debuglog } from "@chojs/core/utils";
-import { Router, RouterContext, RouterMiddleware } from "@oak/oak/router";
-import type { LinkedController, LinkedFeature, Middleware } from "../types.ts";
-import { OakContext } from "./oak-context.ts";
-import { ChoLinker } from "../linker.ts";
 import { Any, Target } from "@chojs/core/di";
+import { Router, RouterContext, RouterMiddleware } from "@oak/oak/router";
 import { Application, Next } from "@oak/oak";
+import type { LinkedController, LinkedFeature, Middleware } from "../types.ts";
+import { ChoLinker } from "../linker.ts";
+import { OakContext } from "./oak-context.ts";
 
 const log = debuglog("vendor:oak-linker");
 

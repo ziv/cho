@@ -1,7 +1,7 @@
-import type { Any, DescriptorFn, InjectableDescriptor, MethodContext, ModuleDescriptor, Target } from "@chojs/core/di";
-import { collect, setInjectable, setModule } from "@chojs/core/di";
-import { type FeatureMeta, setController, setFeature, setMethod } from "./meta.ts";
-import type { ControllerDescriptor, MethodDescriptor } from "./refs.ts";
+import type {Any, DescriptorFn, InjectableDescriptor, MethodContext, ModuleDescriptor, Target} from "@chojs/core/di";
+import {collect, setInjectable, setModule} from "@chojs/core/di";
+import {type FeatureMeta, setController, setFeature, setMethod} from "./meta.ts";
+import type {ControllerDescriptor, MethodDescriptor} from "./refs.ts";
 
 export type MethodDecoratorFn = (
   route: string | DescriptorFn,
