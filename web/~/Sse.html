@@ -124,7 +124,7 @@
 </svg>
 </a>
 </div><div><div class="space-y-7" id=""><div class="markdown"><p>HTTP SSE (Server-Sent Events) Method decorator
-The endpoint method must return async iterator of string or Uint8Array</p>
+The endpoint accept writable stream as parameter to write the events to</p>
 <p>For more information on Server-Sent Events, see:</p>
 </div><section class="section"  id="examples"><div>
       <h2 class="anchorable mb-1"><a href="#examples" class="anchor" aria-label="Anchor" tabIndex="-1"><svg
@@ -175,11 +175,11 @@ Examples</h2></div><div class="space-y-8"><div class="anchorable"><a href="#exam
 </div></h3>
   <div><div class="markdown"><pre class="highlight"><code class="language-ts">class MyController {
  @Sse(&quot;path&quot;)
- * async myMethod():  {}
+ async myMethod(c: Context, stream: WritableStream)  {}
 }
 </code><button class="copyButton" data-copy="class MyController {
  @Sse(&quot;path&quot;)
- * async myMethod():  {}
+ async myMethod(c: Context, stream: WritableStream)  {}
 }
 "><svg
   class="copy"
@@ -294,9 +294,6 @@ Type</h2></div><div class="space-y-8"><div class=" docEntry" id="variable_Sse">
 </svg>
 </a>
 See</h2></div><ul class="see"><li><div class="markdown"><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events">https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events</a></p>
-<p>For more information on async iterators, see:</p>
-</div></li> <li><div class="markdown"><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator</a></p>
-</div></li> <li><div class="markdown"><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator</a></p>
 </div></li> </ul>
 </section>
 </div>
