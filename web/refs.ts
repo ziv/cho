@@ -1,6 +1,5 @@
-import type { Injector, Instance, Target } from "@chojs/core";
-import type { MiddlewareHandler } from "./types.ts";
-import { ChoWebLinker } from "./linker.ts";
+import type { Ctr, Target, Token } from "@chojs/core/di";
+import { Any } from "../core/di/types.ts";
 
 /**
  * A type that extends another type T with routing information.
@@ -77,6 +76,14 @@ export type FeatureDescriptor = WithRoute<{
    */
   features: FeatureDescriptor[];
 }>;
+
+export interface ChoGuard {
+  canActivate(...args: unknown[]): Promise<boolean>;
+}
+
+export interface ChoMiddleware {
+  handle(...args: unknown[]): Promise<boolean>;
+}
 
 /**
  * A reference to a method, including its descriptor, handler function, and middlewares.

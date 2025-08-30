@@ -6,13 +6,13 @@ import type { LinkedFeature } from "./types.ts";
  *
  * @abstract
  */
-export interface ChoLinker<Router> {
+export interface ChoLinker {
   /**
    * Get a reference to the underlying application instance
    *
    * @return Router> The application instance
    */
-  ref(): Router;
+  ref<T>(): T;
 
   /**
    * Get the application request handlers

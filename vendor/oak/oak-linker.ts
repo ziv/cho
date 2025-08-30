@@ -19,7 +19,7 @@ const withMiddlewares = (mws: Middleware[]): Router => {
   return c;
 };
 
-export class OakLinker implements ChoLinker<Application> {
+export class OakLinker implements ChoLinker {
   app!: Application;
 
   ref(): Application {

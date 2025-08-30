@@ -1,6 +1,6 @@
-import type { Ctr, DescriptorFn, Target, Token } from "@chojs/core/di";
-import { FeatureMeta } from "./meta.ts";
-import { ChoGuard, Context, MiddlewareHandler, Next } from "./types.ts";
+import type { Any, Ctr, DescriptorFn, Target, Token } from "@chojs/core/di";
+import type { ChoContext, Middleware, Next } from "@chojs/vendor";
+import type { FeatureMeta } from "./meta.ts";
 
 /**
  * Create a descriptor that sets the route field on a controller, feature, or method.
@@ -89,7 +89,7 @@ export function Middlewares<D extends { middlewares: Target[] }>(
  * @returns A descriptor function that appends guards.
  */
 export function Guards<D extends { middlewares: Target[] }>(
-  ...guards: (Ctr | Token | ChoGuard)[]
+  ...guards: (Ctr | Token)[]
 ): DescriptorFn {
   return (d: Partial<D>) => {
     // todo validate guards
@@ -172,8 +172,8 @@ export function Features<D extends FeatureMeta>(
  * @param fn
  * @return MiddlewareHandler middleware function
  */
-export function AsGuard(fn: (...args: unknown[]) => boolean | Promise<boolean>): MiddlewareHandler {
-  return async function (ctx: Context, next: Next) {
+export function AsGuard(fn: (...args: unknown[]) => boolean | Promise<boolean>): Middleware {
+  return async function (ctx: ChoContext<Any>, next: Next) {
     const ret = await fn(ctx, next);
     if (ret) {
       return next();

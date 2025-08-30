@@ -1,8 +1,9 @@
-import type { Ctr, Target } from "@chojs/core/di";
-import type {LinkedController, LinkedFeature, LinkedMethod, Middleware} from "@chojs/vendor";
+import type { Ctr, Instance, Target } from "@chojs/core/di";
+import type { LinkedController, LinkedFeature, LinkedMethod, Middleware } from "@chojs/vendor";
 import { getInjector, Injector, Provide } from "@chojs/core/di";
 import { debuglog } from "@chojs/core/utils";
 import { getController, getFeature, getMethods } from "./meta.ts";
+import { ChoGuard, ChoMiddleware } from "./refs.ts";
 
 const isMiddlewareClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.handle === "function";
 const isGuardClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.canActivate === "function";
@@ -124,7 +125,7 @@ export class Compiler {
         Provide(mw)(injector.desc);
       }
 
-      const instance = await injector.resolve(mw);
+      const instance = await injector.resolve(mw) as ChoGuard & ChoMiddleware;
       if (!instance || typeof instance[key] !== "function") {
         throw new Error(
           `Cannot create instance of middleware ${middleware.name}`,
@@ -132,7 +133,7 @@ export class Compiler {
       }
 
       // convert the method into a function
-      ret.push(instance[key].bind(instance));
+      ret.push((instance[key] as Target).bind(instance));
     }
     return ret;
   }
