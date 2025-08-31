@@ -124,6 +124,7 @@ export class Compiler {
         continue;
       }
       const key = isMiddlewareClass(mw) ? "handle" : "canActivate";
+      // todo replace with search
       if (!injector.provider(mw as Token)) {
         // before instancing, make sure the middleware is added to the injector
         // providers list to allow self-injection and caching of the instance

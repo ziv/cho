@@ -88,4 +88,3 @@ export class HonoLinker implements ChoLinker {
     return feature;
   }
 }
-

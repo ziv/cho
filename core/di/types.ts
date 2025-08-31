@@ -66,8 +66,8 @@ export type Factory<T = Any> = (injector: Resolver) => T;
  * @internal
  */
 export type Provider<T = Any> = {
-    provide: Token;
-    factory: Factory<T>;
+  provide: Token;
+  factory: Factory<T>;
 };
 
 /**
@@ -76,7 +76,7 @@ export type Provider<T = Any> = {
  * @internal
  */
 export type InjectableDescriptor = {
-    deps?: Token[];
+  deps?: Token[];
 };
 
 /**
@@ -86,17 +86,9 @@ export type InjectableDescriptor = {
  * @internal
  */
 export type ModuleDescriptor = InjectableDescriptor & {
-    imports: Ctr[];
-    providers: (Provider | Ctr)[];
+  imports: Ctr[];
+  providers: (Provider | Ctr)[];
 };
-
-/**
- * Descriptor function type for modifying descriptors.
- * It takes a partial descriptor and returns a modified partial descriptor.
- * This is used in decorators to build up metadata for injectables and modules.
- * @internal
- */
-// export type DescriptorFn<T = Any> = (d: Partial<T>) => Partial<T>;
 
 /**
  * Class decorator context (decorators stage 3, TC39)
@@ -105,11 +97,11 @@ export type ModuleDescriptor = InjectableDescriptor & {
  * @internal
  */
 export type MethodContext = {
-    kind: string;
-    name: string;
-    static: boolean;
-    private: boolean;
-    metadata: object;
-    addInitializer: (fn: () => void) => void;
-    access: { get: () => unknown };
+  kind: string;
+  name: string;
+  static: boolean;
+  private: boolean;
+  metadata: object;
+  addInitializer: (fn: () => void) => void;
+  access: { get: () => unknown };
 };

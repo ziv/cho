@@ -1,26 +1,26 @@
 import { expect } from "@std/expect";
-import {read, readMetadataObject, writeMetadataObject, write} from "./meta.ts";
+import { read, readMetadataObject, write, writeMetadataObject } from "./meta.ts";
 
 const key = Symbol("key");
 
 Deno.test("read should return undefined", () => {
-    class Foo {}
-    expect(read(Foo, key)).toBe(undefined);
+  class Foo {}
+  expect(read(Foo, key)).toBe(undefined);
 });
 
 Deno.test("read should return written data", () => {
-    class Foo {}
-    write(Foo, key, "value");
-    expect(read(Foo, key)).toBe("value");
+  class Foo {}
+  write(Foo, key, "value");
+  expect(read(Foo, key)).toBe("value");
 });
 
 Deno.test("readMetadataObject should return undefined", () => {
-    class Foo {}
-    expect(readMetadataObject(Foo)).toBe(undefined);
+  class Foo {}
+  expect(readMetadataObject(Foo)).toBe(undefined);
 });
 
 Deno.test("readMetadataObject should return written data", () => {
-    class Foo {}
-    writeMetadataObject(Foo, { foo: "bar" });
-    expect(readMetadataObject(Foo)).toEqual({ foo: "bar" });
+  class Foo {}
+  writeMetadataObject(Foo, { foo: "bar" });
+  expect(readMetadataObject(Foo)).toEqual({ foo: "bar" });
 });

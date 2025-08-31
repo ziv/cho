@@ -27,10 +27,10 @@ access their injector.
 The resolving process is as follows:
 
 - Search for resolved value in injector cache
-    - If found, return it
+  - If found, return it
 - Search for provider
-    - Search for provider in current context
-    - Search for provider in imported contexts
+  - Search for provider in current context
+  - Search for provider in imported contexts
 - When provider is found, create the instance/value in the **current** context and cache it
 - Return the resolved value
 
@@ -41,16 +41,16 @@ The resolving process is as follows:
 ### @Injectable
 
 ```ts
-import {Injectable} from "@cho/core/di";
+import { Injectable } from "@cho/core/di";
 
 @Injectable({
-    // optional, list of dependencies to inject
-    deps: ["foo", "bar"]
+  // optional, list of dependencies to inject
+  deps: ["foo", "bar"],
 })
 class MyService {
-    constructor(private foo: string, private bar: number) {
-        // foo and bar will be injected by the injector
-    }
+  constructor(private foo: string, private bar: number) {
+    // foo and bar will be injected by the injector
+  }
 }
 ```
 
@@ -60,23 +60,23 @@ Use `Module` decorator to declare a module. Module is a logic container for prov
 to access their providers.
 
 ```ts
-import {imports, Injectable, Module, provide} from "@cho/core/di";
+import { imports, Injectable, Module, provide } from "@cho/core/di";
 
 @Module({
-    // optional, dependencies to inject into the module constructor
-    deps: [],
-    // list of providers (annotated classes with Injectable or factory providers)
-    providers: [
-        MyService,
-        {
-            provide: "baz",
-            useFactory: () => Promise.resolve("baz value"),
-        }
-    ],
-    // list of modules to import
-    imports: [
-        OtherModule
-    ]
+  // optional, dependencies to inject into the module constructor
+  deps: [],
+  // list of providers (annotated classes with Injectable or factory providers)
+  providers: [
+    MyService,
+    {
+      provide: "baz",
+      useFactory: () => Promise.resolve("baz value"),
+    },
+  ],
+  // list of modules to import
+  imports: [
+    OtherModule,
+  ],
 })
 class MyModule {
 }

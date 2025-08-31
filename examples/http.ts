@@ -1,5 +1,5 @@
 import { Controller, Controllers, createApplication, Feature, Get, Route } from "@chojs/web";
-import {HonoLinker, OakLinker} from "@chojs/vendor";
+import { HonoLinker, OakLinker } from "@chojs/vendor";
 import { Application } from "@oak/oak";
 
 @Controller(Route(""))

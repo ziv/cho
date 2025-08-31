@@ -18,23 +18,22 @@ Controller can have route prefix, which will be applied to all endpoints within 
 Example:
 
 ```ts
-
 @Controller(Route("api"))
 export class MyController {
-    @Get("hello")
-    hello(ctx: ChoContext) {
-        return {hello: "world"};
-    }
+  @Get("hello")
+  hello(ctx: ChoContext) {
+    return { hello: "world" };
+  }
 
-    @Get(
-        Route("data"),
-    )
-    getData(ctx: ChoContext) {
-    }
+  @Get(
+    Route("data"),
+  )
+  getData(ctx: ChoContext) {
+  }
 
-    @Post("data")
-    saceData(ctx: ChoContext) {
-    }
+  @Post("data")
+  saceData(ctx: ChoContext) {
+  }
 }
 ```
 
@@ -81,39 +80,36 @@ class MyController {
 - Phase 4: Linking (linker)
 - Phase 5: Ready to serve
 
-
 ## Structuring TBD
 
 ```ts
-import {Middleware, Route} from "./fn";
-import {Post} from "./decorators";
-import {validator} from "./validator";
+import { Middleware, Route } from "./fn";
+import { Post } from "./decorators";
+import { validator } from "./validator";
 
 @Controller(
-    // apply prefix on all routes in this controller
-    Route("prefix"),
-    // apply middlewares on all routes in this controller
-    Middlewares(a, b, c),
+  // apply prefix on all routes in this controller
+  Route("prefix"),
+  // apply middlewares on all routes in this controller
+  Middlewares(a, b, c),
 )
 class SomeController {
-
-    @Post("route",
-        // apply middlewares on this route
-        Middlewares(d, e, f),
-        // configure the arguments (wich and how to extract)
-        Args(
-            Body(validator),
-            Body("name", validator),
-            Query(validator),
-            Query("name", validator),
-            Params(validator),
-            Param("name", validator)
-        )
-    )
-    save(body, query, params, ctx) {
-        // ...
-
-    }
+  @Post(
+    "route",
+    // apply middlewares on this route
+    Middlewares(d, e, f),
+    // configure the arguments (wich and how to extract)
+    Args(
+      Body(validator),
+      Body("name", validator),
+      Query(validator),
+      Query("name", validator),
+      Params(validator),
+      Param("name", validator),
+    ),
+  )
+  save(body, query, params, ctx) {
+    // ...
+  }
 }
-
 ```
