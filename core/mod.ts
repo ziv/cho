@@ -15,6 +15,7 @@
  * class ServiceFoo {
  *  constructor(readonly foo: string, readonly bar: string) {
  *  }
+ * }
  *
  * 〇Module(
  *      Provide("foo", () => Promise.resolve("Bar Value")),
@@ -29,7 +30,7 @@
  *
  * ## Utilities
  *
- * Environment variable utilities to seamlessly work across Deno, Bun, and Node.js runtimes.
+ * Environment variable utilities to seamlessly work across Deno, Bun, Cloudflare and Node.js runtimes.
  *
  * @example Environment Variable Utilities
  *

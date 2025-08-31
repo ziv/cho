@@ -5,8 +5,10 @@ import { debuglog } from "@chojs/core/utils";
 import { getController, getFeature, getMethods } from "./meta.ts";
 import { ChoGuard, ChoMiddleware } from "./refs.ts";
 
-const isMiddlewareClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.handle === "function";
-const isGuardClass = (mw: Target): boolean => mw.prototype && typeof mw.prototype.canActivate === "function";
+const isMiddlewareClass = (mw: Target): mw is ChoMiddleware =>
+  mw.prototype && typeof mw.prototype.handle === "function";
+
+const isGuardClass = (mw: Target): mw is ChoGuard => mw.prototype && typeof mw.prototype.canActivate === "function";
 
 const log = debuglog("cho:web:compiler");
 
@@ -113,6 +115,9 @@ export class Compiler {
     log(`building ${middlewares.length} middlewares`);
     const ret: Middleware[] = [];
     for (const mw of middlewares) {
+      if (typeof mw !== "function") {
+        throw new Error(`Invalid middleware: ${mw}`);
+      }
       if (!isMiddlewareClass(mw) && !isGuardClass(mw)) {
         // assume it is a function
         ret.push(mw as Middleware);

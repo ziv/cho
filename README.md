@@ -30,9 +30,9 @@ This project use the TC39 stage 3 decorators proposal (JavaScript decorators).
 The JavaScript decorators are different from TypeScript decorators, and they are not compatible with each other. For
 more information, see:
 
-- [decorators.deno.dev](https://decorators.deno.dev/)
-- [Typescript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
 - [TC39 stage 3 proposal](https://github.com/tc39/proposal-decorators)
+- [Typescript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+- [decorators.deno.dev](https://decorators.deno.dev/)
 
 ## Notes about documentation
 
