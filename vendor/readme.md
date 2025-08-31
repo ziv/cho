@@ -40,3 +40,16 @@ const app = await createApplication(AppModule, {
     linker: new OakLinker(),
 });
 ```
+
+## Implementation Matrix
+
+| Feature                   | Hono | Oak |
+|---------------------------|------|-----|
+| HTTP Endpoints            | ✅    | ✅   |
+| Middleware                | ✅    | ✅   |
+| Guards Middleware pattern | ❌    | ❌   |
+| WebSockets endpoints      | ❌    | ❌   |
+| SSE endpoints             | ❌    | ❌   |
+| Static files serving      | ❌    | ❌   |
+| Streaming endpoint        | ❌    | ❌   |
+| Static file serving       | ❌    | ❌   |

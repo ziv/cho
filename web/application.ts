@@ -32,7 +32,6 @@ export async function createApplication<T>(
       const vendor = await import("@chojs/vendor");
       options.linker = new vendor.OakLinker();
     } catch (e) {
-      log.error(e);
       throw new Error("no linker provided and @chojs/vendor not installed");
     }
   }

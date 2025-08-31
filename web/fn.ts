@@ -2,6 +2,140 @@ import type { Any, Ctr, DescriptorFn, Target, Token } from "@chojs/core/di";
 import type { ChoContext, Middleware, Next } from "@chojs/vendor";
 import type { FeatureMeta } from "./meta.ts";
 
+export type Validator = {
+  parse: (data: unknown) => Any;
+};
+export type ArgumentDescriptor = {
+  type: "body" | "query" | "param" | "header" | "cookie";
+  name?: string;
+  validator?: Validator;
+};
+
+const isValidator = (v: unknown): v is Validator => {
+  return typeof v === "object" && v !== null && "parse" in v && typeof (v as any).parse === "function";
+};
+
+const isString = (v: unknown): v is string => {
+  return typeof v === "string";
+};
+
+export function createInputDescriptor(type: "body" | "query" | "param" | "header" | "cookie") {
+  return (keyOrValidator?: string | Validator, validator?: Validator) => {
+    if (!keyOrValidator && !validator) {
+      // full object without validation
+      return {
+        type,
+      };
+    }
+
+    // single argument cases
+
+    if (!validator && isString(keyOrValidator)) {
+      // partial without validation
+      return {
+        type,
+        name: keyOrValidator,
+      };
+    }
+
+    if (!validator && isValidator(keyOrValidator)) {
+      // full object with validation
+      return {
+        type,
+        validator: keyOrValidator,
+      };
+    }
+
+    // two argument case
+
+    if (isString(keyOrValidator) && isValidator(validator)) {
+      // partial with validation
+      return {
+        type,
+        name: keyOrValidator,
+        validator: keyOrValidator,
+      };
+    }
+
+    throw new Error(`Unknown input descriptor arguments for ${type}`);
+  };
+}
+
+export const Param = createInputDescriptor("param");
+export const Header = createInputDescriptor("header");
+export const Cookie = createInputDescriptor("cookie");
+export const Body = createInputDescriptor("body");
+
+/**
+ * Query parameter input descriptor
+ * Can be used to define query parameters for a controllers method.
+ *
+ * @example Usage get all query params as object
+ *
+ * ```ts
+ * class Controller {
+ *
+ * 〇Get("route",
+ *  Args(
+ *      Query(optionalValidator)
+ *   )
+ * )
+ * getItems(query, ctx) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * @example Usage get specific query param by name
+ *
+ * ```ts
+ * class Controller {
+ *
+ * 〇Get("route",
+ *  Args(
+ *      Query("id", optionalValidator)
+ *   )
+ * )
+ * getItems(id, ctx) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * @param keyOrValidator The name of the query parameter or a Validator for the entire query object.
+ * @param validator Optional Validator for the specific query parameter.
+ * @returns An argument descriptor for the query parameter.
+ */
+export const Query = createInputDescriptor("query");
+
+/**
+ * Create a descriptor that sets the args field on a controller, feature, or method.
+ * Works with both class-level decorators (Controller/Feature) and method decorators (Get/Post/etc.).
+ *
+ * @example Usage
+ *
+ * ```ts
+ * // As a class-level args on a controller or feature
+ * 〇Controller(Args(Param("id", IdValidator), Query("search")))
+ * class UsersController {}
+ *
+ * // As a method-level args
+ * class UsersController {
+ *   〇Get(Args(Param("id", IdValidator)))
+ *   getUser(id: string) {}
+ * }
+ * ```
+ *
+ * @param args One or more argument descriptors created with Param, Query, Body, Header, or Cookie.
+ * @returns A descriptor function that assigns the args.
+ */
+export function Args(...args: ArgumentDescriptor[]): DescriptorFn {
+  return (d: Partial<{ args: ArgumentDescriptor[] }>) => {
+    d.args = args;
+    return d;
+  };
+}
+
 /**
  * Create a descriptor that sets the route field on a controller, feature, or method.
  * Works with both class-level decorators (Controller/Feature) and method decorators (Get/Post/etc.).
