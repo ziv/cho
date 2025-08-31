@@ -44,7 +44,7 @@ export function setInjectable(
   data: Partial<InjectableDescriptor>,
 ) {
   write(target, InjectableMetadata, {
-    dependencies: data.dependencies ?? [],
+      deps: data?.deps ?? [],
   });
 }
 
@@ -120,3 +120,6 @@ export function getModule(target: Target): ModuleDescriptor | undefined {
 export function getInjector(target: Target): Injector | undefined {
   return read<Injector>(target, InjectorMetadata);
 }
+
+
+

@@ -66,8 +66,8 @@ export type Factory<T = Any> = (injector: Resolver) => T;
  * @internal
  */
 export type Provider<T = Any> = {
-  provide: Token;
-  factory: Factory<T>;
+    provide: Token;
+    factory: Factory<T>;
 };
 
 /**
@@ -76,8 +76,8 @@ export type Provider<T = Any> = {
  * @internal
  */
 export type Resolved<T = Any> = {
-  value: T;
-  refCount: number;
+    value: T;
+    refCount: number;
 };
 
 /**
@@ -86,7 +86,7 @@ export type Resolved<T = Any> = {
  * @internal
  */
 export type InjectableDescriptor = {
-  dependencies: Token[];
+    deps?: Token[];
 };
 
 /**
@@ -96,8 +96,8 @@ export type InjectableDescriptor = {
  * @internal
  */
 export type ModuleDescriptor = InjectableDescriptor & {
-  imports: Ctr[];
-  providers: Provider[];
+    imports: Ctr[];
+    providers: Provider[];
 };
 
 /**
@@ -115,11 +115,11 @@ export type DescriptorFn<T = Any> = (d: Partial<T>) => Partial<T>;
  * @internal
  */
 export type MethodContext = {
-  kind: string;
-  name: string;
-  static: boolean;
-  private: boolean;
-  metadata: object;
-  addInitializer: (fn: () => void) => void;
-  access: { get: () => unknown };
+    kind: string;
+    name: string;
+    static: boolean;
+    private: boolean;
+    metadata: object;
+    addInitializer: (fn: () => void) => void;
+    access: { get: () => unknown };
 };

@@ -92,7 +92,7 @@ export class Injector implements Resolver {
       log(`${this.name} found "${tokenName(token)}" cached`);
       return {
         type: "resolved",
-        value: this.#cache.get(token),
+        value: this.#cache.get(token)?.value,
       };
     }
     const provider = this.provider(token);
@@ -142,7 +142,7 @@ export class Injector implements Resolver {
    */
   async create(ctr: Ctr, deps?: Token[]): Promise<Instance> {
     if (!deps) {
-      deps = getInjectable(ctr)?.dependencies ?? [];
+      deps = getInjectable(ctr)?.deps ?? [];
     }
     const args = await Promise.all(deps.map((d) => this.resolve(d)));
     return Reflect.construct(ctr, args) as Instance;
