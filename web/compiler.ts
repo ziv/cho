@@ -1,14 +1,22 @@
 import type { Any, Ctr, Instance, Target } from "@chojs/core/di";
 import { Injector, readMetadataObject } from "@chojs/core/di";
-import type { ChoContext, LinkedController, LinkedFeature, LinkedMethod, Middleware, Next } from "@chojs/vendor";
+import type {
+  ChoContext,
+  LinkedController,
+  LinkedFeature,
+  LinkedMethod,
+  MethodType,
+  Middleware,
+  Next,
+} from "@chojs/vendor";
 import type { ChoGuard, ChoMiddleware, ControllerDescriptor, FeatureDescriptor } from "./types.ts";
 import { readMethod, readMiddlewares } from "./meta.ts";
 
 // is is middleware class
-const isMiddleware = (mw: Target): mw is ChoMiddleware => mw.prototype && typeof mw.prototype.handle === "function";
+const isMiddleware = (mw: Target): mw is Ctr => mw.prototype && typeof mw.prototype.handle === "function";
 
 // is guard class
-const isGuard = (mw: Target): mw is ChoGuard => mw.prototype && typeof mw.prototype.canActivate === "function";
+const isGuard = (mw: Target): mw is Ctr => mw.prototype && typeof mw.prototype.canActivate === "function";
 
 /**
  * Compute a middleware.
@@ -26,11 +34,11 @@ async function middleware(
     throw new Error(`Invalid middleware: ${mw}`);
   }
   if (isMiddleware(mw)) {
-    const instance = await injector.register(mw).resolve<ChoMiddleware>(mw);
-    return instance.handle.bind(instance);
+    const instance = await injector.register(mw as Ctr).resolve<ChoMiddleware>(mw);
+    return instance.handle.bind(instance) as Middleware;
   }
   if (isGuard(mw)) {
-    const instance = await injector.register(mw).resolve<ChoGuard>(mw);
+    const instance = await injector.register(mw as Ctr).resolve<ChoGuard>(mw);
     const handler = instance.canActivate.bind(instance);
     return async function (c: ChoContext<Any>, next: Next) {
       const pass = await handler(c, next);
@@ -42,7 +50,7 @@ async function middleware(
     };
   }
   // mw is a function
-  return Promise.resolve(mw);
+  return Promise.resolve(mw as Middleware);
 }
 
 /**
@@ -71,7 +79,7 @@ async function method(
   const handler = (controller[method as keyof typeof controller] as Target).bind(controller);
   return {
     route: meta.route,
-    type: meta.type,
+    type: meta.type as MethodType,
     middlewares,
     handler,
   };
@@ -106,10 +114,9 @@ async function controller(ctr: Ctr, injector: Injector): Promise<LinkedControlle
   if (0 === metaMethods.length) {
     throw new Error(`Controller ${ctr.name} has no endpoints`);
   }
-  const methods: LinkedMethod[] =
-    (await Promise.all(metaMethods.map((name) => method(ctr, controller, name, injector)))).filter(
-      Boolean,
-    );
+  const methods = (await Promise.all(metaMethods.map((name) => method(ctr, controller, name, injector)))).filter(
+    Boolean,
+  ) as LinkedMethod[];
 
   const mws = readMiddlewares(ctr);
   const middlewares = await Promise.all(mws.map((mw) => middleware(mw, injector)));
@@ -143,7 +150,7 @@ async function feature(
   const middlewares = await Promise.all(mws.map((mw) => middleware(mw, injector)));
 
   return {
-    route: meta.route,
+    route: meta.route ?? "",
     middlewares,
     controllers,
     features,

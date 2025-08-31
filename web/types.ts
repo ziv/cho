@@ -1,4 +1,5 @@
-import type {Ctr, InjectableDescriptor, ModuleDescriptor} from "@chojs/core/di";
+import type {Any, Ctr, InjectableDescriptor, ModuleDescriptor} from "@chojs/core/di";
+import type {ChoContext, Next} from "@chojs/vendor";
 
 export type MethodDescriptor = {
   /**
@@ -30,5 +31,5 @@ export interface ChoGuard {
 }
 
 export interface ChoMiddleware {
-  handle(...args: unknown[]): Promise<boolean>;
+  handle(ctx: ChoContext<Any>, next: Next): Promise<void>;
 }

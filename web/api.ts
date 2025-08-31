@@ -1,12 +1,20 @@
-import { Any, InjectableDescriptor, MethodContext, Target, writeMetadataObject } from "@chojs/core/di";
+import type {
+  Any,
+  ClassDecorator,
+  ClassMethodDecorator,
+  Ctr,
+  InjectableDescriptor,
+  MethodContext,
+  Target,
+} from "@chojs/core/di";
+import { writeMetadataObject } from "@chojs/core/di";
 import type { FeatureDescriptor } from "./types.ts";
-import { Ctr } from "../core/di/types.ts";
 import { writeMethod, writeMiddlewares } from "./meta.ts";
 import { features } from "node:process";
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
-export type MethodDecoratorFn = (route: string) => MethodDecorator;
+export type MethodDecoratorFn = (route: string) => ClassMethodDecorator;
 
 /**
  * context param types explained:
@@ -18,11 +26,8 @@ export type MethodDecoratorFn = (route: string) => MethodDecorator;
  * Creates a method decorator for the given HTTP method.
  */
 function createMethodDecorator(type: string): MethodDecoratorFn {
-  return function (route: string): MethodDecorator {
-    return function (
-      target: Any,
-      context: MethodContext | string | symbol,
-    ) {
+  return function (route: string): ClassMethodDecorator {
+    return function (target, context) {
       // method name
       const name = typeof context === "string" ? context : (context as MethodContext).name;
       writeMethod(target, { name, route, type });
@@ -67,7 +72,7 @@ export function Feature(desc: FeatureDescriptor): ClassDecorator {
   };
 }
 
-export function Middlewares(...mws: (Ctr | Target)[]): ClassDecorator & MethodDecorator {
+export function Middlewares(...mws: (Ctr | Target)[]): ClassDecorator & ClassMethodDecorator {
   return (target: Target) => {
     writeMiddlewares(target, mws);
   };
