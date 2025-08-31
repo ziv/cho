@@ -3,7 +3,7 @@ import { gray, magenta, red, yellow } from "@std/fmt/colors";
 import { format } from "@std/datetime";
 import { format as duration } from "@std/fmt/duration";
 
-const TIMESTAMP = env("CHO_DEBUGLOG_TIMESTAMP") ?? "HH:MM:SS.mmm";
+const TIMESTAMP = env("CHO_DEBUGLOG_TIMESTAMP") ?? "HH:mm:ss.SSS";
 const CONTEXT_LEN = isNaN(envnum("CHO_DEBUGLOG_CONTEXT_LEN")) ? 15 : envnum("CHO_DEBUGLOG_CONTEXT_LEN");
 
 let last = Date.now();
