@@ -1,56 +1,45 @@
-import { Target } from "@chojs/core";
+import type {
+    Ctr,
+    InjectableDescriptor,
+    ModuleDescriptor,
+    Resolver,
+    Target,
+    Token,
+} from "./types.ts";
+import { writeMetadataObject, writeProvider } from "./meta.ts";
 
-const meta = Symbol("meta");
+type Metadata = Record<string, unknown>;
 
-export function read<T = unknown>(
-    target: Target,
-    key: symbol,
-): T | undefined {
-    if (key in target) {
-        return target[key as keyof typeof target] as T;
-    }
-    return undefined;
+/**
+ * class decorator factory that writes metadata to the target
+ */
+function createMetaDecorator<T extends Metadata>(): (
+    desc: Partial<T>,
+) => ClassDecorator {
+    return (desc: Partial<T>) => (target: Target) => {
+        writeMetadataObject(target, desc);
+        // any metadata required object is also an injectable
+        // so this is a great place to auto-create its provider
+        writeProvider(target, {
+            provide: target as Ctr,
+            factory: async (injector: Resolver) => {
+                const deps = (desc.deps ?? []) as Token[];
+
+                const args: unknown[] = await Promise.all(
+                    deps.map((d) => injector.resolve(d)),
+                );
+                return Reflect.construct(target, args);
+            },
+        });
+    };
 }
 
-export function write(
-    target: Target,
-    key: symbol,
-    value: unknown,
-): void {
-    Object.defineProperty(target, key, {
-        value,
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
-}
+/**
+ * Mark a class as injectable and create its provider.
+ */
+export const Injectable = createMetaDecorator<InjectableDescriptor>();
 
-export function readMetadataObject(
-    target: Target,
-): Record<string, unknown> | undefined {
-    return read<Record<string, unknown>>(target, meta);
-}
-
-export function setMetadata(target: Target, key: symbol, value: unknown) {
-    const data = read(target, meta) ?? {};
-    (data[key as keyof typeof data] as unknown) = value;
-    write(target, meta, data);
-}
-
-export function setMetadataObject(
-    target: Target,
-    obj: Record<string, unknown>,
-) {
-    write(target, meta, obj)
-}
-//
-// export function addMetadata(target: Target, key: string, value: unknown) {
-//     const data = read(target, meta) ?? {};
-//     const k = key as keyof typeof data;
-//     if (k in data) {
-//         data[k].push(value);
-//     } else {
-//         data[k] = [value];
-//     }
-//     write(target, meta, data);
-// }
+/**
+ * Mark a class as a module and create its provider.
+ */
+export const Module = createMetaDecorator<ModuleDescriptor>();

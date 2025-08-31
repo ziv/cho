@@ -415,7 +415,7 @@ export class InjectionToken<T = unknown> {
     }
 }
 
-// decorators.ts
+// api.ts
 export function Injectable(): ClassDecorator { /* ... */
 }
 

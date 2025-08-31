@@ -71,16 +71,6 @@ export type Provider<T = Any> = {
 };
 
 /**
- * Cached resolved value with reference count.
- * This is used internally by the Injector to manage instances and their lifetimes.
- * @internal
- */
-export type Resolved<T = Any> = {
-    value: T;
-    refCount: number;
-};
-
-/**
  * Injectable descriptor for defining dependencies of an injectable class.
  * It includes a list of tokens that the injectable depends on.
  * @internal
@@ -97,7 +87,7 @@ export type InjectableDescriptor = {
  */
 export type ModuleDescriptor = InjectableDescriptor & {
     imports: Ctr[];
-    providers: Provider[];
+    providers: (Provider | Ctr)[];
 };
 
 /**
@@ -106,7 +96,7 @@ export type ModuleDescriptor = InjectableDescriptor & {
  * This is used in decorators to build up metadata for injectables and modules.
  * @internal
  */
-export type DescriptorFn<T = Any> = (d: Partial<T>) => Partial<T>;
+// export type DescriptorFn<T = Any> = (d: Partial<T>) => Partial<T>;
 
 /**
  * Class decorator context (decorators stage 3, TC39)

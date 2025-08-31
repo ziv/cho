@@ -21,9 +21,7 @@
  * @module
  * @category @chojs/core/di
  */
-export * from "./decorators.ts";
-export * from "./fn.ts";
-export * from "./meta.ts";
+export * from "./api.ts";
 export * from "./injector.ts";
+export * from "./meta.ts";
 export * from "./types.ts";
-export * from "./utils.ts";

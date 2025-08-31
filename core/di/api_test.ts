@@ -1,6 +1,6 @@
 import { expect } from "@std/expect";
-import { Injectable } from "./decorators.ts";
-import { readMetadataObject } from "./api.ts";
+import { Injectable } from "./api.ts";
+import { readMetadataObject } from "./meta.ts";
 
 Deno.test("injectable decorator should set metadata", () => {
     @Injectable({})
