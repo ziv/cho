@@ -38,7 +38,7 @@ export class Injector implements Resolver {
   readonly name: string;
   readonly providers: Provider[] = [];
   readonly imports: Ctr[] = [];
-  readonly cache = new Map<Token, Any>();
+  readonly cache: Map<Token, Any> = new Map<Token, Any>();
 
   /**
    * Create an injector for a given module class.
@@ -48,7 +48,7 @@ export class Injector implements Resolver {
    * @param ctr
    * @returns Promise of the created Injector instance
    */
-  static async create(ctr: Ctr) {
+  static async create(ctr: Ctr): Promise<Injector> {
     log(`creating ${ctr.name} injector`);
     const injector = new Injector(ctr);
     // add self to providers
