@@ -32,6 +32,7 @@ export class HonoLinker implements ChoLinker {
   }
 
   link(ref: LinkedFeature): boolean {
+    console.log("LINK", ref);
     log("linking hono application");
     this.app = this.createFeature(ref);
     return true;

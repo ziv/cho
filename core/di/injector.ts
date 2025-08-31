@@ -93,10 +93,10 @@ export class Injector implements Resolver {
    *
    * @param provider
    */
-  register(provider: Provider | Ctr) {
+  register(provider: Provider | Ctr): Injector {
     if (typeof provider !== "function") {
       this.providers.push(provider);
-      return;
+      return this;
     }
     const fetched = readProvider(provider);
     if (!fetched) {
@@ -104,7 +104,10 @@ export class Injector implements Resolver {
         `${this.name}: Cannot register ${provider.name} as provider. Did you forget to add @Injectable()?`,
       );
     }
-    this.providers.push(fetched);
+    if (!this.providers.includes(fetched)) {
+      this.providers.push(fetched);
+    }
+    return this;
   }
 
   /**

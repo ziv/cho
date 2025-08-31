@@ -1,39 +1,38 @@
-import { Controller, Controllers, createApplication, Feature, Get, Route } from "@chojs/web";
-import { HonoLinker, OakLinker } from "@chojs/vendor";
-import { Application } from "@oak/oak";
+import {Controller, createApplication, Feature, Get} from "@chojs/web";
+import {HonoLinker} from "@chojs/vendor";
 
-@Controller(Route(""))
+@Controller("")
 class RootController {
   @Get("")
   data() {
-    console.log("A");
+    console.log("/");
     return "A";
   }
 
   @Get("foo")
   foo() {
-    console.log("B");
+    console.log("/foo");
     return "B";
   }
 }
 
-@Controller(Route("api"))
+@Controller("api")
 class DataController {
   @Get("")
   data() {
-    console.log("D");
+    console.log("/api");
     return { data: [1, 2, 3, 4, 5] };
   }
   @Get("data")
   getData() {
-    console.log("data");
+    console.log("/api/data");
     return { data: [1, 2, 3, 4, 5] };
   }
 }
 
-@Feature(
-  Controllers(RootController, DataController),
-)
+@Feature({
+  controllers: [RootController, DataController],
+})
 class AppFeature {
 }
 

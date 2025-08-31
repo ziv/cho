@@ -1,147 +1,161 @@
-import { Ctr, getInjector, Injector, Instance, Provide, readMetadataObject, Target, Token } from "@chojs/core/di";
-import type { LinkedController, LinkedFeature, LinkedMethod, MethodType, Middleware } from "@chojs/vendor";
-import { debuglog } from "@chojs/core/utils";
-import { getController, getMethods } from "./meta.ts";
-import { ChoGuard, ChoMiddleware } from "./refs.ts";
-import type { FeatureDescriptor } from "./types.ts";
+import type { Any, Ctr, Instance, Target } from "@chojs/core/di";
+import { Injector, readMetadataObject } from "@chojs/core/di";
+import type { ChoContext, LinkedController, LinkedFeature, LinkedMethod, Middleware, Next } from "@chojs/vendor";
+import type { ChoGuard, ChoMiddleware, ControllerDescriptor, FeatureDescriptor } from "./types.ts";
+import { readMethod, readMiddlewares } from "./meta.ts";
 
-const isMiddlewareClass = (mw: Target): mw is ChoMiddleware =>
-  mw.prototype && typeof mw.prototype.handle === "function";
+// is is middleware class
+const isMiddleware = (mw: Target): mw is ChoMiddleware => mw.prototype && typeof mw.prototype.handle === "function";
 
-const isGuardClass = (mw: Target): mw is ChoGuard => mw.prototype && typeof mw.prototype.canActivate === "function";
+// is guard class
+const isGuard = (mw: Target): mw is ChoGuard => mw.prototype && typeof mw.prototype.canActivate === "function";
 
-const log = debuglog("cho:web:compiler");
-
-export class Compiler {
-  /**
-   * Takes feature class and compiles it, resolving all dependencies.
-   * The result is a tree of linked features, controllers and methods,
-   * with all dependencies resolved and ready to be used by a web framework.
-   */
-  compile(ctr: Ctr): Promise<LinkedFeature> {
-    return this.linkFeature(ctr);
+/**
+ * Compute a middleware.
+ * If it is a class, resolve it and convert it into a function.
+ * If it is already a function, return it as is.
+ *
+ * @param mw
+ * @param injector
+ */
+async function middleware(
+  mw: Target | Ctr,
+  injector: Injector,
+): Promise<Middleware> {
+  if (typeof mw !== "function") {
+    throw new Error(`Invalid middleware: ${mw}`);
   }
-
-  /**
-   * Recursively link a feature, its controllers, methods and sub-features.
-   * @param ctr
-   */
-  private async linkFeature(ctr: Ctr): Promise<LinkedFeature> {
-    log(`linking feature ${ctr.name}`);
-
-    const meta = readMetadataObject<FeatureDescriptor>(ctr);
-    if (!meta) {
-      throw new Error(`${ctr.name} is not a feature`);
-    }
-
-    // if injector not already exists, create it
-    const injector = Injector.read(ctr) ?? await Injector.create(ctr);
-
-    const controllers: LinkedController[] = [];
-    for (const c of meta.controllers) {
-      controllers.push(await this.linkController(c, injector));
-    }
-
-    const features: LinkedFeature[] = [];
-    for (const f of meta.features) {
-      features.push(await this.linkFeature(f));
-    }
-
-    return {
-      route: meta.route,
-      middlewares: await this.buildMiddlewares(meta.middlewares, injector),
-      controllers,
-      features,
+  if (isMiddleware(mw)) {
+    const instance = await injector.register(mw).resolve<ChoMiddleware>(mw);
+    return instance.handle.bind(instance);
+  }
+  if (isGuard(mw)) {
+    const instance = await injector.register(mw).resolve<ChoGuard>(mw);
+    const handler = instance.canActivate.bind(instance);
+    return async function (c: ChoContext<Any>, next: Next) {
+      const pass = await handler(c, next);
+      if (pass) {
+        next();
+      } else {
+        throw new Error("Unauthorized");
+      }
     };
   }
+  // mw is a function
+  return Promise.resolve(mw);
+}
 
-  private async linkController(ctr: Ctr, injector: Injector) {
-    log(`linking controller ${ctr.name}`);
-    const controller = getController(ctr);
-    if (!controller) {
-      throw new Error(`${ctr.name} is not a controller`);
-    }
+/**
+ * Compile a method of a controller.
+ * If the method has no metadata, return null.
+ * Otherwise, read its metadata, middlewares and create the handler function.
+ *
+ * @param ctr
+ * @param controller
+ * @param method
+ * @param injector
+ */
+async function method(
+  ctr: Target,
+  controller: Instance,
+  method: string,
+  injector: Injector,
+): Promise<LinkedMethod | null> {
+  const meta = readMethod(ctr.prototype[method]);
+  if (!meta) {
+    return null;
+  }
+  const mws = readMiddlewares(ctr.prototype[method]);
+  const middlewares = await Promise.all(mws.map((mw) => middleware(mw, injector)));
 
-    const metaMethods = getMethods(ctr);
-    if (metaMethods.length === 0) {
-      throw new Error(`Controller ${ctr.name} has no endpoints`);
-    }
+  const handler = (controller[method as keyof typeof controller] as Target).bind(controller);
+  return {
+    route: meta.route,
+    type: meta.type,
+    middlewares,
+    handler,
+  };
+}
 
-    // create the controller
-
-    if (!injector.provider(ctr)) {
-      // add the controller to the injector providers to allow resolving its dependencies
-      Provide(ctr)(injector.desc);
-    }
-
-    // resolve the controller instance
-    const instance = await injector.resolve(ctr) as Instance;
-
-    const methods: LinkedMethod[] = [];
-    for (const m of metaMethods) {
-      log(`linking method ${m.method} ${m.route} in controller ${ctr.name}`);
-      // compiled  methods
-      methods.push({
-        route: m.route,
-        type: m.method as MethodType,
-        middlewares: await this.buildMiddlewares(m.middlewares, injector),
-        handler: (instance[m.name as keyof typeof instance] as Target).bind(instance),
-      });
-    }
-
-    // compiled controller
-    return {
-      route: controller.route,
-      middlewares: await this.buildMiddlewares(controller.middlewares, injector),
-      methods,
-    };
+/**
+ * Compile a controller into a linked controller.
+ * Read its metadata, middlewares and methods.
+ * @param ctr
+ * @param injector
+ */
+async function controller(ctr: Ctr, injector: Injector): Promise<LinkedController> {
+  const meta = readMetadataObject<ControllerDescriptor>(ctr);
+  if (!meta) {
+    throw new Error(`${ctr.name} is not a controller`);
   }
 
-  /**
-   * Middleware can be either a class or a function.
-   *
-   * If it is a function, we assume it is already a middleware.
-   *
-   * If it is a class, we check if it is implementing one
-   * of the middleware interfaces, resolve it and convert it ito a function.
-   *
-   * Interfaces checked:
-   * - Middleware: "handle" method
-   * - CanActivate (Guard): "canActivate" method
-   *
-   * @param middlewares
-   * @param injector
-   */
-  private async buildMiddlewares(middlewares: (Target | Ctr)[], injector: Injector): Promise<Middleware[]> {
-    log(`building ${middlewares.length} middlewares`);
-    const ret: Middleware[] = [];
-    for (const mw of middlewares) {
-      if (typeof mw !== "function") {
-        throw new Error(`Invalid middleware: ${mw}`);
-      }
-      if (!isMiddlewareClass(mw) && !isGuardClass(mw)) {
-        // assume it is a function
-        ret.push(mw as Middleware);
-        continue;
-      }
-      const key = isMiddlewareClass(mw) ? "handle" : "canActivate";
-      // todo replace with search
-      if (!injector.provider(mw as Token)) {
-        // before instancing, make sure the middleware is added to the injector
-        // providers list to allow self-injection and caching of the instance
-        Provide(mw as Token)(injector.desc);
-      }
+  // todo missing middlewares handling
 
-      const instance = await injector.resolve(mw as Token) as ChoGuard & ChoMiddleware;
-      if (!instance || typeof instance[key] !== "function") {
-        throw new Error(
-          `Cannot create instance of middleware ${mw.name}`,
-        );
-      }
+  injector.register(ctr);
+  const controller = await injector.resolve<Instance>(ctr);
 
-      // convert the method into a function
-      ret.push((instance[key] as Target).bind(instance));
-    }
-    return ret;
+  const props = Object.getOwnPropertyNames(
+    ctr.prototype,
+  ) as (string & keyof typeof ctr.prototype)[];
+
+  // get methods that have metadata
+  const metaMethods = props
+    .filter((name) => name !== "constructor")
+    .filter((name) => typeof ctr.prototype[name] === "function");
+
+  if (0 === metaMethods.length) {
+    throw new Error(`Controller ${ctr.name} has no endpoints`);
   }
+  const methods: LinkedMethod[] =
+    (await Promise.all(metaMethods.map((name) => method(ctr, controller, name, injector)))).filter(
+      Boolean,
+    );
+
+  const mws = readMiddlewares(ctr);
+  const middlewares = await Promise.all(mws.map((mw) => middleware(mw, injector)));
+
+  return {
+    route: meta.route,
+    middlewares,
+    methods,
+  };
+}
+
+/**
+ * Compile a feature module into a linked feature.
+ * Build an abstract tree of features, controllers, methods and middlewares
+ * with all dependencies resolved.
+ * @param ctr
+ */
+async function feature(
+  ctr: Ctr,
+): Promise<LinkedFeature> {
+  const meta = readMetadataObject<FeatureDescriptor>(ctr);
+  if (!meta) {
+    throw new Error(`${ctr.name} is not a feature`);
+  }
+  const injector = Injector.read(ctr) ?? await Injector.create(ctr);
+
+  const controllers = await Promise.all(meta.controllers.map((c: Ctr) => controller(c, injector)));
+  const features = await Promise.all(meta.features.map((f: Ctr) => feature(f)));
+
+  const mws = readMiddlewares(ctr);
+  const middlewares = await Promise.all(mws.map((mw) => middleware(mw, injector)));
+
+  return {
+    route: meta.route,
+    middlewares,
+    controllers,
+    features,
+  };
+}
+
+/**
+ * Compile a feature module into a linked feature.
+ * Build an abstract tree of features, controllers, methods and middlewares
+ * with all dependencies resolved.
+ * @param ctr
+ */
+export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
+  return feature(ctr);
 }

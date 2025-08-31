@@ -1,4 +1,11 @@
-import { Ctr, Provider, Target } from "@chojs/core";
+import type {
+    Ctr,
+    InjectableDescriptor,
+    Provider,
+    Resolver,
+    Target,
+    Token,
+} from "@chojs/core/di";
 
 // metadata read/write utilities
 // ------------------------------------
@@ -13,17 +20,17 @@ const ProviderKey = Symbol("provider");
  * @returns Provider
  */
 function provide(ctr: Ctr): Provider {
-  return {
-    provide: ctr,
-    factory: async (r: Resolver) => {
-      const deps = readMetadataObject<InjectableDescriptor>(ctr)?.deps ??
-        [];
-      const args: unknown[] = await Promise.all(
-        deps.map((d) => r.resolve(d)),
-      );
-      return Reflect.construct(ctr, args);
-    },
-  };
+    return {
+        provide: ctr,
+        factory: async (r: Resolver) => {
+            const deps = readMetadataObject<InjectableDescriptor>(ctr)?.deps ??
+                [] as Token[];
+            const args: unknown[] = await Promise.all(
+                deps.map((d: Token) => r.resolve(d)),
+            );
+            return Reflect.construct(ctr, args);
+        },
+    };
 }
 
 /**
@@ -35,13 +42,13 @@ function provide(ctr: Ctr): Provider {
  * @returns T | undefined
  */
 export function read<T = unknown>(
-  target: Target,
-  key: symbol,
+    target: Target,
+    key: symbol,
 ): T | undefined {
-  if (key in target) {
-    return target[key as keyof typeof target] as T;
-  }
-  return undefined;
+    if (key in target) {
+        return target[key as keyof typeof target] as T;
+    }
+    return undefined;
 }
 
 /**
@@ -52,16 +59,16 @@ export function read<T = unknown>(
  * @param value
  */
 export function write(
-  target: Target,
-  key: symbol,
-  value: unknown,
+    target: Target,
+    key: symbol,
+    value: unknown,
 ): void {
-  Object.defineProperty(target, key, {
-    value,
-    writable: false,
-    enumerable: false,
-    configurable: false,
-  });
+    Object.defineProperty(target, key, {
+        value,
+        writable: false,
+        enumerable: false,
+        configurable: false,
+    });
 }
 
 /**
@@ -73,9 +80,9 @@ export function write(
  * @returns T | undefined
  */
 export function readMetadataObject<T>(
-  target: Target,
+    target: Target,
 ): T | undefined {
-  return read<T>(target, MetaKey);
+    return read<T>(target, MetaKey);
 }
 
 /**
@@ -85,13 +92,13 @@ export function readMetadataObject<T>(
  * @param obj
  */
 export function writeMetadataObject(
-  target: Target,
-  obj: Record<string, unknown>,
+    target: Target,
+    obj: Record<string, unknown>,
 ) {
-  write(target, MetaKey, obj);
-  // every metadata object defines an injectable class
-  // so this is a great place to auto-create its provider
-  writeProvider(target, provide(target as Ctr));
+    write(target, MetaKey, obj);
+    // every metadata object defines an injectable class
+    // so this is a great place to auto-create its provider
+    writeProvider(target, provide(target as Ctr));
 }
 
 /**
@@ -102,9 +109,9 @@ export function writeMetadataObject(
  * @returns Provider | undefined
  */
 export function readProvider(
-  target: Target,
+    target: Target,
 ): Provider | undefined {
-  return read<Provider>(target, ProviderKey);
+    return read<Provider>(target, ProviderKey);
 }
 
 /**
@@ -114,8 +121,8 @@ export function readProvider(
  * @param provider
  */
 export function writeProvider(
-  target: Target,
-  provider: Provider,
+    target: Target,
+    provider: Provider,
 ): void {
-  write(target, ProviderKey, provider);
+    write(target, ProviderKey, provider);
 }

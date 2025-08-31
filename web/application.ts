@@ -1,7 +1,7 @@
 import type { ChoLinker } from "@chojs/vendor";
 import type { Any, Ctr } from "@chojs/core/di";
 import { debuglog } from "@chojs/core/utils";
-import { Compiler } from "./compiler.ts";
+import compile from "./compiler.ts";
 
 export type ChoWebApplicationOptions = {
   linker: ChoLinker;
@@ -37,8 +37,7 @@ export async function createApplication<T>(
   }
 
   log("linking application");
-  const compiled = await new Compiler().compile(app);
-  options.linker.link(compiled);
+  options.linker.link(await compile(app));
 
   return new ApplicationRef<T>(options.linker);
 }

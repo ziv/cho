@@ -66,8 +66,8 @@ export type Factory<T = Any> = (injector: Resolver) => T;
  * @internal
  */
 export type Provider<T = Any> = {
-  provide: Token;
-  factory: Factory<T>;
+    provide: Token;
+    factory: Factory<T>;
 };
 
 /**
@@ -76,7 +76,7 @@ export type Provider<T = Any> = {
  * @internal
  */
 export type InjectableDescriptor = {
-  deps?: Token[];
+    deps?: Token[];
 };
 
 /**
@@ -86,8 +86,8 @@ export type InjectableDescriptor = {
  * @internal
  */
 export type ModuleDescriptor = InjectableDescriptor & {
-  imports: Ctr[];
-  providers: (Provider | Ctr)[];
+    imports: Ctr[];
+    providers: (Provider | Ctr)[];
 };
 
 /**
@@ -97,11 +97,39 @@ export type ModuleDescriptor = InjectableDescriptor & {
  * @internal
  */
 export type MethodContext = {
-  kind: string;
-  name: string;
-  static: boolean;
-  private: boolean;
-  metadata: object;
-  addInitializer: (fn: () => void) => void;
-  access: { get: () => unknown };
+    kind: string;
+    name: string;
+    static: boolean;
+    private: boolean;
+    metadata: object;
+    addInitializer: (fn: () => void) => void;
+    access: { get: () => unknown };
 };
+
+/**
+ * Class method decorators receive the method that is being decorated as the first value,
+ * and can optionally return a new method to replace it. If a new method is returned,
+ * it will replace the original on the prototype (or on the class itself in the case of static methods).
+ * If any other type of value is returned, an error will be thrown.
+ * @see https://github.com/tc39/proposal-decorators?tab=readme-ov-file#class-methods
+ */
+export type ClassDecorator = (value: Function, context: {
+    kind: "class";
+    name: string | undefined;
+    addInitializer(initializer: () => void): void;
+}) => Function | void;
+
+/**
+ * Class decorators receive the class that is being decorated as the first parameter,
+ * and may optionally return a new callable (a class, function, or Proxy) to replace it.
+ * If a non-callable value is returned, then an error is thrown.
+ * @see https://github.com/tc39/proposal-decorators?tab=readme-ov-file#class-methods
+ */
+export type ClassMethodDecorator = (value: Function, context: {
+    kind: "method";
+    name: string | symbol;
+    access: { get(): unknown };
+    static: boolean;
+    private: boolean;
+    addInitializer(initializer: () => void): void;
+}) => Function | void;

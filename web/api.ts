@@ -1,26 +1,24 @@
-import type { Any, InjectableDescriptor, MethodContext, Target } from "@chojs/core/di";
-import { writeMetadataObject } from "@chojs/core/di";
+import { Any, InjectableDescriptor, MethodContext, Target, writeMetadataObject } from "@chojs/core/di";
 import type { FeatureDescriptor } from "./types.ts";
-import { writeMethod } from "./meta.ts";
+import { Ctr } from "../core/di/types.ts";
+import { writeMethod, writeMiddlewares } from "./meta.ts";
+import { features } from "node:process";
 
-export type MethodDecoratorFn = (
-  route: string | DescriptorFn,
-  ...fns: DescriptorFn[]
-) => Any; // to avoid TS strict mode error on decorators
+// use any to avoid TS strict mode error on decorators
+// the JS decorators are not compatible with TS ones
+export type MethodDecoratorFn = (route: string) => MethodDecorator;
+
+/**
+ * context param types explained:
+ * - `string` | `symbol to support TS experimental decorators (Bun, TS < 5.0, reflect-metadata, etc.)
+ * - `MethodContext` to support TC39 stage 3 proposal decorators (ESM/Deno/TS)
+ */
 
 /**
  * Creates a method decorator for the given HTTP method.
  */
-function createMethodDecorator(
-  type: string,
-): MethodDecoratorFn {
-  /** */
-  return function (route: string) {
-    /**
-     * context param
-     * - `string` | `symbol to support TS experimental decorators (Bun, TS < 5.0, reflect-metadata, etc.)
-     * - `MethodContext` to support TC39 stage 3 proposal decorators (ESM/Deno/TS)
-     */
+function createMethodDecorator(type: string): MethodDecoratorFn {
+  return function (route: string): MethodDecorator {
     return function (
       target: Any,
       context: MethodContext | string | symbol,
@@ -42,7 +40,7 @@ function createMethodDecorator(
 export function Controller(route: string, desc?: InjectableDescriptor): ClassDecorator {
   return (target: Target) => {
     const data = {
-      route,
+      route: route ?? "",
       deps: desc?.deps ?? [],
     };
     writeMetadataObject(target, data);
@@ -62,9 +60,16 @@ export function Feature(desc: FeatureDescriptor): ClassDecorator {
       imports: desc.imports ?? [],
       providers: desc.providers ?? [],
       deps: desc.deps ?? [],
+      features: desc.features ?? [],
       controllers: desc.controllers,
     };
     writeMetadataObject(target, data);
+  };
+}
+
+export function Middlewares(...mws: (Ctr | Target)[]): ClassDecorator & MethodDecorator {
+  return (target: Target) => {
+    writeMiddlewares(target, mws);
   };
 }
 
