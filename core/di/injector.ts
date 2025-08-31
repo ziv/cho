@@ -57,6 +57,10 @@ export class Injector implements Resolver {
     return injector;
   }
 
+  static read(ctr: Ctr): Injector | undefined {
+    return read<Injector>(ctr, InjectorMetadata);
+  }
+
   constructor(
     readonly ctr: Ctr,
   ) {

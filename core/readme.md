@@ -25,22 +25,22 @@ you can define and manage dependencies in your application with ease.
 Example for dependency injection configuration using decorators:
 
 ```ts
-import {Imports, Injectable, Injector, Module} from "@cho/core/di";
+import { Imports, Injectable, Injector, Module } from "@cho/core/di";
 
 @Injectable({
-    deps: ["foo", "bar"],
+  deps: ["foo", "bar"],
 })
 class ServiceFoo {
-    constructor(readonly foo: string, readonly bar: string) {
-    }
+  constructor(readonly foo: string, readonly bar: string) {
+  }
 }
 
 @Module({
-    providers: [
-        ServiceFoo,
-        {provide: "foo", usFactory: () => Promise.resolve("Hello")},
-        {provide: "bar", usFactory: () => Promise.resolve("World")},
-    ],
+  providers: [
+    ServiceFoo,
+    { provide: "foo", usFactory: () => Promise.resolve("Hello") },
+    { provide: "bar", usFactory: () => Promise.resolve("World") },
+  ],
 })
 class ModuleFoo {
 }

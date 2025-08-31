@@ -1,9 +1,9 @@
-import type { Ctr, Instance, Target, Token } from "@chojs/core/di";
-import { getInjector, Injector, Provide } from "@chojs/core/di";
+import { Ctr, getInjector, Injector, Instance, Provide, readMetadataObject, Target, Token } from "@chojs/core/di";
 import type { LinkedController, LinkedFeature, LinkedMethod, MethodType, Middleware } from "@chojs/vendor";
 import { debuglog } from "@chojs/core/utils";
-import { getController, getFeature, getMethods } from "./meta.ts";
+import { getController, getMethods } from "./meta.ts";
 import { ChoGuard, ChoMiddleware } from "./refs.ts";
+import type { FeatureDescriptor } from "./types.ts";
 
 const isMiddlewareClass = (mw: Target): mw is ChoMiddleware =>
   mw.prototype && typeof mw.prototype.handle === "function";
@@ -29,12 +29,13 @@ export class Compiler {
   private async linkFeature(ctr: Ctr): Promise<LinkedFeature> {
     log(`linking feature ${ctr.name}`);
 
-    const meta = getFeature(ctr);
+    const meta = readMetadataObject<FeatureDescriptor>(ctr);
     if (!meta) {
       throw new Error(`${ctr.name} is not a feature`);
     }
 
-    const injector = getInjector(ctr) ?? new Injector(ctr);
+    // if injector not already exists, create it
+    const injector = Injector.read(ctr) ?? await Injector.create(ctr);
 
     const controllers: LinkedController[] = [];
     for (const c of meta.controllers) {

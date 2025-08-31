@@ -1,10 +1,30 @@
-import { Provider, Target } from "@chojs/core";
+import { Ctr, Provider, Target } from "@chojs/core";
 
 // metadata read/write utilities
 // ------------------------------------
 
 const MetaKey = Symbol("meta");
 const ProviderKey = Symbol("provider");
+
+/**
+ * Create a provider for the given class constructor.
+ *
+ * @param ctr
+ * @returns Provider
+ */
+function provide(ctr: Ctr): Provider {
+  return {
+    provide: ctr,
+    factory: async (r: Resolver) => {
+      const deps = readMetadataObject<InjectableDescriptor>(ctr)?.deps ??
+        [];
+      const args: unknown[] = await Promise.all(
+        deps.map((d) => r.resolve(d)),
+      );
+      return Reflect.construct(ctr, args);
+    },
+  };
+}
 
 /**
  * Read a metadata value from a target.
@@ -69,6 +89,9 @@ export function writeMetadataObject(
   obj: Record<string, unknown>,
 ) {
   write(target, MetaKey, obj);
+  // every metadata object defines an injectable class
+  // so this is a great place to auto-create its provider
+  writeProvider(target, provide(target as Ctr));
 }
 
 /**

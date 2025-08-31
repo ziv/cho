@@ -1,10 +1,9 @@
-import { DependsOn, Imports, Injectable, Injector, Module, Provide } from "@chojs/core";
+#!/usr/bin/env -S deno run --allow-env --allow-net
+import { Injectable, Injector, Module } from "@chojs/core";
 
 // service
 
-@Injectable(
-  DependsOn("config"),
-)
+@Injectable({ deps: ["config"] })
 class Service {
   constructor(readonly config: string) {
   }
@@ -12,17 +11,22 @@ class Service {
 
 // modules
 
-@Module(
-  Provide(Service),
-)
+@Module({
+  providers: [Service],
+})
 class Foo {}
 
-@Module(
-  Imports(Foo),
-  Provide("config", () => Promise.resolve("This is a config string")),
-)
+@Module({
+  imports: [Foo],
+  providers: [
+    {
+      provide: "config",
+      factory: () => "This is a config string",
+    },
+  ],
+})
 class Bar {}
 
-const inj = new Injector(Bar);
+const inj = await Injector.create(Bar);
 const service = await inj.resolve(Service);
 console.log(service);

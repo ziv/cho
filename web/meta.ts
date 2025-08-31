@@ -1,4 +1,4 @@
-import type { Ctr, Target } from "@chojs/core/di";
+import type { Ctr, ModuleDescriptor, Target } from "@chojs/core/di";
 import { read, write } from "@chojs/core/di";
 
 const MethodMetadata = Symbol("MethodMetadata");
@@ -10,69 +10,17 @@ const FeatureMetadata = Symbol("Feature");
  */
 export type ControllerMeta = {
   route: string;
-  middlewares: Target[];
 };
-
-/**
- * Set controller-level metadata on a target using a symbol-keyed property.
- * Applies defaults for missing fields (empty route string and empty middleware list).
-
- * @example
- *
- * ```ts
- * class UsersController {}
- * setController(UsersController, { route: "users", middlewares: [] });
- * ```
- *
- * @param target The controller class to annotate.
- * @param data Partial metadata including route and middlewares.
- * @return void
- */
-export function setController(
-  target: Target,
-  data: Partial<ControllerMeta>,
-): void {
-  write(target, ControllerMetadata, {
-    route: data.route ?? "",
-    middlewares: data.middlewares ?? [],
-  });
-}
 
 /**
  * A type representing feature metadata including route, middlewares, controllers, and sub-features.
  */
 export type FeatureMeta = {
   route: string;
-  middlewares: Target[];
-  controllers: Ctr[];
-  features: Ctr[];
+  // middlewares: Target[];
+  // controllers: Ctr[];
+  // features: Ctr[];
 };
-
-/**
- * Set feature-level metadata on a target using a symbol-keyed property.
- * Initializes missing arrays (middlewares, controllers, features) to empty.
- *
- * @example
- *
- * ```ts
- * class ApiFeature {}
- * setFeature(ApiFeature, { route: "api", controllers: [], features: [] });
- * ```
- *
- * @param target The feature class to annotate.
- * @param data Partial metadata including route, middlewares, controllers, and features.
- */
-export function setFeature(
-  target: Target,
-  data: Partial<FeatureMeta>,
-): void {
-  write(target, FeatureMetadata, {
-    route: data.route ?? "",
-    middlewares: data.middlewares ?? [],
-    controllers: data.controllers ?? [],
-    features: data.features ?? [],
-  });
-}
 
 /**
  * A type representing method metadata including name, route, HTTP method, and middlewares.
@@ -80,8 +28,8 @@ export function setFeature(
 export type MethodMeta = {
   name: string;
   route: string;
-  method: string;
-  middlewares: Target[];
+  type: string;
+  // middlewares: Target[];
   // validators
   // body?: any;
   // query?: any;
@@ -103,16 +51,11 @@ export type MethodMeta = {
  * @param target The method function (e.g. Controller.prototype.method).
  * @param data Partial metadata including name, route, method, and middlewares.
  */
-export function setMethod(
+export function writeMethod(
   target: Target,
-  data: Partial<MethodMeta>,
+  data: MethodMeta,
 ): void {
-  write(target, MethodMetadata, {
-    name: data.name ?? "",
-    route: data.route ?? "",
-    method: data.method ?? "GET",
-    middlewares: data.middlewares ?? [],
-  });
+  write(target, MethodMetadata, data);
 }
 
 /**
