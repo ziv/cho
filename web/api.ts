@@ -1,26 +1,18 @@
 import type {
-  Any,
-  ClassDecorator,
-  ClassMethodDecorator,
-  Ctr,
-  InjectableDescriptor,
-  MethodContext,
-  Target,
+    ClassDecorator,
+    ClassMethodDecorator,
+    Ctr,
+    InjectableDescriptor,
+    MethodContext,
+    Target,
 } from "@chojs/core/di";
-import { writeMetadataObject } from "@chojs/core/di";
-import type { FeatureDescriptor } from "./types.ts";
-import { writeMethod, writeMiddlewares } from "./meta.ts";
-import { features } from "node:process";
+import {writeMetadataObject} from "@chojs/core/di";
+import type {FeatureDescriptor} from "./types.ts";
+import {writeMethod, writeMiddlewares} from "./meta.ts";
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
 export type MethodDecoratorFn = (route: string) => ClassMethodDecorator;
-
-/**
- * context param types explained:
- * - `string` | `symbol to support TS experimental decorators (Bun, TS < 5.0, reflect-metadata, etc.)
- * - `MethodContext` to support TC39 stage 3 proposal decorators (ESM/Deno/TS)
- */
 
 /**
  * Creates a method decorator for the given HTTP method.
@@ -28,7 +20,11 @@ export type MethodDecoratorFn = (route: string) => ClassMethodDecorator;
 function createMethodDecorator(type: string): MethodDecoratorFn {
   return function (route: string): ClassMethodDecorator {
     return function (target, context) {
-      // method name
+      /**
+       * context param types explained:
+       * - `string` | `symbol to support TS experimental decorators (Bun, TS < 5.0, reflect-metadata, etc.)
+       * - `MethodContext` to support TC39 stage 3 proposal decorators (ESM/Deno/TS)
+       */
       const name = typeof context === "string" ? context : (context as MethodContext).name;
       writeMethod(target, { name, route, type });
     };
