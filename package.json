@@ -2,7 +2,16 @@
   "name": "chojs",
   "version": "0.0.0",
   "engines": {
-    "node": ">=22.0.0",
-    "npm": ">=10.0.0"
+    "deno": ">=2"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "@chojs/core": "./core/mod.ts",
+    "@tsconfig/deno": "^1.0.11",
+    "vitepress": "^1.6.4"
   }
 }

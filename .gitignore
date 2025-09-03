@@ -2,4 +2,6 @@
 /tmp
 .env
 /demo
-/docs
+/docs/.vitepress/dist
+/docs/.vitepress/cache
+/node_modules

@@ -1,0 +1,24 @@
+{
+  "extends": "@tsconfig/deno",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "lib": ["ESNext"],
+    "paths": {
+      "@chojs/core": [
+        "./core/mod.ts"
+      ],
+      "@chojs/core/di": [
+        "./core/di/mod.ts"
+      ],
+      "@chojs/core/utils": [
+        "./core/utils/mod.ts"
+      ],
+      "@chojs/vendor": [
+        "./vendor/mod.ts"
+      ],
+      "@chojs/web": [
+        "./web/mod.ts"
+      ]
+    }
+  }
+}
