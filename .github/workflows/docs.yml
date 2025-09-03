@@ -20,7 +20,7 @@ jobs:
           deno-version: v2.x
 
       - name: Generate documentation
-        run: npm run docs:build
+        run: npm ci && npm run docs:build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
