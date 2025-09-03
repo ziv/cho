@@ -18,9 +18,9 @@ hero:
 features:
   - title: Engine Agnostic
     details: The framework support most of Javascript runtimes (Node.js, Deno, Bun, Cloudflare Workers).
-  - title: XXX
-    details: Use the language standard features (or in our case, stage 3 decorators proposal).
-  - title: YYY
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Blazing Fast
+    details: Choose the right runtime for your needs, and enjoy the performance benefits.
+  - title: Fast Development
+    details: Tooling and ecosystem to speed up your development process.
 
 ---
