@@ -23,14 +23,19 @@ jobs:
         with:
           fetch-depth: 0
 
-#      - name: Setup Node.js
-      #        uses: actions/setup-node@v4
-      #        with:
-      #          node-version: "lts/*"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
 
       - name: setup version
         run: |
           ./scripts/next.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
+
+      - name: install
+        run: |
+          cd ${{ github.event.inputs.lib }}
+          npm ci --no-fund
 
       - name: release
         env:
