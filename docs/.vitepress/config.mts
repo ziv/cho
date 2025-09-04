@@ -24,10 +24,12 @@ export default defineConfig({
         [
             "script",
             {},
-            `window.dataLayer = window.dataLayer || [];
-             function gtag(){dataLayer.push(arguments);}
-             gtag('js', new Date());
-             gtag('config', 'G-SXHNBW6X10');`,
+            ` 
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-SXHNBW6X10');
+            `,
         ],
     ],
     base: "/cho/",
@@ -58,7 +60,7 @@ export default defineConfig({
                 ],
             },
             {
-                text: "RFCs",
+                text: "Specs",
                 items: [
                     { text: "Dependency Injection", link: "/rfcs/di" },
                     { text: "Web Interface", link: "/rfcs/web" },
