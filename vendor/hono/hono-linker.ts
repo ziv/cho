@@ -1,6 +1,7 @@
 import { debuglog } from "@chojs/core/utils";
 import { Target } from "@chojs/core/di";
-import { Context, Hono, MiddlewareHandler, Next } from "hono";
+import type { Context, MiddlewareHandler, Next } from "./deps.ts";
+import { Hono } from "./deps.ts";
 import type { LinkedController, LinkedFeature, Middleware } from "../types.ts";
 import { ChoLinker } from "../linker.ts";
 import { HonoContext } from "./hono-context.ts";

@@ -1,8 +1,6 @@
-import { expect } from "@std/expect";
-import type { Provider } from "./types.ts";
-import { Module } from "./api.ts";
-import { Injector } from "./injector.ts";
-import { readProvider } from "./meta.ts";
+import {expect} from "@std/expect";
+import {Module} from "./decorators.ts";
+import {Injector} from "./injector.ts";
 
 Deno.test("injector ctr should throw for module already have injector", () => {
   @Module({})
@@ -69,7 +67,7 @@ Deno.test("injector resolve should return imported value", async () => {
   expect(await inj.resolve("test")).toEqual("test");
 });
 
-// those next tests are to demonstrate that the order of module resolution matters
+// those next specs are to demonstrate that the order of module resolution matters
 // the eager of the importing modules will cause generation of different instances (by design).
 
 Deno.test("injector resolve should return 1 instance for 2 modules because AAA resolved before BBB", async () => {

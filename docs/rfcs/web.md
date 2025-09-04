@@ -38,7 +38,7 @@ The controller is an **injectable** class that can have dependencies injected in
 
 ### Feature
 
-The feature is a **routable** module that exposes a set of controllers and/or sub-features.
+A feature is a **routable** module that exposes a set of controllers and/or sub-features.
 The feature is an **injectable** class that can have dependencies injected into its constructor.
 
 ## Implementation Details
@@ -78,7 +78,7 @@ type Validator = {
 
 Libraries support this interface include Zod, Yup, Joi, Valibot, and many others.
 
-The following types are supported:
+The following types should be supported:
 
 | Type                      | Description                                                     |
 |---------------------------|-----------------------------------------------------------------|
@@ -94,15 +94,16 @@ The following types are supported:
 Example:
 
 ```ts
+
 class MyController {
 
-    @Args(Body(), Header('x-api-key'), Cookie('session_id'))
+    @Args(Body(validator), Header('x-api-key'), Cookie('session_id'))
     @Post()
     save(
-        body: any,
+        body: typeof validator,
         key: string,
         sessionsId: string,
-        ctx: ChoContext<any> // the context is always the last argument
+        ctx: ChoContext // the context is always the last argument
     ) {
         // do something with body, key, sessionsId, ctx
     }
@@ -115,27 +116,27 @@ class MyController {
 
 ### Controller Decorator
 
-```ts
-import {ChoContext} from "./context";
+### Examples
 
+```ts
 const qsValidator = {};
 const bodyValidator = {};
 
-@Middlewares(...)
+@Middlewares(/* list of middlewares */)
 @Controller("prefix")
 class MyController {
 
-    @Middlewares(...)
+    @Middlewares(/* list of middlewares */)
     @Args(Param("name"), Query(qsValidator))
     @Get('hello/:name')
-    hello(name: string, ctx: ChoContext<any>) {
+    hello(name: string, ctx: ChoContext) {
         return {message: 'Hello ' + name};
     }
 
-    @Middlewares(...)
+    @Middlewares(/* list of middlewares */)
     @Args(Body(bodyValidator))
     @Post('data')
-    postData(data: Type, ctx: ChoContext<any>) {
+    postData(data: typeof bodyValidator, ctx: ChoContext) {
     }
 }
 ```

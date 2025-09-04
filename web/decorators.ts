@@ -1,14 +1,16 @@
 import type {
-    ClassDecorator,
-    ClassMethodDecorator,
-    Ctr,
-    InjectableDescriptor,
-    MethodContext,
-    Target,
+  ClassDecorator,
+  ClassMethodDecorator,
+  Ctr,
+  InjectableDescriptor,
+  MethodContext,
+  Target,
 } from "@chojs/core/di";
-import {writeMetadataObject} from "@chojs/core/di";
-import type {FeatureDescriptor} from "./types.ts";
-import {writeMethod, writeMiddlewares} from "./meta.ts";
+import { writeMetadataObject } from "@chojs/core/di";
+import type { FeatureDescriptor } from "./types.ts";
+import { writeMethod, writeMiddlewares } from "./meta.ts";
+import type { MethodArgType, Validator } from "@chojs/vendor";
+import { addToMetadataObject } from "@chojs/core";
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
@@ -16,17 +18,22 @@ export type MethodDecoratorFn = (route: string) => ClassMethodDecorator;
 
 /**
  * Creates a method decorator for the given HTTP method.
+ *
+ * Why the decorator function check the context type?
+ * Because there are two different decorator proposals:
+ * - TC39 stage 3 proposal (ESM/Deno/TS > 5.0)
+ * - TS experimental decorators (Bun, Experimental TS decorators, reflect-metadata, etc.)
+ *
+ * They have different context types.
+ *
+ * @param type HTTP method type (GET, POST, etc.)
+ * @return {MethodDecoratorFn}
  */
 function createMethodDecorator(type: string): MethodDecoratorFn {
-  return function (route: string): ClassMethodDecorator {
+  return function (route: string, args: MethodArgType[] = []): ClassMethodDecorator {
     return function (target, context) {
-      /**
-       * context param types explained:
-       * - `string` | `symbol to support TS experimental decorators (Bun, TS < 5.0, reflect-metadata, etc.)
-       * - `MethodContext` to support TC39 stage 3 proposal decorators (ESM/Deno/TS)
-       */
       const name = typeof context === "string" ? context : (context as MethodContext).name;
-      writeMethod(target, { name, route, type });
+      writeMethod(target, { name, route, type, args });
     };
   };
 }
@@ -58,19 +65,20 @@ export function Feature(desc: FeatureDescriptor): ClassDecorator {
   return (target: Target) => {
     const data = {
       route: desc.route ?? "",
+      deps: desc.deps ?? [],
       imports: desc.imports ?? [],
       providers: desc.providers ?? [],
-      deps: desc.deps ?? [],
       features: desc.features ?? [],
       controllers: desc.controllers,
     };
-    writeMetadataObject(target, data);
+    addToMetadataObject(target, data);
   };
 }
 
-export function Middlewares(...mws: (Ctr | Target)[]): ClassDecorator & ClassMethodDecorator {
+// todo why not using the feature/controller directly?
+export function Middlewares(...middlewares: (Ctr | Target)[]): ClassDecorator & ClassMethodDecorator {
   return (target: Target) => {
-    writeMiddlewares(target, mws);
+    addToMetadataObject(target, { middlewares });
   };
 }
 
@@ -86,3 +94,30 @@ export const Sse: MethodDecoratorFn = createMethodDecorator("SSE");
 export const Sseit: MethodDecoratorFn = createMethodDecorator("SSEIT");
 export const Stream: MethodDecoratorFn = createMethodDecorator("STREAM");
 export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
+
+// method types functions
+
+function createTypeFunction(type: string) {
+  return function (keyOrValidator?: string | Validator, validatorIfKey?: Validator) {
+    if (!validatorIfKey) {
+      if (!keyOrValidator) {
+        return { type };
+      }
+      if (typeof keyOrValidator !== "string") {
+        return { type, validator: keyOrValidator };
+      }
+      return { type, key: keyOrValidator };
+    }
+    return {
+      type,
+      key: keyOrValidator as string,
+      validator: validatorIfKey as Validator,
+    };
+  };
+}
+
+export const Params = createTypeFunction("params");
+export const Body = createTypeFunction("body");
+export const Query = createTypeFunction("query");
+export const Header = createTypeFunction("header");
+export const Cookie = createTypeFunction("cookie");

@@ -1,13 +1,13 @@
-# RFC: Decorator-based Dependency Injection with Module-Scoped Injectors and Factory Providers
+# RFC: Decorator-based Dependency Injection
 
 ::: info
+
 - Status: Draft
 - Authors: xpr
 - Created: 2025-08-01
 - Target: TypeScript (ECMAScript decorators)
-  :::
 
-
+:::
 
 [[toc]]
 
@@ -40,11 +40,11 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
 
 ## Terminology
 
-- Token: The key used to look up a dependency. Typically, a class constructor or a unique identifier.
-- Factory Provider: A provider that supplies a value by invoking a factory function.
-- Module: A class annotated with `@Module` that declares providers and imports.
-- Injector: A per-module dependency resolver/registry.
-- Injectable: A class annotated with `@Injectable` that can be constructed and injected.
+- **Token**: The key used to look up a dependency. Typically, a class constructor or a unique identifier.
+- **Factory** Provider: A provider that supplies a value by invoking a factory function.
+- **Module**: A class annotated with `@Module` that declares providers and imports.
+- **Injector**: A per-module dependency resolver/registry.
+- **Injectable**: A class annotated with `@Injectable` that can be constructed and injected.
 
 ## Design Overview
 
@@ -66,50 +66,51 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
 
 ### Tokens
 
-Tokens identify dependencies. They can be:
+Tokens identify dependencies. They can be class constructors (e.g., `class Foo {}`, `Foo` as token)
+or `symbol` or `string`.
 
-- Class constructors (e.g., `class Foo {}`, `Foo` as token).
-- `symbol` or `string`.
-
-### Factory Provider
-
-Shape:
+##### Token Definition:
 
 ```ts
 type Ctr = new (...args: any[]) => any;
 type Token = Ctr | symbol | string;
+```
 
+### Factory Provider
+
+The factory provider is the sole provider type. It defines how to create an instance for a given token.
+
+##### Factory Provider Definition:
+
+```ts
 type FactoryProvider<T = any> = {
     token: Token;
-    useFactory: (injector: Injector) => Promise<T>;
+    factory: (injector: Injector) => Promise<T>;
 };
 ```
 
 Notes:
 
-- As the only provider type, all values—including class instances, primitives, configs—are supplied through
-  `useFactory`.
+- As the only provider type, all values—including class instances and primitives are supplied through
+  `factory`.
 - For convenience, `@Injectable()` classes get an implicit factory provider unless overridden in the module.
 
-### @Injectable Decorator
+### Injectable Decorator
 
 Marks a class as injectable and eligible for implicit factory creation:
+
+##### `@Injectable` Decorator Definition:
 
 ```ts
 type InjectableDescriptor = {
     deps?: Token[];
 };
 
-/**
- * Decorator to mark a class as injectable.
- * @param fns
- * @constructor
- */
 function Injectable(d: InjectableDescriptor) {
 }
 ```
 
-- `deps`: List of tokens for constructor parameters.
+- `deps`: List of tokens for the constructor arguments.
 
 Example:
 
@@ -122,23 +123,18 @@ class MyService {
     constructor(readonly foo: Foo) {
     }
 }
-
-// set the service in a module (di context)
-@Module({
-    providers: [MyService],
-})
-class MyModule {
-}
 ```
 
 By default, the system will:
 
 - Treat the class constructor as the token.
-- Generate an implicit factory: `useFactory: (inj) => new C(...deps)`.
+- Generate an implicit factory: `factory: (inj) => new C(...deps)`.
 
-### @Module Decorator
+### Module Decorator
 
-Declares a DI context:
+Mark a class as a DI context.
+
+##### `@Module` Decorator Definition:
 
 ```ts
 type ModuleDescriptor = InjectableDescriptor & {
@@ -153,20 +149,59 @@ function Module(d: ModuleDescriptor): ClassDecorator {
 - `providers`: Factory providers declared by this module.
 - `imports`: Other modules whose providers are visible to this module.
 - `deps`: see `@Injectable`.
+- All imported module providers are visible; no separate export list in this initial design.
 
-All imported module providers are visible; no separate export list in this initial design.
+Example:
+
+```ts
+
+@Injectable({
+    deps: [Foo],
+})
+class MyService {
+    constructor(readonly foo: Foo) {
+    }
+}
+
+// set the service from previous example in a module (di context)
+@Module({
+    providers: [MyService],
+})
+class MyModule {
+}
+
+// is equivalent to
+@Module({
+    providers: [
+        {
+            token: MyService,
+            factory: async (inj) => {
+                const foo = await inj.resolve(Foo);
+                return new MyService(foo);
+            },
+        },
+    ],
+})
+```
 
 ### Injector
 
-Created per module:
+The injector is responsible for resolving tokens to instances.
+Each module has its own injector, and creating an injector cause the module to instantiate while resolving its
+dependencies.
+
+* The injector search imported modules’ injectors for resolution.
+* The injector caches a module’s singleton instances by token.
+* Global singletons can be archived using self injection.
+* Throws if a token cannot be resolved.
+
+##### `Injector` Definition:
 
 ```ts
 interface Injector {
     resolve<T>(token: Token): Promise<T>;
 }
 ```
-
-Responsibilities:
 
 - Resolve tokens using local providers first, then imported modules’ providers.
 - Cache singleton instances per injector by token.
@@ -175,193 +210,7 @@ Responsibilities:
 
 ---
 
-    TBD from here...
-
----
-
----
-
-## Provider Resolution Semantics
-
-1. Lookup order:
-    - Cache (previously resolved instances).
-    - Local providers.
-    - Imported modules’ providers (depth-first).
-2. Precedence:
-    - Local providers override imported providers with the same token.
-3. Caching:
-    - Default is per-injector singleton caching. A token resolved within a module yields the same instance for that
-      module’s injector.
-4. Asynchrony:
-    - Factories must return promises.
-5. Cycles:
-    - Circular dependencies are detected via resolution stack tracking.
-    - Error includes the token chain (e.g., A -> B -> A).
-6. Missing tokens:
-    - Resolution error clearly lists the missing token and the chain that required it.
-
-## API Specification (Draft)
-
-Types:
-
-```ts
-export type Token<T = any> = new (...args: any[]) => T | InjectionToken<T>;
-
-export interface FactoryProvider<T = any> {
-    token: Token<T>;
-    useFactory: (injector: Injector) => T | Promise<T>;
-}
-
-export interface Injector {
-    get<T>(token: Token<T>): T;
-}
-
-export interface ModuleOptions {
-    providers?: FactoryProvider[];
-    imports?: ModuleType[];
-}
-
-export type ModuleType = new (...args: any[]) => any;
-
-// Decorators
-export declare function Injectable(): ClassDecorator;
-
-export declare function Inject(token: Token): ParameterDecorator;
-
-export declare function Module(options: ModuleOptions): ClassDecorator;
-
-// Runtime
-export declare function createInjectorForModule(moduleType: ModuleType): Injector;
-```
-
-Behavioral notes:
-
-- `createInjectorForModule`:
-    - Constructs an injector for the given module type.
-    - Recursively constructs injectors for imported modules.
-    - Registers local and implicit providers.
-- Implicit provider generation for `@Injectable`:
-    - If `C` is annotated with `@Injectable` and no explicit provider is present for token `C`, register:
-        - `{ token: C, useFactory: (inj) => new C(...resolveDeps(C))) }`.
-- Dependency inference:
-    - With `emitDecoratorMetadata`, use `Reflect.getMetadata('design:paramtypes', C)`.
-    - Otherwise, rely on `@Inject` parameter decorators for non-class tokens.
-
-## Examples
-
-### 1) Basic Injectable and Module
-
-```ts
-
-@Injectable()
-class Logger {
-    log(msg: string) {
-        console.log(msg);
-    }
-}
-
-@Injectable()
-class Greeter {
-    constructor(private logger: Logger) {
-    }
-
-    greet(name: string) {
-        this.logger.log(`Hello, ${name}!`);
-    }
-}
-
-@Module({
-    providers: [], // Implicit providers for Logger and Greeter will be available when requested
-    imports: [],
-})
-class AppModule {
-}
-
-const injector = createInjectorForModule(AppModule);
-const greeter = injector.get(Greeter);
-greeter.greet("World");
-```
-
-### 2) Factory Provider for Configuration
-
-```ts
-const APP_NAME = new InjectionToken<string>("APP_NAME");
-
-@Module({
-    providers: [
-        {
-            token: APP_NAME,
-            useFactory: () => "MyApp",
-        },
-    ],
-})
-class ConfigModule {
-}
-
-@Injectable()
-class Banner {
-    constructor(@Inject(APP_NAME) private appName: string) {
-    }
-
-    text() {
-        return `Welcome to ${this.appName}`;
-    }
-}
-
-@Module({
-    imports: [ConfigModule],
-})
-class FeatureModule {
-}
-
-const inj = createInjectorForModule(FeatureModule);
-console.log(inj.get(Banner).text()); // Welcome to MyApp
-```
-
-### 3) Overriding a Provider in a Test Module
-
-```ts
-const NOW = new InjectionToken<Date>("NOW");
-
-@Module({
-    providers: [
-        {token: NOW, useFactory: () => new Date()},
-    ],
-})
-class TimeModule {
-}
-
-@Injectable()
-class Clock {
-    constructor(@Inject(NOW) private now: Date) {
-    }
-
-    value() {
-        return this.now;
-    }
-}
-
-@Module({
-    imports: [TimeModule],
-})
-class AppModule {
-}
-
-// Test override
-@Module({
-    providers: [
-        {token: NOW, useFactory: () => new Date("2000-01-01T00:00:00Z")},
-    ],
-    imports: [AppModule],
-})
-class TestModule {
-}
-
-const inj = createInjectorForModule(TestModule);
-console.log(inj.get(Clock).value().toISOString()); // 2000-01-01T00:00:00.000Z
-```
-
-## Error Handling
+## Error Handling (TBD, TBC)
 
 - Missing token:
     - Throw: `No provider for Token X (required by Y -> Z -> X)`
@@ -369,69 +218,3 @@ console.log(inj.get(Clock).value().toISOString()); // 2000-01-01T00:00:00.000Z
     - Throw: `Circular dependency detected: A -> B -> A`
 - Duplicate local providers for the same token:
     - Last-one-wins or fail-fast; this RFC recommends fail-fast for clarity.
-
-## Implementation Sketch
-
-- Metadata storage:
-    - Use WeakMaps keyed by class constructors for `@Injectable` and `@Module` data.
-    - Use `reflect-metadata` for param types when available.
-- Injector internals:
-    - Map<Token, ProviderRecord> where ProviderRecord stores factory and instance cache.
-    - Resolution:
-        - Try local map, then implicit `@Injectable`, then imported injectors in order.
-        - Track a resolution stack array for diagnostics.
-- Imports:
-    - Construct child injectors for each imported module once and reuse them.
-    - Visibility: imported providers are read-only from the importing module’s perspective.
-
-## Rationale
-
-- Factory-only keeps the system small and powerful; class/value providers are syntactic sugar over factories and can be
-  added later if needed.
-- Per-module injectors match the module-as-DI-context requirement and simplify overrides and testing.
-- Decorators provide a declarative way to register and compose DI metadata.
-
-## Alternatives Considered
-
-- Multiple provider kinds (class/value/alias): increases API surface; not necessary to meet requirements.
-- Global singleton injector: breaks modular encapsulation and makes testing harder.
-- Required explicit tokens for all params: too verbose; decorator metadata plus `@Inject` strikes a balance.
-
-## Open Questions
-
-- Async support: Should `get` be sync-only, and we provide `getAsync` for async factories?
-- Caching policy: Do we need a way to opt-out of singleton caching at this stage?
-- Import precedence ordering: Depth-first vs breadth-first lookup; this RFC proposes depth-first—should this be
-  configurable?
-
-## Appendix: Minimal Type Declarations
-
-```ts
-// tokens.ts
-export class InjectionToken<T = unknown> {
-    constructor(public readonly description: string | symbol) {
-    }
-
-    toString() {
-        return `InjectionToken(${String(this.description)})`;
-    }
-}
-
-// api.ts
-export function Injectable(): ClassDecorator {
-    /* ... */
-}
-
-export function Inject(token: Token): ParameterDecorator {
-    /* ... */
-}
-
-export function Module(options: ModuleOptions): ClassDecorator {
-    /* ... */
-}
-
-// runtime.ts
-export function createInjectorForModule(moduleType: ModuleType): Injector {
-    /* ... */
-}
-```

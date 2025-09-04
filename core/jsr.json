@@ -5,6 +5,7 @@
   "exports": {
     ".": "./mod.ts",
     "./di": "./di/mod.ts",
+    "./meta": "./di/meta.ts",
     "./utils": "./utils/mod.ts"
   },
   "imports": {

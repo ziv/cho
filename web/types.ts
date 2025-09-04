@@ -1,5 +1,5 @@
-import type {Any, Ctr, InjectableDescriptor, ModuleDescriptor} from "@chojs/core/di";
-import type {ChoContext, Next} from "@chojs/vendor";
+import type { Any, Ctr, InjectableDescriptor, ModuleDescriptor } from "@chojs/core/di";
+import type { ChoContext, MethodArgType, Next } from "@chojs/vendor";
 
 export type MethodDescriptor = {
   /**
@@ -16,6 +16,12 @@ export type MethodDescriptor = {
    * The name of the method on the controller (property key).
    */
   name: string;
+
+  /**
+   * The argument to pass the method when invoked.
+   * Each argument is represented by its type and an optional key.
+   */
+  args: MethodArgType[];
 };
 
 export type ControllerDescriptor = InjectableDescriptor & { route: string };

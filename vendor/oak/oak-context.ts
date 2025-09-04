@@ -1,4 +1,4 @@
-import type { RouterContext } from "@oak/oak/router";
+import type { RouterContext } from "deps.ts";
 import type { ChoContext } from "../context.ts";
 import { Any } from "@chojs/core/di";
 

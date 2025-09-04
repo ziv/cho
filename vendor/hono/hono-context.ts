@@ -1,5 +1,4 @@
-import type { Context } from "hono";
-import type { StatusCode } from "hono/utils/http-status";
+import type { Context, StatusCode } from "./deps.ts";
 import { ChoContext } from "../context.ts";
 
 /**

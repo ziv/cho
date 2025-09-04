@@ -1,7 +1,7 @@
 import { debuglog } from "@chojs/core/utils";
 import { Any, Target } from "@chojs/core/di";
-import { Router, RouterContext, RouterMiddleware } from "@oak/oak/router";
-import { Application, Next } from "@oak/oak";
+import type { Next, RouterContext, RouterMiddleware } from "./deps.ts";
+import { Application, Router } from "./deps";
 import type { LinkedController, LinkedFeature, Middleware } from "../types.ts";
 import { ChoLinker } from "../linker.ts";
 import { OakContext } from "./oak-context.ts";
@@ -69,7 +69,7 @@ export class OakLinker implements ChoLinker {
           "/" + endpoint.route,
           // @ts-ignore
           ...middlewares,
-          async (c) => {
+          async (c: any) => {
             const res = await endpoint.handler(new OakContext(c));
             if (res instanceof Response) {
               c.response.body = res.body;

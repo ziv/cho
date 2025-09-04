@@ -80,6 +80,7 @@ async function method(
   return {
     route: meta.route,
     type: meta.type as MethodType,
+    args: meta.args,
     middlewares,
     handler,
   };

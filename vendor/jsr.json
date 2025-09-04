@@ -8,7 +8,7 @@
     "./oak": "./hono/mod.ts"
   },
   "imports": {
-    "hono": "jsr:@hono/hono@^4.9.2",
+    "hono": "jsr:@hono/hono@^4.9.4",
     "@oak/oak": "jsr:@oak/oak@^17.1.6",
     "@chojs/core": "jsr:@chojs/core@^0.2.1"
   }

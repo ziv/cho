@@ -1,4 +1,4 @@
-export interface ChoContext<Ctx> {
+export interface ChoContext<Ctx extends any = any> {
   rawContext(): Ctx;
 
   // request handlers
