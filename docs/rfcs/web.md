@@ -49,19 +49,34 @@ The decorators will be processed at runtime to set up the routing and middleware
 ### Input Decorators
 
 Since we are dealing with JS decorators, we cannot set decorators on method arguments directly.
-Instead, we will use a special `@Args` decorator on the method itself to specify the arguments required by the method.
+Instead, we will use extra arguments in the input decorator to define list of inputs we want to add our endpoint.
 
-#### `@Args` Decorator
+Definition:
 
-- If the `@Args` decorator is not present, the method will receive only the context object.
-- The `@Args` decorator can specify multiple arguments, which will be passed to the method in the order they are
-  defined.
-- The context object is always exists and always the last argument of the method.
+```ts
+type Method = (route: string, args: MethodArgType = []) => MethodDecorator;
+```
 
-#### `@Args` Types
+#### Context Argument
 
-The `@Args` decorator types are a list of functions that extract specific parts of the request and validate them if a
+The context is always passes to the method, and it is always the last argument of the method.
+By default, if no extra arguments provided, the method will receive only the context object as its argument.
+
+#### Input Arguments
+
+We can use any of the following input arguments function to extract specific parts of the request and validate them if a
 validator is provided.
+
+| Type                        | Description                                       |
+|-----------------------------|---------------------------------------------------|
+| `Param(name?, validator?)`  | Extracts a path parameter(s) from the request URL |
+| `Query(name?, validator?)`  | Extracts a query parameter from the request URL   |
+| `Body(name?, validator?)`   | Extracts path from    request body                | 
+| `Header(name?, validator?)` | Extracts a header from the request                |
+| `Cookie(name, validator?)`  | Extracts a cookie from the request                |
+| `Context`                   | The context object                                |
+| `RawRequest`                | The raw request object                            |
+| `RawResponse`               | The raw response object                           |
 
 The validator should be an object with a `safeParse` method that takes the input and returns an object with the
 following properties:
@@ -78,67 +93,60 @@ type Validator = {
 
 Libraries support this interface include Zod, Yup, Joi, Valibot, and many others.
 
-The following types should be supported:
+#### HTTP Methods Decorators
 
-| Type                      | Description                                                     |
-|---------------------------|-----------------------------------------------------------------|
-| `Param(name, validator?)` | Extracts a path parameter from the request URL                  |
-| `Param(validator?)`       | Extracts all path parameters from the request URL as an object  |
-| `Query(name, validator?)` | Extracts a query parameter from the request URL                 |
-| `Query(validator?)`       | Extracts all query parameters from the request URL as an object |
-| `Body(name, validator?)`  | Extracts path from request body                                 |
-| `Body(validator?)`        | Extracts all body from the request                              |
-| `Header(name)`            | Extracts a header from the request                              |
-| `Cookie(name)`            | Extracts a cookie from the request                              |
+| Method    | Description               |
+|-----------|---------------------------|
+| `@Get`    | Defines a GET endpoint    |
+| `@Post`   | Defines a POST endpoint   |
+| `@Put`    | Defines a PUT endpoint    |
+| `@Patch`  | Defines a PATCH endpoint  |
+| `@Delete` | Defines a DELETE endpoint |
 
 Example:
 
 ```ts
 
-class MyController {
+class ExampleController {
 
-    @Args(Body(validator), Header('x-api-key'), Cookie('session_id'))
-    @Post()
-    save(
+    @Post("route", [
+        Body(validator),
+        Header('x-api-key'),
+        Cookie('session_id')
+    ])
+    handle(
         body: typeof validator,
         key: string,
         sessionsId: string,
         ctx: ChoContext // the context is always the last argument
     ) {
-        // do something with body, key, sessionsId, ctx
     }
 }
 ```
+
+#### Other Input Decorators
+
+| Decorator    | Description                 |
+|--------------|-----------------------------|
+| `@Sse`       | Server-Sent Events endpoint |
+| `@WebSocket` | WebSocket endpoint          |
+| `@Stream`    | Stream endpoint             |
+
+Each of these decorators explained in its own RFC document as extensions to this base framework.
 
 ### Middlewares Decorator
 
-### Method Decorators
+Takes a list of middlewares to be applied to the feature, controller or endpoint.
+Middlewares are executed in the order they are defined.
+Middleware can be either a function or an injectable class that implements the `ChoMiddleware` interface.
 
-### Controller Decorator
-
-### Examples
+Definition:
 
 ```ts
-const qsValidator = {};
-const bodyValidator = {};
 
-@Middlewares(/* list of middlewares */)
-@Controller("prefix")
-class MyController {
-
-    @Middlewares(/* list of middlewares */)
-    @Args(Param("name"), Query(qsValidator))
-    @Get('hello/:name')
-    hello(name: string, ctx: ChoContext) {
-        return {message: 'Hello ' + name};
-    }
-
-    @Middlewares(/* list of middlewares */)
-    @Args(Body(bodyValidator))
-    @Post('data')
-    postData(data: typeof bodyValidator, ctx: ChoContext) {
-    }
-}
+type Middlewares = (...middlewares: (Function | ChoMiddleware)[]) => MethodDecorator;
 ```
+
+### Controller Decorator
 
 ### Feature Decorator

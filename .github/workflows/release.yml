@@ -28,9 +28,9 @@ jobs:
         with:
           node-version: "24"
 
-      - name: setup version
-        run: |
-          ./scripts/next.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
+#      - name: setup version
+#        run: |
+#          ./scripts/next.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
 
       - name: install
         run: |
