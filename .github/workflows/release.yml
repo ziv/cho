@@ -1,0 +1,41 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g., 1.0.0 or major/minor/patch)"
+        required: true
+      lib:
+        description: "Library to publish (core or web)"
+        required: true
+#  push:
+#    branches:
+#      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+#      - name: Setup Node.js
+      #        uses: actions/setup-node@v4
+      #        with:
+      #          node-version: "lts/*"
+
+      - name: setup version
+        run: |
+          ./scripts/next.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
+
+      - name: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd ${{ github.event.inputs.lib }}
+          npx semantic-release --dry-run
