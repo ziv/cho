@@ -1,6 +1,5 @@
 import type {Any, Ctr} from "../meta/mod.ts";
 
-/*
 /**
  * Token type for dependency injection.
  * It can be a string, symbol, or a class constructor.
