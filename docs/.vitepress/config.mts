@@ -61,7 +61,10 @@ export default defineConfig({
                         items: [
                             { text: "Overview", link: "/guide/di-overview" },
                             { text: "Providers", link: "/guide/di-providers" },
-                            { text: "Injectables", link: "/guide/di-injectables" },
+                            {
+                                text: "Injectables",
+                                link: "/guide/di-injectables",
+                            },
                             { text: "Modules", link: "/guide/di-modules" },
                             { text: "Injector", link: "/guide/injectables" },
                             { text: "Testing", link: "/guide/injectables" },
@@ -101,6 +104,10 @@ export default defineConfig({
                     { text: "Dependency Injection", link: "/rfcs/di" },
                     { text: "Web Interface", link: "/rfcs/web" },
                 ],
+            },
+            {
+                text: "API Reference",
+                link: "https://ziv.github.io/cho/ref/all_symbols.html",
             },
         ],
 
