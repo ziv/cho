@@ -60,11 +60,11 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
 
 ## Terminology
 
-- **Token**: The key used to look up a dependency. Typically, a class constructor or a unique identifier.
+- **Token**: The key used to look up a dependency. A class constructor, a string or a symbol.
 - **Factory Provider**: A provider that supplies a value by invoking a factory function.
-- **Module**: A class annotated with `@Module` that declares providers and imports.
-- **Injector**: A per-module dependency resolver/registry.
 - **Injectable**: A class annotated with `@Injectable` that can be constructed and injected (implicit provider).
+- **Module**: A class annotated with `@Module` that declares providers and imports (DI context).
+- **Injector**: A per-module dependency resolver/registry.
 
 ## Design Overview
 
@@ -76,7 +76,7 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
     - Views on imported modules’ injectors for transitive resolution.
     - The resolution algorithm and instance cache (by default, per-injector singletons).
 - `@Injectable` marks a class as eligible for DI. It implies an implicitly registered factory provider for that class:
-    - Default factory: `() => new C(...resolvedDeps)` using dependency parameter tokens (`dependsOn` function).
+    - Default factory: `() => new C(...resolvedDeps)` using dependency parameter tokens.
 - Only factory providers exist:
     - Factories get the injector as an argument to resolve dependencies.
     - Factories must return a future value (promise).
