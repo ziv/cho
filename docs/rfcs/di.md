@@ -1,11 +1,31 @@
+---
+outline: [ 2, 4 ]
+---
+
 # RFC: Decorator-based Dependency Injection
 
-::: info
+::: details Properties
 
-- Status: Draft
-- Authors: xpr
-- Created: 2025-08-01
-- Target: TypeScript (ECMAScript decorators)
+<table class="properties">
+    <tbody>
+        <tr>
+            <th>Status</th>
+            <td>Draft</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>2025-08-01</td>
+        </tr>
+        <tr>
+            <th>Target</th>
+            <td>TypeScript (ECMAScript decorators)</td>
+        </tr>
+        <tr>
+            <th>Authors</th>
+            <td>XPR</td>
+        </tr>
+    </tbody>
+</table>
 
 :::
 
@@ -49,18 +69,18 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
 ## Design Overview
 
 - The system revolves around modules. Each module class annotated with `@Module` has:
-  - A list of factory providers it declares.
-  - A list of other modules it imports to gain access to their providers.
+    - A list of factory providers it declares.
+    - A list of other modules it imports to gain access to their providers.
 - An injector is instantiated per module class. It contains:
-  - The module’s own providers.
-  - Views on imported modules’ injectors for transitive resolution.
-  - The resolution algorithm and instance cache (by default, per-injector singletons).
+    - The module’s own providers.
+    - Views on imported modules’ injectors for transitive resolution.
+    - The resolution algorithm and instance cache (by default, per-injector singletons).
 - `@Injectable` marks a class as eligible for DI. It implies an implicitly registered factory provider for that class:
-  - Default factory: `() => new C(...resolvedDeps)` using dependency parameter tokens (`dependsOn` function).
+    - Default factory: `() => new C(...resolvedDeps)` using dependency parameter tokens (`dependsOn` function).
 - Only factory providers exist:
-  - Factories get the injector as an argument to resolve dependencies.
-  - Factories must return a future value (promise).
-  - Factories may construct classes (including `@Injectable` classes) or compute values.
+    - Factories get the injector as an argument to resolve dependencies.
+    - Factories must return a future value (promise).
+    - Factories may construct classes (including `@Injectable` classes) or compute values.
 
 ## Core Concepts
 
@@ -84,8 +104,8 @@ The factory provider is the sole provider type. It defines how to create an inst
 
 ```ts
 type FactoryProvider<T = any> = {
-  token: Token;
-  factory: (injector: Injector) => Promise<T>;
+    token: Token;
+    factory: (injector: Injector) => Promise<T>;
 };
 ```
 
@@ -102,7 +122,7 @@ Marks a class as injectable and eligible for implicit factory creation:
 
 ```ts
 type InjectableDescriptor = {
-  deps?: Token[];
+    deps?: Token[];
 };
 
 function Injectable(d: InjectableDescriptor) {
@@ -116,11 +136,11 @@ Example:
 ```ts
 // example with dependencies
 @Injectable({
-  deps: [Foo],
+    deps: [Foo],
 })
 class MyService {
-  constructor(readonly foo: Foo) {
-  }
+    constructor(readonly foo: Foo) {
+    }
 }
 ```
 
@@ -137,8 +157,8 @@ Mark a class as a DI context.
 
 ```ts
 type ModuleDescriptor = InjectableDescriptor & {
-  imports: Ctr[];
-  providers: (Provider | Ctr)[];
+    imports: Ctr[];
+    providers: (Provider | Ctr)[];
 };
 
 function Module(d: ModuleDescriptor): ClassDecorator {
@@ -153,6 +173,7 @@ function Module(d: ModuleDescriptor): ClassDecorator {
 Example:
 
 ```ts
+
 @Injectable({
     deps: [Foo],
 })
@@ -196,7 +217,7 @@ injector cause the module to instantiate while resolving its dependencies.
 
 ```ts
 interface Injector {
-  resolve<T>(token: Token): Promise<T>;
+    resolve<T>(token: Token): Promise<T>;
 }
 ```
 
@@ -210,8 +231,8 @@ interface Injector {
 ## Error Handling (TBD, TBC)
 
 - Missing token:
-  - Throw: `No provider for Token X (required by Y -> Z -> X)`
+    - Throw: `No provider for Token X (required by Y -> Z -> X)`
 - Circular dependency:
-  - Throw: `Circular dependency detected: A -> B -> A`
+    - Throw: `Circular dependency detected: A -> B -> A`
 - Duplicate local providers for the same token:
-  - Last-one-wins or fail-fast; this RFC recommends fail-fast for clarity.
+    - Last-one-wins or fail-fast; this RFC recommends fail-fast for clarity.

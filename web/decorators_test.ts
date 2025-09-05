@@ -15,22 +15,11 @@ Deno.test("decorated controller", () => {
   }
 
   expect(readMetadataObject(TestController)).toEqual({ route: "test-route", deps: [] });
+  expect(readMetadataObject(TestController.prototype.testGet)).toEqual({
+    name: "testGet",
+    route: "test-get",
+    type: "GET",
+    args: [],
+  });
+  // console.log(readMetadataObject(TestController.prototype.testPost));
 });
-// { route: "test-route", deps: [] }
-// console.log();
-// { name: "testGet", route: "test-get", type: "GET", args: []
-// console.log(readMethod(TestController.prototype.testGet));
-// {
-//     name: "testPost",
-//         route: "test-post",
-//     type: "POST",
-//     args: [
-//     { type: "body" },
-//     {
-//         type: "query",
-//         key: "key",
-//         validator: { safeParse: [Function: safeParse] }
-// }
-// ]
-// }
-// console.log(readMethod(TestController.prototype.testPost));

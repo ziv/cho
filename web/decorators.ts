@@ -6,13 +6,13 @@ import type {
   MethodContext,
   Target,
 } from "@chojs/core";
-import { addToMetadataObject } from "@chojs/core/meta";
+import { addToMetadataObject, Any } from "@chojs/core/meta";
 import type { FeatureDescriptor } from "./types.ts";
 import { ArgType, MethodArgType, Validator } from "@chojs/vendor";
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
-export type MethodDecoratorFn = (route: string) => ClassMethodDecorator;
+export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; // ClassMethodDecorator;
 
 /**
  * Creates a method decorator for the given HTTP method.

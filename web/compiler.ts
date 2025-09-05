@@ -95,7 +95,7 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
     if (!meta) {
       return null;
     }
-    const middlewares: Middleware[] = await allMiddlewares(meta.middlewares, injector);
+    const middlewares: Middleware[] = await allMiddlewares(meta.middlewares ?? [], injector);
     const args = meta.args.map((arg) => ((ctx: ChoContext<Any>) => ctx.getInput(arg)));
 
     const handler = (controller[method as keyof typeof controller] as Target).bind(controller);
@@ -172,14 +172,12 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
 
     const controllers: LinkedController[] = [];
     for (const c of meta.controllers ?? []) {
-      await controller(c, injector);
-      // controllers.map();
+      controllers.push(await controller(c, injector));
     }
 
     const features: LinkedFeature[] = [];
     for (const f of meta.features ?? []) {
-      await feature(f);
-      // features.map(await feature(f));
+      features.push(await feature(f));
     }
 
     const middlewares: Middleware[] = await allMiddlewares(meta.middlewares ?? [], injector);

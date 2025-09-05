@@ -1,3 +1,7 @@
+---
+outline: 1
+---
+
 # Introduction
 
 ## Why This Project Exists

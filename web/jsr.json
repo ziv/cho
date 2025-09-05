@@ -5,8 +5,6 @@
   "exports": "./mod.ts",
   "imports": {
     "@chojs/core": "jsr:@chojs/core@^0.2.1",
-    "@chojs/vendor": "jsr:@chojs/vendor@^0.2.0",
-    "@std/datetime": "jsr:@std/datetime@^0.225.5",
-    "@std/fmt": "jsr:@std/fmt@^1.0.8"
+    "@chojs/vendor": "jsr:@chojs/vendor@^0.2.0"
   }
 }
