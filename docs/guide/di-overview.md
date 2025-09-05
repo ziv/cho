@@ -1,6 +1,6 @@
 # Dependency Injection
 
-<img class="choko-end" src="../assets/cho.svg">
+<img class="choko-end" src="../public/cho.svg">
 
 **CHO** provide a simple and flexible [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) (DI) system
 to manage the creation and sharing of entities within your application.
@@ -18,7 +18,7 @@ Module can import other modules, allowing you to compose your application from s
 The injector will look for providers in the current module first, then in the imported modules injectors if the provider
 is not found.
 
-<img class="excalidraw" src="../assets/module.svg">
+<img class="excalidraw" src="../public/module.svg">
 
 The DI in **CHO** supports only single type of provider, the factory provider. A factory provider is defined by a token and
 a factory function that receive injector as argument for resolving dependencies, and returns the resulting entity. The

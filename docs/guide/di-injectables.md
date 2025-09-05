@@ -4,7 +4,7 @@ outline: deep
 
 # Injectables
 
-<img class="choko-end" src="../assets/cho.svg">
+<img class="choko-end" src="../public/cho.svg">
 
 We can define provider using the `@Injectable` decorator. It creates an implicit provider for us to create an instance
 of the decorated class. We define the class dependencies (its constructor arguments) using the `deps` property of the

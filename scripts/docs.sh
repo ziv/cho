@@ -3,7 +3,7 @@
 # generate the reference docs
 deno doc --html \
   --name="@chojs" \
-  --output="./docs/reference" \
+  --output="./docs/public/ref" \
   core/di/mod.ts \
   core/utils/mod.ts \
   web/mod.ts \
