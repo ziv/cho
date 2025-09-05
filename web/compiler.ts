@@ -1,15 +1,29 @@
 import type { Any, Ctr, Instance, Target } from "@chojs/core";
 import { Injector, readMetadataObject } from "@chojs/core";
 import type {
-  ChoContext,
+  ChoGuard,
+  ChoMiddleware,
+  ControllerDescriptor,
+  FeatureDescriptor,
   LinkedController,
   LinkedFeature,
   LinkedMethod,
+  MethodArgFactory,
+  MethodArgType,
+  MethodDescriptor,
   MethodType,
   Middleware,
   Next,
-} from "@chojs/vendor";
-import type { ChoGuard, ChoMiddleware, ControllerDescriptor, FeatureDescriptor, MethodDescriptor } from "./types.ts";
+} from "./types.ts";
+import type { Context } from "./context.ts";
+import {
+  EmptyControllerError,
+  InvalidInputError,
+  NotControllerError,
+  NotFeatureError,
+  NotMiddlewareError,
+  UnauthorizedError,
+} from "./errors.ts";
 
 /**
  * Compile a feature module into a linked feature.
@@ -24,6 +38,47 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
   // is guard class
   const isGuard = (mw: Target): mw is Ctr => mw.prototype && typeof mw.prototype.canActivate === "function";
 
+  function createMethodArgFactory(args: MethodArgType[]): MethodArgFactory {
+    return async function (ctx: Context) {
+      const ret = [];
+      for (const arg of args) {
+        let value;
+        switch (arg.type) {
+          case "param":
+            value = ctx.param(arg.key);
+            break;
+          case "query":
+            value = ctx.query(arg.key);
+            break;
+          case "header":
+            value = ctx.header(arg.key);
+            break;
+          case "body":
+            const json = await ctx.json() as Any;
+            value = arg.key ? json[arg.key] : json;
+            break;
+          case "cookie":
+            value = ctx.cookie(arg.key);
+            break;
+        }
+        if (!arg.validator) {
+          ret.push(value);
+          continue;
+        }
+        const parsed = arg.validator.safeParse(value);
+        if (!parsed.success) {
+          const message = arg.key
+            ? `Input validation failed at argument ${arg.type}.${arg.key}`
+            : `Input validation failed at argument ${arg.type}`;
+          throw new InvalidInputError(parsed.error, message);
+        }
+
+        ret.push(parsed.data);
+      }
+      return ret;
+    };
+  }
+
   /**
    * Compile a middleware.
    * If it is a class, resolve it and convert it into a function.
@@ -37,7 +92,7 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
     injector: Injector,
   ): Promise<Middleware> {
     if (typeof mw !== "function") {
-      throw new Error(`Invalid middleware: ${mw}`);
+      throw new NotMiddlewareError(mw);
     }
     if (isMiddleware(mw)) {
       const instance = await injector.register(mw as Ctr).resolve<ChoMiddleware>(mw);
@@ -46,12 +101,12 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
     if (isGuard(mw)) {
       const instance = await injector.register(mw as Ctr).resolve<ChoGuard>(mw);
       const handler = instance.canActivate.bind(instance);
-      return async function (c: ChoContext<Any>, next: Next) {
+      return async function (c: Context<Any>, next: Next) {
         const pass = await handler(c, next);
         if (pass) {
           next();
         } else {
-          throw new Error("Unauthorized");
+          throw new UnauthorizedError();
         }
       };
     }
@@ -96,9 +151,9 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
       return null;
     }
     const middlewares: Middleware[] = await allMiddlewares(meta.middlewares ?? [], injector);
-    const args = meta.args.map((arg) => ((ctx: ChoContext<Any>) => ctx.getInput(arg)));
-
+    const args = createMethodArgFactory(meta.args);
     const handler = (controller[method as keyof typeof controller] as Target).bind(controller);
+
     return {
       route: meta.route,
       type: meta.type as MethodType,
@@ -120,7 +175,7 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
   ): Promise<LinkedController> {
     const meta = readMetadataObject<ControllerDescriptor>(ctr);
     if (!meta) {
-      throw new Error(`${ctr.name} is not a controller`);
+      throw new NotControllerError(ctr);
     }
 
     const controller = await injector.register(ctr).resolve<Instance>(ctr);
@@ -135,7 +190,7 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
       .filter((name) => typeof ctr.prototype[name] === "function");
 
     if (0 === metaMethods.length) {
-      throw new Error(`Controller ${ctr.name} has no endpoints`);
+      throw new EmptyControllerError(ctr);
     }
 
     const methods: LinkedMethod[] = [];
@@ -166,7 +221,7 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
   ): Promise<LinkedFeature> {
     const meta = readMetadataObject<FeatureDescriptor>(ctr);
     if (!meta) {
-      throw new Error(`${ctr.name} is not a feature`);
+      throw new NotFeatureError(ctr);
     }
     const injector = Injector.read(ctr) ?? await Injector.create(ctr);
 

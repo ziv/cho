@@ -1,14 +1,6 @@
-import type {
-  ClassDecorator,
-  ClassMethodDecorator,
-  Ctr,
-  InjectableDescriptor,
-  MethodContext,
-  Target,
-} from "@chojs/core";
-import { addToMetadataObject, Any } from "@chojs/core/meta";
-import type { FeatureDescriptor } from "./types.ts";
-import { ArgType, MethodArgType, Validator } from "@chojs/vendor";
+import type { Any, ClassDecorator, ClassMethodDecorator, Ctr, MethodContext, Target } from "@chojs/core";
+import { addToMetadataObject } from "@chojs/core/meta";
+import { ControllerDescriptor, FeatureDescriptor, MethodArgType } from "./types.ts";
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
@@ -31,7 +23,6 @@ function createMethodDecorator(type: string): MethodDecoratorFn {
   return function (route: string, args: MethodArgType[] = []): ClassMethodDecorator {
     return function (target, context) {
       const name = typeof context === "string" ? context : (context as MethodContext).name;
-      // writeMethod(target, { name, route, type, args });
       addToMetadataObject(target, { name, route, type, args });
     };
   };
@@ -44,10 +35,13 @@ function createMethodDecorator(type: string): MethodDecoratorFn {
  * @param route
  * @param desc
  */
-export function Controller(route: string, desc?: InjectableDescriptor): ClassDecorator {
+export function Controller(route: string, desc?: ControllerDescriptor): ClassDecorator {
   return (target: Target) => {
     const data = {
+      // routed
       route: route ?? "",
+      middlewares: desc.middlewares ?? [],
+      // injectable
       deps: desc?.deps ?? [],
     };
     addToMetadataObject(target, data);
@@ -63,10 +57,15 @@ export function Controller(route: string, desc?: InjectableDescriptor): ClassDec
 export function Feature(desc: FeatureDescriptor): ClassDecorator {
   return (target: Target) => {
     const data = {
+      // routed
       route: desc.route ?? "",
+      middlewares: desc.middlewares ?? [],
+      // injectable
       deps: desc.deps ?? [],
+      // module
       imports: desc.imports ?? [],
       providers: desc.providers ?? [],
+      // feature
       features: desc.features ?? [],
       controllers: desc.controllers,
     };
@@ -93,56 +92,3 @@ export const Sse: MethodDecoratorFn = createMethodDecorator("SSE");
 export const Sseit: MethodDecoratorFn = createMethodDecorator("SSEIT");
 export const Stream: MethodDecoratorFn = createMethodDecorator("STREAM");
 export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
-
-// method types functions
-
-export type ArgTypeFunction = {
-  (key?: string): MethodArgType;
-  (validator: Validator): MethodArgType;
-  (key: string, validator: Validator): MethodArgType;
-};
-
-/**
- * Creates a function to generate argument type objects for method parameters.
- *
- * The returned function can be called in three ways:
- * 1. Without arguments: returns an object with only the type.
- * 2. With a single string argument: returns an object with the type and key.
- * 3. With a single validator argument: returns an object with the type and validator.
- * 4. With both a string key and a validator: returns an object with the type, key, and validator.
- *
- * @return {ArgTypeFunction}
- * @param type
- */
-function createTypeFunction(type: ArgType): ArgTypeFunction {
-  return function (keyOrValidator?: string | Validator, validatorIfKey?: Validator) {
-    if (!validatorIfKey) {
-      if (!keyOrValidator) {
-        return {
-          type,
-        } as MethodArgType;
-      }
-      if (typeof keyOrValidator !== "string") {
-        return {
-          type,
-          validator: keyOrValidator as Validator,
-        } as MethodArgType;;
-      }
-      return {
-        type,
-        key: keyOrValidator,
-      } as MethodArgType;;
-    }
-    return {
-      type,
-      key: keyOrValidator,
-      validator: validatorIfKey as Validator,
-    } as MethodArgType;;
-  };
-}
-
-export const Params: ArgTypeFunction = createTypeFunction("param");
-export const Body: ArgTypeFunction = createTypeFunction("body");
-export const Query: ArgTypeFunction = createTypeFunction("query");
-export const Header: ArgTypeFunction = createTypeFunction("header");
-export const Cookie: ArgTypeFunction = createTypeFunction("cookie");

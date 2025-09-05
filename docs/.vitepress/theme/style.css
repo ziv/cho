@@ -152,3 +152,21 @@
 table.properties td {
     width: 90%;
 }
+
+
+img.excalidraw {
+    margin: 0 auto;
+    border-radius: .5em;
+}
+
+img.choko-end {
+    width: 3em;
+    float: right;
+    transform: translateY(1.5em);
+}
+
+.dark {
+    img.excalidraw {
+        filter: invert(100%);
+    }
+}

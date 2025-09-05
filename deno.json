@@ -1,7 +1,7 @@
 {
   "tasks": {
     "test": "deno test --allow-env",
-    "docs-json": "deno doc --json  core/di/mod.ts core/utils/mod.ts web/mod.ts > docs.json",
+    "docs": "./scripts/docs.sh",
     "dev": "deno run --watch main.ts"
   },
   "imports": {
@@ -10,6 +10,8 @@
     "@chojs/core/meta": "./core/meta/mod.ts",
     "@chojs/core/utils": "./core/utils/mod.ts",
     "@chojs/vendor": "./vendor/mod.ts",
+    "@chojs/vendor-hono": "./vendor/hono/mod.ts",
+    "@chojs/oak-hono": "./vendor/oak/mod.ts",
     "@chojs/web": "./web/mod.ts",
     "@oak/oak": "jsr:@oak/oak@^17.1.6",
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
@@ -18,7 +20,7 @@
     "@std/semver": "jsr:@std/semver@^1.0.5",
     "@std/testing": "jsr:@std/testing@^1.0.15",
     "@std/assert": "jsr:@std/assert@^1.0.14",
-    "@hono/hono": "jsr:@hono/hono@^4.9.4",
+    "hono": "jsr:@hono/hono@^4.9.4",
     "mongodb": "npm:mongodb@^6.18.0"
   },
   "fmt": {

@@ -34,12 +34,6 @@ more information, see:
 - [Typescript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
 - [decorators.deno.dev](https://decorators.deno.dev/)
 
-## Notes about documentation
-
-I'm using `deno doc` to generate the documentation. It has a bug that identifies decorators as jsdoc. So I'm using
-`〇Injectable` instead of `@Injectable` in the comments to avoid this issue. `fix-docs.sh` script fix the generated
-documentation.
-
 <img src="./assets/cho.svg"  alt="CHO" width="200"/>
 
 soon...

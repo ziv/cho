@@ -1,5 +1,5 @@
-import type { Context, StatusCode } from "./deps.ts";
-import { ChoContext } from "../context.ts";
+import type { ChoContext } from "@chojs/vendor";
+import type { Context, StatusCode } from "hono";
 
 /**
  * HonoContext is a wrapper around Hono's Context to provide a unified interface.

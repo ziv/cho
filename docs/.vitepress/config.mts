@@ -61,8 +61,8 @@ export default defineConfig({
                         items: [
                             { text: "Overview", link: "/guide/di-overview" },
                             { text: "Providers", link: "/guide/di-providers" },
+                            { text: "Injectables", link: "/guide/di-injectables" },
                             { text: "Modules", link: "/guide/di-modules" },
-                            { text: "Injectables", link: "/guide/injectables" },
                             { text: "Injector", link: "/guide/injectables" },
                             { text: "Testing", link: "/guide/injectables" },
                         ],

@@ -1,8 +1,12 @@
-import { ChoAdapter } from "../adapter.ts";
-import { Hono, type MiddlewareHandler } from "./deps.ts";
+import { Hono, type MiddlewareHandler } from "hono";
 import { HonoContext } from "./hono-context.ts";
 
-export class HonoAdapter extends ChoAdapter<Hono, Hono, Hono, MiddlewareHandler> {
+export class HonoAdapter extends ChoAdapter<
+  Hono,
+  Hono,
+  Hono,
+  MiddlewareHandler
+> {
   createMiddleware(handler): MiddlewareHandler {
     return function (c, next) {
       return handler(new HonoContext(c), next);
@@ -38,6 +42,7 @@ export class HonoAdapter extends ChoAdapter<Hono, Hono, Hono, MiddlewareHandler>
     route: string,
     httpMethod: string,
   ) {
+    httpMethod = httpMethod.toLowerCase();
     switch (httpMethod) {
       case "get":
       case "post":
