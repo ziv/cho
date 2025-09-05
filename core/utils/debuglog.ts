@@ -4,7 +4,9 @@ import { format as duration } from "@std/fmt/duration";
 import { env, envbool, envnum } from "./env.ts";
 
 const TIMESTAMP = env("CHO_DEBUGLOG_TIMESTAMP") ?? "HH:mm:ss.SSS";
-const CONTEXT_LEN = isNaN(envnum("CHO_DEBUGLOG_CONTEXT_LEN")) ? 15 : envnum("CHO_DEBUGLOG_CONTEXT_LEN");
+const CONTEXT_LEN = isNaN(envnum("CHO_DEBUGLOG_CONTEXT_LEN"))
+  ? 15
+  : envnum("CHO_DEBUGLOG_CONTEXT_LEN");
 
 let last = Date.now();
 
@@ -58,7 +60,9 @@ export function debuglog(
   };
 
   const header = () =>
-    (context.length > CONTEXT_LEN) ? context.substring(0, CONTEXT_LEN - 1) + "…" : context.padEnd(CONTEXT_LEN, " ");
+    (context.length > CONTEXT_LEN)
+      ? context.substring(0, CONTEXT_LEN - 1) + "…"
+      : context.padEnd(CONTEXT_LEN, " ");
 
   function log(...args: unknown[]) {
     if (canLog()) {
