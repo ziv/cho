@@ -15,27 +15,27 @@
  * @category @chojs/core/utils
  */
 export function env(key: string): string | undefined {
-    // @ts-ignore: used to support multiple runtimes
-    if ("Deno" in globalThis && Deno?.env?.get) {
-        // todo remove the try-catch? let the user know about permission errors?
-        try {
-            // @ts-ignore: used to support multiple runtimes
-            return globalThis.Deno.env.get(key);
-        } catch (err) {
-            return undefined;
-        }
+  // @ts-ignore: used to support multiple runtimes
+  if ("Deno" in globalThis && Deno?.env?.get) {
+    // todo remove the try-catch? let the user know about permission errors?
+    try {
+      // @ts-ignore: used to support multiple runtimes
+      return globalThis.Deno.env.get(key);
+    } catch (err) {
+      return undefined;
     }
+  }
+  // @ts-ignore: used to support multiple runtimes
+  if ("Bun" in globalThis && globalThis.Bun?.env) {
     // @ts-ignore: used to support multiple runtimes
-    if ("Bun" in globalThis && globalThis.Bun?.env) {
-        // @ts-ignore: used to support multiple runtimes
-        return globalThis.Bun.env[key];
-    }
+    return globalThis.Bun.env[key];
+  }
+  // @ts-ignore: used to support multiple runtimes
+  if ("process" in globalThis && globalThis.process?.env) {
     // @ts-ignore: used to support multiple runtimes
-    if ("process" in globalThis && globalThis.process?.env) {
-        // @ts-ignore: used to support multiple runtimes
-        return globalThis.process.env[key];
-    }
-    return undefined;
+    return globalThis.process.env[key];
+  }
+  return undefined;
 }
 
 /**
@@ -51,7 +51,7 @@ export function env(key: string): string | undefined {
  * @category @chojs/core/utils
  */
 export function envnum(key: string): number {
-    return Number(env(key));
+  return Number(env(key));
 }
 
 /**
@@ -63,7 +63,7 @@ export function envnum(key: string): number {
  * @category @chojs/core/utils
  */
 export function envbool(key: string): boolean {
-    const val = env(key);
-    if (!val) return false;
-    return ["1", "true", "yes", "on"].includes(val.toLowerCase());
+  const val = env(key);
+  if (!val) return false;
+  return ["1", "true", "yes", "on"].includes(val.toLowerCase());
 }

@@ -1,5 +1,5 @@
-import type { Any } from "@chojs/core";
-import { ChoContext, LinkedFeature, Next } from "./types.ts";
+import type {Any, Target} from "@chojs/core";
+import {ChoContext, Next} from "./types.ts";
 
 export abstract class ChoAdapter<
   Application = Any,
@@ -17,7 +17,7 @@ export abstract class ChoAdapter<
    * Takes cho endpoint handler and converts it to the framework's endpoint
    * @param mw
    */
-  abstract createEndpoint(mw: (ctx: ChoContext) => Response | unknown): Middleware;
+  abstract createEndpoint(mw: Target): Middleware;
 
   /**
    * Takes cho controller and converts it to the framework's controller
@@ -69,38 +69,38 @@ export abstract class ChoAdapter<
    */
   abstract mountApp(feature: Feature): void;
 }
-
-export function linker(adapter: ChoAdapter, top: LinkedFeature) {
-  // convert to function for simplicity
-  const toMiddleware = adapter.createMiddleware.bind(adapter);
-
-  function processFeature(ref: LinkedFeature): App {
-    const feat = adapter.createFeature(ref.middlewares.map(toMiddleware));
-
-    // controllers
-    for (const c of ref.controllers) {
-      const controller = adapter.createController(c.middlewares.map(toMiddleware));
-
-      // endpoints
-      for (const e of c.methods) {
-        adapter.mountEndpoint(
-          controller,
-          e.middlewares.map(toMiddleware),
-          adapter.createEndpoint(e.handler),
-          e.route,
-          e.type,
-        );
-      }
-      adapter.mountController(feat, controller, c.route);
-    }
-
-    // sub-features
-    for (const f of ref.features) {
-      adapter.mountFeature(feat, processFeature(f), f.route);
-    }
-
-    return feat;
-  }
-
-  return adapter.mountApp(processFeature(top));
-}
+//
+// export function linker(adapter: ChoAdapter, top: LinkedFeature) {
+//   // convert to function for simplicity
+//   const toMiddleware = adapter.createMiddleware.bind(adapter);
+//
+//   function processFeature(ref: LinkedFeature): Application {
+//     const feat = adapter.createFeature(ref.middlewares.map(toMiddleware));
+//
+//     // controllers
+//     for (const c of ref.controllers) {
+//       const controller = adapter.createController(c.middlewares.map(toMiddleware));
+//
+//       // endpoints
+//       for (const e of c.methods) {
+//         adapter.mountEndpoint(
+//           controller,
+//           e.middlewares.map(toMiddleware),
+//           adapter.createEndpoint(e.handler),
+//           e.route,
+//           e.type,
+//         );
+//       }
+//       adapter.mountController(feat, controller, c.route);
+//     }
+//
+//     // sub-features
+//     for (const f of ref.features) {
+//       adapter.mountFeature(feat, processFeature(f), f.route);
+//     }
+//
+//     return feat;
+//   }
+//
+//   return adapter.mountApp(processFeature(top));
+// }

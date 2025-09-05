@@ -43,7 +43,7 @@ export class HonoAdapter extends ChoAdapter<
     route: string,
     httpMethod: string,
   ) {
-      httpMethod = httpMethod.toLowerCase();
+    httpMethod = httpMethod.toLowerCase();
     switch (httpMethod) {
       case "get":
       case "post":

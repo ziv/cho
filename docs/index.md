@@ -22,5 +22,4 @@ features:
     details: Choose the right runtime for your needs, and enjoy the performance benefits.
   - title: Fast Development
     details: Tooling and ecosystem to speed up your development process.
-
 ---

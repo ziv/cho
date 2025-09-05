@@ -1,5 +1,7 @@
 import { ChoAdapter } from "../adapter.ts";
-import type { Next, RouterContext, RouterMiddleware } from "./deps.ts";
+import { type Next, Router, type RouterContext, type RouterMiddleware } from "@oak/oak/router";
+import { Application } from "@oak/oak";
+
 import { Application, Router } from "./deps";
 import { OakContext } from "./oak-context.ts";
 

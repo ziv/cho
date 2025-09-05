@@ -1,30 +1,27 @@
-import type {Target} from "../meta/mod.ts";
-import type {ClassDecorator, InjectableDescriptor, ModuleDescriptor} from "./types.ts";
-import {writeMetadataObject,} from "../meta/mod.ts";
+import type { Target } from "../meta/mod.ts";
+import type { ClassDecorator, InjectableDescriptor, ModuleDescriptor } from "./types.ts";
+import { writeMetadataObject } from "../meta/mod.ts";
 
 export type Metadata = Record<string, unknown>;
 export type MetaDecoratorFactory<T extends Metadata> = (
-    desc: Partial<T>,
+  desc: Partial<T>,
 ) => ClassDecorator;
 
 /**
  * class decorator factory that writes metadata to the target
  */
 function createMetaDecorator<T extends Metadata>(): MetaDecoratorFactory<T> {
-    return (desc: Partial<T>) => (target: Target) => {
-        writeMetadataObject(target, desc);
-    };
+  return (desc: Partial<T>) => (target: Target) => {
+    writeMetadataObject(target, desc);
+  };
 }
 
 /**
  * Mark a class as injectable and create its provider.
  */
-export const Injectable: MetaDecoratorFactory<InjectableDescriptor> =
-    createMetaDecorator<InjectableDescriptor>();
+export const Injectable: MetaDecoratorFactory<InjectableDescriptor> = createMetaDecorator<InjectableDescriptor>();
 
 /**
  * Mark a class as a module and create its provider.
  */
-export const Module: MetaDecoratorFactory<ModuleDescriptor> =
-    createMetaDecorator<ModuleDescriptor>();
-
+export const Module: MetaDecoratorFactory<ModuleDescriptor> = createMetaDecorator<ModuleDescriptor>();

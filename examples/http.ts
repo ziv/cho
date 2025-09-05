@@ -1,5 +1,5 @@
-import {Controller, createApplication, Feature, Get} from "@chojs/web";
-import {HonoLinker} from "@chojs/vendor";
+import { Controller, createApplication, Feature, Get } from "@chojs/web";
+import { HonoLinker } from "@chojs/vendor";
 
 @Controller("")
 class RootController {

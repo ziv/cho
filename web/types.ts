@@ -1,12 +1,15 @@
-import type { Any, Ctr, InjectableDescriptor, ModuleDescriptor } from "@chojs/core/di";
+import type { Any, Ctr, InjectableDescriptor, ModuleDescriptor, Target } from "@chojs/core";
 import type { ChoContext, MethodArgType, Next } from "@chojs/vendor";
 
-export type MethodDescriptor = {
+export type Routed = {
   /**
    * The relative route of the endpoint (e.g. "/users" or "/:id").
    * The "route" value does not contain the prefixed slash ("/").
    */
   route: string;
+  middlewares: (Ctr | Target)[];
+};
+export type MethodDescriptor = Routed & {
   /**
    * The HTTP method of the endpoint (e.g. "GET", "POST", "PUT", "DELETE").
    */
@@ -24,13 +27,14 @@ export type MethodDescriptor = {
   args: MethodArgType[];
 };
 
-export type ControllerDescriptor = InjectableDescriptor & { route: string };
+export type ControllerDescriptor = InjectableDescriptor & Partial<Routed>;
 
-export type FeatureDescriptor = Partial<ModuleDescriptor> & {
-  route?: string;
-  controllers: Ctr[];
-  features: Ctr[];
-};
+export type FeatureDescriptor = Partial<
+  ModuleDescriptor & Routed & {
+    controllers: Ctr[];
+    features: Ctr[];
+  }
+>;
 
 export interface ChoGuard {
   canActivate(...args: unknown[]): Promise<boolean>;

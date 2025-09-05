@@ -1,7 +1,7 @@
 import { debuglog } from "@chojs/core/utils";
 import { Any, Target } from "@chojs/core/di";
-import type { Next, RouterContext, RouterMiddleware } from "./deps.ts";
-import { Application, Router } from "./deps";
+import { type Next, Router, type RouterContext, type RouterMiddleware } from "@oak/oak/router";
+import { Application } from "@oak/oak";
 import type { LinkedController, LinkedFeature, Middleware } from "../types.ts";
 import { ChoLinker } from "../linker.ts";
 import { OakContext } from "./oak-context.ts";

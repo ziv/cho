@@ -7,7 +7,6 @@ export type Next = () => void | Promise<void>;
 export type Middleware<T = Any> = (ctx: ChoContext<T>, next: Next) => void | Promise<void>;
 export type Validator = { safeParse: (data: unknown) => { success: boolean; data: unknown; error: unknown } };
 
-
 export type MethodType =
   | "GET"
   | "POST"
@@ -21,13 +20,17 @@ export type MethodType =
   | "WS"
   | "STREAM";
 
+export type ArgType = "param" | "query" | "header" | "body" | "cookie";
+
 export type MethodArgType = {
-  type: "param" | "query" | "header" | "body" | "cookie";
+  type: ArgType;
   key?: string;
-  validator?: Validator
+  validator?: Validator;
 };
 
+export type MethodArgFactory = (ctx: ChoContext) => Any;
+
 export type Linked<T> = T & { route: string; middlewares: Middleware[] };
-export type LinkedMethod = Linked<{ handler: Target; type: MethodType; args: MethodArgType[] }>;
+export type LinkedMethod = Linked<{ handler: Target; type: MethodType; args: MethodArgFactory[] }>;
 export type LinkedController = Linked<{ methods: LinkedMethod[] }>;
 export type LinkedFeature = Linked<{ controllers: LinkedController[]; features: LinkedFeature[] }>;

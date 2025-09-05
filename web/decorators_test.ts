@@ -1,6 +1,6 @@
-import {expect} from "@std/expect";
-import {readMetadataObject} from "@chojs/core";
-import {Body, Controller, Get, Post, Query} from "./decorators.ts";
+import { expect } from "@std/expect";
+import { readMetadataObject } from "@chojs/core";
+import { Body, Controller, Get, Post, Query } from "./decorators.ts";
 
 const validator = { safeParse: (data: unknown) => ({ success: true, data, error: null }) };
 
@@ -14,7 +14,7 @@ Deno.test("decorated controller", () => {
     testPost() {}
   }
 
-    expect(readMetadataObject(TestController)).toEqual({ route: "test-route", deps: [] });
+  expect(readMetadataObject(TestController)).toEqual({ route: "test-route", deps: [] });
 });
 // { route: "test-route", deps: [] }
 // console.log();

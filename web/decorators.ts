@@ -5,12 +5,10 @@ import type {
   InjectableDescriptor,
   MethodContext,
   Target,
-} from "@chojs/core/di";
-import { writeMetadataObject } from "@chojs/core/di";
+} from "@chojs/core";
+import { addToMetadataObject } from "@chojs/core/meta";
 import type { FeatureDescriptor } from "./types.ts";
-import { writeMethod, writeMiddlewares } from "./meta.ts";
-import type { MethodArgType, Validator } from "@chojs/vendor";
-import { addToMetadataObject } from "@chojs/core";
+import { ArgType, MethodArgType, Validator } from "@chojs/vendor";
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
@@ -33,7 +31,8 @@ function createMethodDecorator(type: string): MethodDecoratorFn {
   return function (route: string, args: MethodArgType[] = []): ClassMethodDecorator {
     return function (target, context) {
       const name = typeof context === "string" ? context : (context as MethodContext).name;
-      writeMethod(target, { name, route, type, args });
+      // writeMethod(target, { name, route, type, args });
+      addToMetadataObject(target, { name, route, type, args });
     };
   };
 }
@@ -51,7 +50,7 @@ export function Controller(route: string, desc?: InjectableDescriptor): ClassDec
       route: route ?? "",
       deps: desc?.deps ?? [],
     };
-    writeMetadataObject(target, data);
+    addToMetadataObject(target, data);
   };
 }
 
@@ -97,27 +96,53 @@ export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
 
 // method types functions
 
-function createTypeFunction(type: string) {
+export type ArgTypeFunction = {
+  (key?: string): MethodArgType;
+  (validator: Validator): MethodArgType;
+  (key: string, validator: Validator): MethodArgType;
+};
+
+/**
+ * Creates a function to generate argument type objects for method parameters.
+ *
+ * The returned function can be called in three ways:
+ * 1. Without arguments: returns an object with only the type.
+ * 2. With a single string argument: returns an object with the type and key.
+ * 3. With a single validator argument: returns an object with the type and validator.
+ * 4. With both a string key and a validator: returns an object with the type, key, and validator.
+ *
+ * @return {ArgTypeFunction}
+ * @param type
+ */
+function createTypeFunction(type: ArgType): ArgTypeFunction {
   return function (keyOrValidator?: string | Validator, validatorIfKey?: Validator) {
     if (!validatorIfKey) {
       if (!keyOrValidator) {
-        return { type };
+        return {
+          type,
+        } as MethodArgType;
       }
       if (typeof keyOrValidator !== "string") {
-        return { type, validator: keyOrValidator };
+        return {
+          type,
+          validator: keyOrValidator as Validator,
+        } as MethodArgType;;
       }
-      return { type, key: keyOrValidator };
+      return {
+        type,
+        key: keyOrValidator,
+      } as MethodArgType;;
     }
     return {
       type,
-      key: keyOrValidator as string,
+      key: keyOrValidator,
       validator: validatorIfKey as Validator,
-    };
+    } as MethodArgType;;
   };
 }
 
-export const Params = createTypeFunction("params");
-export const Body = createTypeFunction("body");
-export const Query = createTypeFunction("query");
-export const Header = createTypeFunction("header");
-export const Cookie = createTypeFunction("cookie");
+export const Params: ArgTypeFunction = createTypeFunction("param");
+export const Body: ArgTypeFunction = createTypeFunction("body");
+export const Query: ArgTypeFunction = createTypeFunction("query");
+export const Header: ArgTypeFunction = createTypeFunction("header");
+export const Cookie: ArgTypeFunction = createTypeFunction("cookie");

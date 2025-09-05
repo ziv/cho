@@ -1,6 +1,6 @@
-import {expect} from "@std/expect";
-import {Module} from "./decorators.ts";
-import {Injector} from "./injector.ts";
+import { expect } from "@std/expect";
+import { Module } from "./decorators.ts";
+import { Injector } from "./injector.ts";
 
 Deno.test("injector ctr should throw for module already have injector", () => {
   @Module({})

@@ -1,3 +1,5 @@
+import type { MethodArgType } from "./types.ts";
+
 export interface ChoContext<Ctx extends any = any> {
   rawContext(): Ctx;
 
@@ -38,4 +40,6 @@ export interface ChoContext<Ctx extends any = any> {
    * @param code
    */
   status(code: number): this;
+
+  getInput(input: MethodArgType): Promise<any>;
 }
