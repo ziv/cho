@@ -10,7 +10,7 @@ outline: [ 2, 4 ]
     <tbody>
         <tr>
             <th>Status</th>
-            <td>Draft</td>
+            <td>Implemented `@chojs/core@0.4.0`</td>
         </tr>
         <tr>
             <th>Created</th>
@@ -228,11 +228,29 @@ interface Injector {
 
 ---
 
-## Error Handling (TBD, TBC)
+## Error Handling
+
+- Creating injector for a module that already contain injector:
+    - Throw: `Injector already set for this module.`
+
+- Creating injector for non-module class:
+    - Throw: `CLASS is not a module.`
+
+- Importing (registering) non-class:
+    - Throw: `INJECTOR: Cannot register import. Not a class.`
+
+- Importing (registering) non-module class:
+    - Throw: `INJECTOR:  Cannot register CLASS as import. Did you forget to add @Module()?`
 
 - Missing token:
-    - Throw: `No provider for Token X (required by Y -> Z -> X)`
+    - Throw: `INJECTOR: Token X not found`
+
 - Circular dependency:
-    - Throw: `Circular dependency detected: A -> B -> A`
+    - Throw: `Circular dependency detected while resolving TOKEN: A → B → A`
+
+- Duplicate module import:
+    - No error. Import once.
+  
 - Duplicate local providers for the same token:
-    - Last-one-wins or fail-fast; this RFC recommends fail-fast for clarity.
+    - Last wins. No error.
+  
