@@ -61,10 +61,10 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
 ## Terminology
 
 - **Token**: The key used to look up a dependency. Typically, a class constructor or a unique identifier.
-- **Factory** Provider: A provider that supplies a value by invoking a factory function.
+- **Factory Provider**: A provider that supplies a value by invoking a factory function.
 - **Module**: A class annotated with `@Module` that declares providers and imports.
 - **Injector**: A per-module dependency resolver/registry.
-- **Injectable**: A class annotated with `@Injectable` that can be constructed and injected.
+- **Injectable**: A class annotated with `@Injectable` that can be constructed and injected (implicit provider).
 
 ## Design Overview
 
