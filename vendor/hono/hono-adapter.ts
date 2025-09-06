@@ -1,6 +1,8 @@
 import type {Target} from "@chojs/core";
 import {Adapter, Context, MethodArgFactory, Next} from "@chojs/web";
 import {Hono, type MiddlewareHandler} from "hono";
+import {stream, streamSSE} from "hono/streaming";
+import {createMiddleware} from "hono/factory";
 import {HonoContext} from "./hono-context.ts";
 
 export class HonoAdapter implements
@@ -11,9 +13,9 @@ export class HonoAdapter implements
     MiddlewareHandler
   > {
   createMiddleware(handler: (ctx: Context, next: Next) => void): MiddlewareHandler {
-    return function (c, next) {
+    return createMiddleware((c, next) => {
       return handler(new HonoContext(c), next);
-    } as MiddlewareHandler;
+    });
   }
 
   createEndpoint(handler: Target, factory: MethodArgFactory): MiddlewareHandler {
@@ -24,6 +26,26 @@ export class HonoAdapter implements
       if (ret instanceof Response) return ret;
       return c.json(ret);
     } as MiddlewareHandler;
+  }
+
+  createStreamEndpoint(handler: Target, factory: MethodArgFactory): MiddlewareHandler {
+    return function (c) {
+      return stream(c, async (stream) => {
+        const ctx = new HonoContext(c);
+        const args = [...(await factory(ctx)), stream, ctx];
+        await handler(...args);
+      });
+    };
+  }
+
+  createSseEndpoint(handler: Target, factory: MethodArgFactory): MiddlewareHandler {
+    return function (c) {
+      return streamSSE(c, async (stream) => {
+        const ctx = new HonoContext(c);
+        const args = [...(await factory(ctx)), stream, ctx];
+        await handler(...args);
+      });
+    };
   }
 
   createController(mws: MiddlewareHandler[]): Hono {
@@ -51,6 +73,9 @@ export class HonoAdapter implements
       case "delete":
       case "patch":
         ctr[httpMethod](route, ...middlewares, endpoint);
+        break;
+      case "stream":
+        ctr.get(route, ...middlewares, endpoint);
         break;
       default:
         throw new Error(`Method type "${httpMethod}" not implemented yet in HonoAdapter`);

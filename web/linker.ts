@@ -13,10 +13,19 @@ export function linker<App>(root: LinkedFeature, adapter: Adapter): App {
 
       // endpoints
       for (const e of c.methods) {
+        const type = e.type.toLocaleLowerCase();
+        let endpoint;
+        if (type === "stream") {
+          endpoint = adapter.createStreamEndpoint(e.handler, e.args);
+        } else if (type === "sse") {
+          endpoint = adapter.createSSEndpoint(e.handler, e.args);
+        } else {
+          endpoint = adapter.createEndpoint(e.handler, e.args);
+        }
         adapter.mountEndpoint(
           controller,
           e.middlewares.map(toMiddleware),
-          adapter.createEndpoint(e.handler, e.args),
+          endpoint,
           e.route,
           e.type,
         );
