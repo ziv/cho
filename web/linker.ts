@@ -18,7 +18,7 @@ export function linker<App>(root: LinkedFeature, adapter: Adapter): App {
         if (type === "stream") {
           endpoint = adapter.createStreamEndpoint(e.handler, e.args);
         } else if (type === "sse") {
-          endpoint = adapter.createSSEndpoint(e.handler, e.args);
+          endpoint = adapter.createSseEndpoint(e.handler, e.args);
         } else {
           endpoint = adapter.createEndpoint(e.handler, e.args);
         }
