@@ -13,6 +13,9 @@ import { defineConfig } from "vitepress";
  */
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+    markdown: {
+        lineNumbers: true,
+    },
     head: [
         [
             "script",
@@ -74,6 +77,10 @@ export default defineConfig({
                         text: "Web Server",
                         collapsed: true,
                         items: [
+                            {
+                                text: "Quick Start",
+                                link: "/guide/web-quick-start",
+                            },
                             { text: "Controllers", link: "/guide/controllers" },
                             { text: "Providers", link: "/guide/providers" },
                             { text: "Middlewares", link: "/guide/middlewares" },
