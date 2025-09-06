@@ -1,5 +1,9 @@
 import type { ArgType, MethodArgType, Validator } from "./types.ts";
 
+/**
+ * Function overloads for creating method argument type objects.
+ * Supports multiple signatures for different combinations of key and validator parameters.
+ */
 export type ArgTypeFunction = {
   (key?: string): MethodArgType;
   (validator: Validator): MethodArgType;
@@ -45,8 +49,25 @@ function createTypeFunction(type: ArgType): ArgTypeFunction {
   };
 }
 
+/**
+ * Create param argument input
+ * If no key is provided, the entire params object will be passed.
+ * If key is provided, the value will be extracted from the params object using the key.
+ * If validator is provided, the value will be validated using the validator.
+ * @see https://ziv.github.io/cho/guide/controllers.html
+ *
+ * @example with validator
+ * ```ts
+ * class MyController {
+ *
+ * @Get("/users/:id", [
+ *  Param("id", z.string().uuid()),
+ * ])
+ * getUser(id: string) {
+ *  // id is guaranteed to be a valid UUID string
+ * }
+ */
 export const Params: ArgTypeFunction = createTypeFunction("param");
 export const Body: ArgTypeFunction = createTypeFunction("body");
 export const Query: ArgTypeFunction = createTypeFunction("query");
 export const Header: ArgTypeFunction = createTypeFunction("header");
-export const Cookie: ArgTypeFunction = createTypeFunction("cookie");

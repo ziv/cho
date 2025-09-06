@@ -15,7 +15,7 @@ export class HonoAdapter implements
     };
   }
 
-  createEndpoint(handler, factory) {
+  createEndpoint(handler, factory): MiddlewareHandler {
     return async function (c) {
       const ctx = new HonoContext(c);
       const args = [...(await factory(ctx)), ctx];
@@ -41,7 +41,7 @@ export class HonoAdapter implements
     endpoint: MiddlewareHandler,
     route: string,
     httpMethod: string,
-  ) {
+  ): void {
     httpMethod = httpMethod.toLowerCase();
     switch (httpMethod) {
       case "get":

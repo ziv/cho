@@ -1,7 +1,7 @@
 import { LinkedFeature } from "./types.ts";
 import { Adapter } from "./adapter.ts";
 
-export function linker(root: LinkedFeature, adapter: Adapter) {
+export function linker<App>(root: LinkedFeature, adapter: Adapter): App {
   const toMiddleware = adapter.createMiddleware.bind(adapter);
 
   function process(ref: LinkedFeature) {
@@ -32,5 +32,5 @@ export function linker(root: LinkedFeature, adapter: Adapter) {
     return feature;
   }
 
-  return adapter.mountApp(process(root));
+  return adapter.mountApp<App>(process(root));
 }

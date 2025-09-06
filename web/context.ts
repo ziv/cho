@@ -1,5 +1,3 @@
-export type ParamsType<S> = Record<string, S> | string | undefined;
-
 /**
  * Context is an ion over different web frameworks to provide a unified interface.
  */

@@ -4,6 +4,9 @@ import { ControllerDescriptor, FeatureDescriptor, MethodArgType } from "./types.
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
+/**
+ * Function signature for method decorators that define HTTP endpoints.
+ */
 export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; // ClassMethodDecorator;
 
 /**
