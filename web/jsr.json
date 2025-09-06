@@ -4,7 +4,6 @@
   "license": "MIT",
   "exports": "./mod.ts",
   "imports": {
-    "@chojs/core": "jsr:@chojs/core@^0.2.1",
-    "@chojs/vendor": "jsr:@chojs/vendor@^0.2.0"
+    "@chojs/core": "jsr:@chojs/core@^0.4.1"
   }
 }
