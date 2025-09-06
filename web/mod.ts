@@ -128,3 +128,4 @@ export * from "./linker.ts";
 export * from "./decorators.ts";
 export * from "./types.ts";
 export * from "./inputs.ts";
+export * from "./errors.ts";

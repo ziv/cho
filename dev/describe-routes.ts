@@ -1,14 +1,9 @@
-import {blue, cyan, green} from "@std/fmt/colors";
-import {type Ctr, readMetadataObject} from "@chojs/core";
-import type {
-    ControllerDescriptor,
-    FeatureDescriptor,
-    MethodDescriptor,
-    NotControllerError,
-    NotFeatureError,
-} from "@chojs/web";
+import { blue, cyan, green } from "@std/fmt/colors";
+import { type Ctr, readMetadataObject } from "@chojs/core";
+import type { ControllerDescriptor, FeatureDescriptor, MethodDescriptor } from "@chojs/web";
+import { NotControllerError, NotFeatureError } from "@chojs/web";
 
-const isMethod = (ctr: Ctr) => (name) => typeof ctr.prototype[name] === "function";
+const isMethod = (ctr: Ctr) => (name: string) => typeof ctr.prototype[name] === "function";
 const notConstructor = () => (name: string) => name !== "constructor";
 
 const F = blue("F");
