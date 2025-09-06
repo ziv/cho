@@ -1,5 +1,5 @@
-import type { Context } from "hono";
 import type { Context as WebContext } from "@chojs/web";
+import type { Context } from "hono";
 
 /**
  * HonoContext is a wrapper around Hono's Context to provide a unified interface.
@@ -22,15 +22,15 @@ export class HonoContext implements WebContext<Context> {
 
   // input handlers
 
-  params() {
+  params(): Record<string, string> {
     return this.raw.req.param();
   }
 
-  query() {
+  query(): Record<string, string | string[]> {
     return this.raw.req.query();
   }
 
-  headers() {
+  headers(): Record<string, string | string[]> {
     return this.raw.req.header();
   }
 

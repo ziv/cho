@@ -9,7 +9,6 @@
     "@chojs/core/di": "./core/di/mod.ts",
     "@chojs/core/meta": "./core/meta/mod.ts",
     "@chojs/core/utils": "./core/utils/mod.ts",
-    "@chojs/vendor": "./vendor/mod.ts",
     "@chojs/vendor-hono": "./vendor/hono/mod.ts",
     "@chojs/oak-hono": "./vendor/oak/mod.ts",
     "@chojs/web": "./web/mod.ts",

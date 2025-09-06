@@ -1,6 +1,7 @@
-import { Hono, type MiddlewareHandler } from "hono";
-import type { Adapter } from "@chojs/web";
-import { HonoContext } from "./hono-context.ts";
+import type {Target} from "@chojs/core";
+import {Adapter, Context, MethodArgFactory, Next} from "@chojs/web";
+import {Hono, type MiddlewareHandler} from "hono";
+import {HonoContext} from "./hono-context.ts";
 
 export class HonoAdapter implements
   Adapter<
@@ -9,20 +10,20 @@ export class HonoAdapter implements
     Hono,
     MiddlewareHandler
   > {
-  createMiddleware(handler): MiddlewareHandler {
+  createMiddleware(handler: (ctx: Context, next: Next) => void): MiddlewareHandler {
     return function (c, next) {
       return handler(new HonoContext(c), next);
-    };
+    } as MiddlewareHandler;
   }
 
-  createEndpoint(handler, factory): MiddlewareHandler {
+  createEndpoint(handler: Target, factory: MethodArgFactory): MiddlewareHandler {
     return async function (c) {
       const ctx = new HonoContext(c);
       const args = [...(await factory(ctx)), ctx];
       const ret = await handler(...args);
       if (ret instanceof Response) return ret;
       return c.json(ret);
-    };
+    } as MiddlewareHandler;
   }
 
   createController(mws: MiddlewareHandler[]): Hono {
@@ -64,7 +65,7 @@ export class HonoAdapter implements
     return this.mountController(to, feat, route);
   }
 
-  mountApp(feature: Hono): Hono {
-    return feature;
+  mountApp<R = Hono>(feature: Hono): R {
+    return feature as R;
   }
 }
