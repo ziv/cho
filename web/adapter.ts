@@ -1,5 +1,6 @@
 import type { Any, Target } from "@chojs/core";
-import { MethodArgFactory } from "@chojs/web";
+import { MethodArgFactory, Next } from "./types.ts";
+import type { Context } from "./context.ts";
 
 export interface Adapter<
   Application = Any,
@@ -11,7 +12,7 @@ export interface Adapter<
    * Takes cho middleware and converts it to the framework's middleware
    * @param mw
    */
-  createMiddleware(mw: (ctx: ChoContext, next: Next) => void): Middleware;
+  createMiddleware(mw: (ctx: Context, next: Next) => void): Middleware;
 
   /**
    * Takes cho endpoint handler and converts it to the framework's endpoint

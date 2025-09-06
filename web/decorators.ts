@@ -1,5 +1,5 @@
+import { addToMetadataObject } from "@chojs/core";
 import type { Any, ClassDecorator, ClassMethodDecorator, Ctr, MethodContext, Target } from "@chojs/core";
-import { addToMetadataObject } from "@chojs/core/meta";
 import { ControllerDescriptor, FeatureDescriptor, MethodArgType } from "./types.ts";
 
 // use any to avoid TS strict mode error on decorators
