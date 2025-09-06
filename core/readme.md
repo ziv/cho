@@ -3,7 +3,7 @@
 Core modules for `cho` framework.
 
 | Modules                             |
-|-------------------------------------|
+| ----------------------------------- |
 | [Dependency Injection](./di/mod.ts) |
 | [Utilities](./utils/mod.ts)         |
 | [Metadata](./meta/mod.ts)           |

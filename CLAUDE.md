@@ -32,7 +32,7 @@ decorators). The framework is designed to be engine-agnostic and minimal.
 
 **Web Module (`web/`):**
 
-- Building blocks decorators for web application:  `@Controller`, `@Feature`
+- Building blocks decorators for web application: `@Controller`, `@Feature`
 - HTTP endpoints decorators: `@Controller`, `@Feature`, `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`
 - Parameter functions: `@Params()`, `@Body()`, `@Query()`, `@Header()`, `@Cookie()`
 - Advanced HTTP decorators: `@Sse`, `@WebSocket`, `@Stream`, `@Middlewares`

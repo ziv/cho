@@ -1,8 +1,6 @@
 # CHO Quick Start
 
-
 TBD create a cli tool to make a cho project
-
 
 ## Installation
 

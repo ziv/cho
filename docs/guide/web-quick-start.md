@@ -19,14 +19,14 @@ By default, the return value from an endpoint is transformed to a JSON response.
 of response, you can return a response object.
 
 ```ts
-import {Controller} from "@chojs/web";
+import { Controller } from "@chojs/web";
 
 @Controller("")
 class MyController {
-    @Get("hello")
-    hello() {
-        return {message: "Hello, World!"};
-    }
+  @Get("hello")
+  hello() {
+    return { message: "Hello, World!" };
+  }
 }
 ```
 
@@ -38,7 +38,6 @@ Explanation:
 
 <sup>7</sup> any plain object returned from the endpoint will be transformed to a JSON response.
 
-
 ---
 
 ## Feature
@@ -47,14 +46,13 @@ A feature is a routable module, meaning it can have a route prefix that applies 
 middleware attached to it. A feature can contain multiple controllers and sub-features.
 
 ```ts
-import {Feature} from "@chojs/web";
-import {MyController} from "./my-controller";
+import { Feature } from "@chojs/web";
+import { MyController } from "./my-controller";
 
 @Feature({
-    controllers: [MyController],
-    prefix: "api",
+  controllers: [MyController],
+  prefix: "api",
 })
 class MyFeature {
 }
 ```
-

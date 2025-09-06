@@ -1,5 +1,6 @@
 import { showRoutes } from "hono/dev";
-import { compile, Controller, Feature, Get, linker, Params } from "@chojs/web";
+import { compile, Context, Controller, Feature, Get, linker, Params, Post } from "@chojs/web";
+import { describeRoutes } from "@chojs/dev";
 import { HonoAdapter } from "./hono-adapter.ts";
 
 @Controller("")
@@ -7,6 +8,11 @@ class ExampleController {
   @Get("")
   example() {
     return { message: "Hello, World!" };
+  }
+
+  @Post("test")
+  test(ctx: Context) {
+    return ctx.text("text");
   }
 
   @Get(":id", [
@@ -27,6 +33,7 @@ const compiled = await compile(ExampleFeature);
 // console.log(compiled);
 const linked = linker(compiled, new HonoAdapter());
 showRoutes(linked);
+describeRoutes(ExampleFeature);
 // console.log(linked);
 
-Deno.serve(linked.fetch);
+// Deno.serve(linked.fetch);

@@ -1,5 +1,5 @@
 ---
-outline: [ 2, 4 ]
+outline: [2, 4]
 ---
 
 # RFC: Decorator-based Dependency Injection
@@ -69,18 +69,18 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
 ## Design Overview
 
 - The system revolves around modules. Each module class annotated with `@Module` has:
-    - A list of factory providers it declares.
-    - A list of other modules it imports to gain access to their providers.
+  - A list of factory providers it declares.
+  - A list of other modules it imports to gain access to their providers.
 - An injector is instantiated per module class. It contains:
-    - The module’s own providers.
-    - Views on imported modules’ injectors for transitive resolution.
-    - The resolution algorithm and instance cache (by default, per-injector singletons).
+  - The module’s own providers.
+  - Views on imported modules’ injectors for transitive resolution.
+  - The resolution algorithm and instance cache (by default, per-injector singletons).
 - `@Injectable` marks a class as eligible for DI. It implies an implicitly registered factory provider for that class:
-    - Default factory: `() => new C(...resolvedDeps)` using dependency parameter tokens.
+  - Default factory: `() => new C(...resolvedDeps)` using dependency parameter tokens.
 - Only factory providers exist:
-    - Factories get the injector as an argument to resolve dependencies.
-    - Factories must return a future value (promise).
-    - Factories may construct classes (including `@Injectable` classes) or compute values.
+  - Factories get the injector as an argument to resolve dependencies.
+  - Factories must return a future value (promise).
+  - Factories may construct classes (including `@Injectable` classes) or compute values.
 
 ## Core Concepts
 
@@ -104,8 +104,8 @@ The factory provider is the sole provider type. It defines how to create an inst
 
 ```ts
 type FactoryProvider<T = any> = {
-    token: Token;
-    factory: (injector: Injector) => Promise<T>;
+  token: Token;
+  factory: (injector: Injector) => Promise<T>;
 };
 ```
 
@@ -122,7 +122,7 @@ Marks a class as injectable and eligible for implicit factory creation:
 
 ```ts
 type InjectableDescriptor = {
-    deps?: Token[];
+  deps?: Token[];
 };
 
 function Injectable(d: InjectableDescriptor) {
@@ -136,11 +136,11 @@ Example:
 ```ts
 // example with dependencies
 @Injectable({
-    deps: [Foo],
+  deps: [Foo],
 })
 class MyService {
-    constructor(readonly foo: Foo) {
-    }
+  constructor(readonly foo: Foo) {
+  }
 }
 ```
 
@@ -157,8 +157,8 @@ Mark a class as a DI context.
 
 ```ts
 type ModuleDescriptor = InjectableDescriptor & {
-    imports: Ctr[];
-    providers: (Provider | Ctr)[];
+  imports: Ctr[];
+  providers: (Provider | Ctr)[];
 };
 
 function Module(d: ModuleDescriptor): ClassDecorator {
@@ -173,7 +173,6 @@ function Module(d: ModuleDescriptor): ClassDecorator {
 Example:
 
 ```ts
-
 @Injectable({
     deps: [Foo],
 })
@@ -217,7 +216,7 @@ injector cause the module to instantiate while resolving its dependencies.
 
 ```ts
 interface Injector {
-    resolve<T>(token: Token): Promise<T>;
+  resolve<T>(token: Token): Promise<T>;
 }
 ```
 
@@ -231,26 +230,25 @@ interface Injector {
 ## Error Handling
 
 - Creating injector for a module that already contain injector:
-    - Throw: `Injector already set for this module.`
+  - Throw: `Injector already set for this module.`
 
 - Creating injector for non-module class:
-    - Throw: `CLASS is not a module.`
+  - Throw: `CLASS is not a module.`
 
 - Importing (registering) non-class:
-    - Throw: `INJECTOR: Cannot register import. Not a class.`
+  - Throw: `INJECTOR: Cannot register import. Not a class.`
 
 - Importing (registering) non-module class:
-    - Throw: `INJECTOR:  Cannot register CLASS as import. Did you forget to add @Module()?`
+  - Throw: `INJECTOR:  Cannot register CLASS as import. Did you forget to add @Module()?`
 
 - Missing token:
-    - Throw: `INJECTOR: Token X not found`
+  - Throw: `INJECTOR: Token X not found`
 
 - Circular dependency:
-    - Throw: `Circular dependency detected while resolving TOKEN: A → B → A`
+  - Throw: `Circular dependency detected while resolving TOKEN: A → B → A`
 
 - Duplicate module import:
-    - No error. Import once.
-  
+  - No error. Import once.
+
 - Duplicate local providers for the same token:
-    - Last wins. No error.
-  
+  - Last wins. No error.

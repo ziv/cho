@@ -24,8 +24,7 @@ window.addEventListener("load", () => {
   themeToggle.removeAttribute("style");
 
   const storedTheme = localStorage.getItem("theme");
-  const systemPrefersDark =
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   if (storedTheme) {
     setTheme(storedTheme, themeToggle);
@@ -43,7 +42,5 @@ window.addEventListener("load", () => {
 
 // prevent flash
 const theme = localStorage.getItem("theme") ||
-  (window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light");
+  (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 document.documentElement.classList.add(theme);

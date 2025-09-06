@@ -11,35 +11,32 @@ injectable decorator argument.
 Example:
 
 ```ts
-import {Injectable} from "@chojs/core";
+import { Injectable } from "@chojs/core";
 
 @Injectable({
-    deps: ["token", OtherService]
+  deps: ["token", OtherService],
 })
 class SomeService {
 }
-
-
 ```
 
 The example above is equivalent to following example using explicit provider definition:
 
 ```ts
-import {Injectable} from "@chojs/core";
+import { Injectable } from "@chojs/core";
 
 @Injectable({
-    deps: ["token", OtherService]
+  deps: ["token", OtherService],
 })
 class SomeService {
 }
 
 const provider = {
-    provide: SomeService,
-    factory: async (injector) => {
-        const a = await injector.resolve("token");
-        const b = await injector.resolve(OtherService);
-        return new SmeService(a, b);
-    }
-}
-
+  provide: SomeService,
+  factory: async (injector) => {
+    const a = await injector.resolve("token");
+    const b = await injector.resolve(OtherService);
+    return new SmeService(a, b);
+  },
+};
 ```

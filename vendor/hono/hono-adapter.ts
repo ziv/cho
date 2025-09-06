@@ -1,9 +1,9 @@
-import type {Target} from "@chojs/core";
-import {Adapter, Context, MethodArgFactory, Next} from "@chojs/web";
-import {Hono, type MiddlewareHandler} from "hono";
-import {stream, streamSSE} from "hono/streaming";
-import {createMiddleware} from "hono/factory";
-import {HonoContext} from "./hono-context.ts";
+import type { Target } from "@chojs/core";
+import { Adapter, Context, MethodArgFactory, Next } from "@chojs/web";
+import { Hono, type MiddlewareHandler } from "hono";
+import { stream, streamSSE } from "hono/streaming";
+import { createMiddleware } from "hono/factory";
+import { HonoContext } from "./hono-context.ts";
 
 export class HonoAdapter implements
   Adapter<

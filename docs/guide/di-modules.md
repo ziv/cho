@@ -14,35 +14,35 @@ not found.
 Example:
 
 ```ts
-import {Module, Injectable} from '@chojs/core';
+import { Injectable, Module } from "@chojs/core";
 
 @Injectable()
 class Service {
-    constructor(private readonly apiService: ApiService) {
-    }
+  constructor(private readonly apiService: ApiService) {
+  }
 }
 
 @Module({
-    // module dependencies
-    deps: [Service],
+  // module dependencies
+  deps: [Service],
 
-    // module imports (other modules)
-    imports: [OtherModule],
+  // module imports (other modules)
+  imports: [OtherModule],
 
-    // registering providers
-    providers: [
-        Service,
-        {
-            provide: ApiService,
-            factory: async (injector) => {
-                const config = await injector.resolve('Config');
-                return new ApiService(config.apiUrl);
-            }
-        }
-    ]
+  // registering providers
+  providers: [
+    Service,
+    {
+      provide: ApiService,
+      factory: async (injector) => {
+        const config = await injector.resolve("Config");
+        return new ApiService(config.apiUrl);
+      },
+    },
+  ],
 })
 class MyModule {
-    constructor(private readonly service: Service) {
-    }
+  constructor(private readonly service: Service) {
+  }
 }
 ```

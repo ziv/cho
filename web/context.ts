@@ -22,35 +22,113 @@ export interface Context<
    */
   rawResponse(): Res;
 
-  // request input getters
+  // request section
 
   /**
-   * Get all path parameters as a record.
+   * Get the request URL
    */
-  params(): Record<string, string>;
+  url(): string;
 
   /**
-   * Get query parameters
+   * Get the request method
    */
-  query(): Record<string, string | string[]>;
+  method(): string;
 
   /**
-   * Get headers
+   * Set a local value that can be shared within the request lifecycle.
+   * @param key
+   * @param value
    */
-  headers(): Record<string, string | string[]>;
+  setLocal(key: string, value: unknown): this;
 
-  // body handlers
+  /**
+   * Get a local value that was set within the request lifecycle.
+   * @param key
+   */
+  getLocal<T = unknown>(key: string): T | undefined;
+
+  /**
+   * Get all path parameters as a record object or a specific parameter by key.
+   */
+  params(key?: string): Record<string, string> | string;
+
+  /**
+   * Get query parameters as a record object or a specific parameter by key.
+   */
+  query(key?: string): Record<string, string | string[]>;
+
+  /**
+   * Get headers as a record object or a specific header by key.
+   */
+  headers(key?: string): Record<string, string | string[]>;
+
+  /**
+   * Get the request body as raw bytes.
+   */
+  rawBody(): Promise<Uint8Array>;
 
   /**
    * Get the request body parsed as JSON.
    */
   jsonBody<T>(): Promise<T>;
 
-  // response handlers
+  /**
+   * Get the request body as blob.
+   */
+  blobBody(): Promise<string>;
+
+  /**
+   * Get the request body as text.
+   */
+  textBody<T = Uint8Array>(): Promise<T>;
+
+  /**
+   * Get the request body parsed as form data.
+   */
+  formBody(): Promise<Record<string, string | string[]>>;
+
+  // response section
+
+  /**
+   * Set the response status code.
+   * @param code
+   */
+  status(code: number): this;
+
+  /**
+   * Set a response header.
+   * @param key
+   * @param value
+   */
+  header(key: string, value: string): this;
 
   /**
    * Send a JSON response.
    * @param data
    */
   json(data: unknown): Response;
+
+  /**
+   * Send a text response.
+   * @param data
+   */
+  text(data: string): Response;
+
+  /**
+   * Send an HTML response.
+   * @param data
+   */
+  html(data: string): Response;
+
+  /**
+   * Send a 404 Not Found response.
+   */
+  notFound(): Response;
+
+  /**
+   * Send a redirect response.
+   * @param url
+   * @param code default to 302
+   */
+  redirect(url: string, code?: number): Response;
 }

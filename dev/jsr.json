@@ -1,0 +1,11 @@
+{
+  "name": "@chojs/dev",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": "./mod.ts",
+  "imports": {
+    "@chojs/core": "jsr:@chojs/core@^0.4.2",
+    "@chojs/web": "jsr:@chojs/core@^0.4.2",
+    "@std/fmt": "jsr:@std/fmt@^1.0.8"
+  }
+}

@@ -1,6 +1,5 @@
 /**
- * This is a meta-package that groups vendor-related functionalities.
- * It holds as dependencies all the packages that are considered vendor-specific.
+ * This is a meta-package that groups vendors packages.
  */
 export default {
   name: "@chojs/vendor",

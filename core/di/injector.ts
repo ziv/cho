@@ -1,11 +1,5 @@
 import type { Any, Ctr } from "../meta/mod.ts";
-import type {
-  InjectableDescriptor,
-  ModuleDescriptor,
-  Provider,
-  Resolver,
-  Token,
-} from "./types.ts";
+import type { InjectableDescriptor, ModuleDescriptor, Provider, Resolver, Token } from "./types.ts";
 import { debuglog } from "../utils/debuglog.ts";
 import { read, readMetadataObject, write } from "../meta/mod.ts";
 
@@ -13,8 +7,7 @@ const log = debuglog("di:injector");
 
 const InjectorMetadata = Symbol("ModuleInjector");
 
-const tokenName = (token: Token) =>
-  (typeof token === "function" && token.name) ? token.name : String(token);
+const tokenName = (token: Token) => (typeof token === "function" && token.name) ? token.name : String(token);
 
 export type SearchResultProvider = {
   type: "provider";
@@ -179,9 +172,7 @@ export class Injector implements Resolver {
     if (type === "circular-dependency-detected") {
       const path = value.map((i) => i.name).join(" → ");
       throw new Error(
-        `${this.name}: Circular dependency detected while resolving ${
-          tokenName(token)
-        }: ${path} → ${tokenName(token)}`,
+        `${this.name}: Circular dependency detected while resolving ${tokenName(token)}: ${path} → ${tokenName(token)}`,
       );
     }
 

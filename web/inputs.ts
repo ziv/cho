@@ -207,7 +207,7 @@ export const Header: ArgTypeFunction = createTypeFunction("header");
 
 /**
  * Create cookie argument input.
- * 
+ *
  * If no key is provided, all cookies will be passed as an object.
  * If key is provided, the value will be extracted from the cookies using the key.
  * If validator is provided, the cookie will be validated using the validator.
@@ -221,7 +221,7 @@ export const Header: ArgTypeFunction = createTypeFunction("header");
  *   }
  * }
  * ```
- * 
+ *
  * @example With validator
  * ```ts
  * class UserController {
@@ -231,7 +231,7 @@ export const Header: ArgTypeFunction = createTypeFunction("header");
  *   }
  * }
  * ```
- * 
+ *
  * @example All cookies
  * ```ts
  * class UserController {

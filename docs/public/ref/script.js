@@ -25,8 +25,7 @@ window.addEventListener("load", () => {
     if (
       findParent(
         e.target,
-        (el) =>
-          el.parentElement === usageSelector && el instanceof HTMLDivElement,
+        (el) => el.parentElement === usageSelector && el instanceof HTMLDivElement,
       )
     ) {
       usageSelector.open = false;
