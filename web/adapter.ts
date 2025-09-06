@@ -68,5 +68,5 @@ export interface Adapter<
    * Mounts a top-level feature to the application
    * @param feature
    */
-  mountApp(feature: Feature): void;
+  mountApp(feature: Feature): Application;
 }

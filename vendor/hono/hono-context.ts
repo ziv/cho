@@ -1,39 +1,46 @@
-import type { ChoContext } from "@chojs/vendor";
-import type { Context, StatusCode } from "hono";
+import type {Context} from "hono";
+import type {Context as WebContext} from "@chojs/web";
 
 /**
  * HonoContext is a wrapper around Hono's Context to provide a unified interface.
  */
-export class HonoContext implements ChoContext<Context> {
+export class HonoContext implements WebContext<Context> {
   constructor(readonly raw: Context) {
   }
 
-  rawContext() {
+  rawCtx(): Context {
     return this.raw;
   }
 
-  status(code: number): this {
-    this.raw.status(code as StatusCode);
-    return this;
+  rawRequest(): Request {
+    return this.raw.req;
   }
 
-  param(key: string): string | undefined {
-    return this.raw.req.param(key);
+  rawResponse(): Response {
+    return this.raw.res;
   }
 
-  query(key?: string): URLSearchParams | string | Record<string, string> | null {
-    return (key ? this.raw.req.query(key) : this.raw.req.query()) ?? null;
+  // input handlers
+
+  params() {
+    return this.raw.req.param();
   }
 
-  queries(key: string): string[] {
-    return this.raw.req.queries(key) ?? [];
+  query() {
+    return this.raw.req.query();
   }
 
-  header(key: string): string | null {
-    return this.raw.header(key) ?? null;
+  headers() {
+    return this.raw.req.header();
   }
 
-  json<T>(): Promise<T> {
+  jsonBody<T>(): Promise<T> {
     return this.raw.req.json() as Promise<T>;
+  }
+
+  // response handlers
+
+  json(data: any): Response {
+    return this.raw.json(data);
   }
 }

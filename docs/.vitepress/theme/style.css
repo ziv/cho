@@ -166,6 +166,7 @@ img.choko-end {
 }
 
 .dark {
+    img.choko-end,
     img.excalidraw {
         filter: invert(100%);
     }

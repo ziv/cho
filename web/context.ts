@@ -3,7 +3,6 @@ export type ParamsType<S> = Record<string, S> | string | undefined;
 /**
  * Context is an ion over different web frameworks to provide a unified interface.
  */
-
 export interface Context<
   Ctx extends any = any,
   Req = Request,
@@ -13,7 +12,7 @@ export interface Context<
   /**
    * Get the raw context object from the underlying framework.
    */
-  raw(): Ctx;
+  rawCtx(): Ctx;
 
   /**
    * Get the raw request object from the underlying framework.
@@ -25,36 +24,35 @@ export interface Context<
    */
   rawResponse(): Res;
 
-  // input handler
+  // request input getters
 
   /**
-   * Get path parameters or a specific path parameter by key.
-   * @param key
+   * Get all path parameters as a record.
    */
-  param(key?: string): ParamsType<string>;
+  params(): Record<string, string>;
 
   /**
-   * Get query parameters or a specific query parameter by key.
-   * @param key
+   * Get query parameters
    */
-  query(key?: string): ParamsType<string | string[]>;
+  query(): Record<string, string | string[]>;
 
   /**
-   * Get header parameters or a specific header parameter by key.
-   * @param key
+   * Get headers
    */
-  header(key?: string): ParamsType<string | string[]>;
+  headers(): Record<string, string | string[]>;
 
-  /**
-   * Get cookie parameters or a specific cookie parameter by key.
-   * @param key
-   */
-  cookie(key?: string): ParamsType<string>;
+  // body handlers
 
   /**
    * Get the request body parsed as JSON.
    */
-  json<T>(): Promise<T>;
+  jsonBody<T>(): Promise<T>;
 
-  body<T>(): Promise<T>;
+  // response handlers
+
+  /**
+   * Send a JSON response.
+   * @param data
+   */
+  json(data: unknown): Response;
 }

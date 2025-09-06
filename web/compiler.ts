@@ -31,7 +31,7 @@ import {
  * with all dependencies resolved.
  * @param ctr
  */
-export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
+export function compile(ctr: Ctr): Promise<LinkedFeature> {
   // is middleware class
   const isMiddleware = (mw: Target): mw is Ctr => mw.prototype && typeof mw.prototype.handle === "function";
 
@@ -40,27 +40,25 @@ export default function compiler(ctr: Ctr): Promise<LinkedFeature> {
 
   function createMethodArgFactory(args: MethodArgType[]): MethodArgFactory {
     return async function (ctx: Context) {
+      let body: any = undefined;
+      const fromRequest = async (type: string) => {
+        switch (type) {
+          case "param":
+            return ctx.params();
+          case "query":
+            return ctx.query();
+          case "header":
+            return ctx.headers();
+          case "body":
+            if (!body) body = await ctx.jsonBody();
+            return body;
+        }
+      };
+
       const ret = [];
       for (const arg of args) {
-        let value;
-        switch (arg.type) {
-          case "param":
-            value = ctx.param(arg.key);
-            break;
-          case "query":
-            value = ctx.query(arg.key);
-            break;
-          case "header":
-            value = ctx.header(arg.key);
-            break;
-          case "body":
-            const json = await ctx.json() as Any;
-            value = arg.key ? json[arg.key] : json;
-            break;
-          case "cookie":
-            value = ctx.cookie(arg.key);
-            break;
-        }
+        const temp = await fromRequest(arg.type);
+        const value = arg.key ? temp?.[arg.key] : temp;
         if (!arg.validator) {
           ret.push(value);
           continue;

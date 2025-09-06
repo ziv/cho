@@ -10,7 +10,6 @@
     "docs:preview": "vitepress preview "
   },
   "devDependencies": {
-    "@chojs/core": "../core/mod.ts",
     "@tsconfig/deno": "^1.0.11",
     "vitepress": "^1.6.4"
   }

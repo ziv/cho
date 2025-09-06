@@ -1,33 +1,33 @@
 import { Hono, type MiddlewareHandler } from "hono";
+import type { Adapter } from "@chojs/web";
 import { HonoContext } from "./hono-context.ts";
 
-export class HonoAdapter extends ChoAdapter<
-  Hono,
-  Hono,
-  Hono,
-  MiddlewareHandler
-> {
+export class HonoAdapter implements
+  Adapter<
+    Hono,
+    Hono,
+    Hono,
+    MiddlewareHandler
+  > {
   createMiddleware(handler): MiddlewareHandler {
     return function (c, next) {
       return handler(new HonoContext(c), next);
     };
   }
 
-  createEndpoint(handler) {
+  createEndpoint(handler, factory) {
     return async function (c) {
-      const ret = await handler(new HonoContext(c));
-      if (ret instanceof Response) {
-        return ret;
-      }
+      const ctx = new HonoContext(c);
+      const args = [...(await factory(ctx)), ctx];
+      const ret = await handler(...args);
+      if (ret instanceof Response) return ret;
       return c.json(ret);
     };
   }
 
   createController(mws: MiddlewareHandler[]): Hono {
     const c = new Hono();
-    for (const mw of mws) {
-      c.use(mw);
-    }
+    for (const mw of mws) c.use(mw);
     return c;
   }
 

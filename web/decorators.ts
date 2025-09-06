@@ -40,7 +40,7 @@ export function Controller(route: string, desc?: ControllerDescriptor): ClassDec
     const data = {
       // routed
       route: route ?? "",
-      middlewares: desc.middlewares ?? [],
+      middlewares: desc?.middlewares ?? [],
       // injectable
       deps: desc?.deps ?? [],
     };

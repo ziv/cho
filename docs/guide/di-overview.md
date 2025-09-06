@@ -1,14 +1,11 @@
 # Dependency Injection
 
-<img class="choko-end" src="../public/cho.svg">
-
-**CHO** provide a simple and flexible [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) (DI) system
+**CHO** provide a simple and flexible [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) (DI)
+system
 to manage the creation and sharing of entities within your application.
 DI is a design pattern that allows a class to receive its dependencies from an external source rather than creating them
 itself. This promotes loose coupling and makes your code more modular, testable, and maintainable. This guide will walk
 you through the key concepts and usage of DI in **CHO**.
-
-
 
 The DI in **CHO** is achieved through [providers](di-providers.md) definitions. A provider is a recipe for creating an
 entity. Providers are registered in a DI container (the module), and each [module](di-modules.md) contain an injector
@@ -20,7 +17,8 @@ is not found.
 
 <img class="excalidraw" src="../public/module.svg">
 
-The DI in **CHO** supports only single type of provider, the factory provider. A factory provider is defined by a token and
+The DI in **CHO** supports only single type of provider, the factory provider. A factory provider is defined by a token
+and
 a factory function that receive injector as argument for resolving dependencies, and returns the resulting entity. The
 factories in **CHO** are always asynchronous.
 

@@ -4,8 +4,6 @@ outline: deep
 
 # Providers
 
-<img class="choko-end" src="../public/cho.svg">
-
 Providers are a core concept in **CHO**'s Dependency Injection (DI) system. They define how to create entities.
 
 ### Factory Providers
