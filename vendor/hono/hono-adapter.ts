@@ -42,8 +42,11 @@ export class HonoAdapter implements
     return function (c) {
       return streamSSE(c, async (stream) => {
         const ctx = new HonoContext(c);
-        const args = [...(await factory(ctx)), stream, ctx];
-        await handler(...args);
+        const args = [...(await factory(ctx)), ctx];
+        for await (const next of handler(...args)) {
+          await stream.writeSSE(next);
+        }
+        await stream.close();
       });
     };
   }
@@ -75,6 +78,7 @@ export class HonoAdapter implements
         ctr[httpMethod](route, ...middlewares, endpoint);
         break;
       case "stream":
+      case "sse":
         ctr.get(route, ...middlewares, endpoint);
         break;
       default:

@@ -18,8 +18,7 @@ The framework does not depend on any engine and on the environment (Node.js, Den
 
 ### Minimal
 
-Provide a shallow set of decorators, and provide a set of functions to extend the decorators functionality. Enough to
-build a modular application.
+Provide only the essential features to build modular applications.
 
 ---
 

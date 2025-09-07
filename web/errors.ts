@@ -48,3 +48,7 @@ export class EmptyControllerError extends Error {
  */
 export class UnauthorizedError extends Error {
 }
+
+export class CircularDependencyError extends Error {
+
+}

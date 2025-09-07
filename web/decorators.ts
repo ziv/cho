@@ -1,35 +1,37 @@
-import { addToMetadataObject } from "@chojs/core";
-import type { Any, ClassDecorator, ClassMethodDecorator, Ctr, MethodContext, Target } from "@chojs/core";
-import { ControllerDescriptor, FeatureDescriptor, MethodArgType } from "./types.ts";
+import type {ClassDecorator, ClassMethodDecorator, Ctr, Target} from "@chojs/core";
+import {addToMetadataObject} from "@chojs/core";
+import {ControllerDescriptor, FeatureDescriptor} from "./types.ts";
+import type {MethodDecoratorFn} from "./meta.ts";
+import {createMethodDecorator} from "./meta.ts";
 
 // use any to avoid TS strict mode error on decorators
 // the JS decorators are not compatible with TS ones
-/**
- * Function signature for method decorators that define HTTP endpoints.
- */
-export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; // ClassMethodDecorator;
-
-/**
- * Creates a method decorator for the given HTTP method.
- *
- * Why the decorator function check the context type?
- * Because there are two different decorator proposals:
- * - TC39 stage 3 proposal (ESM/Deno/TS > 5.0)
- * - TS experimental decorators (Bun, Experimental TS decorators, reflect-metadata, etc.)
- *
- * They have different context types.
- *
- * @param type HTTP method type (GET, POST, etc.)
- * @return {MethodDecoratorFn}
- */
-function createMethodDecorator(type: string): MethodDecoratorFn {
-  return function (route: string, args: MethodArgType[] = []): ClassMethodDecorator {
-    return function (target, context) {
-      const name = typeof context === "string" ? context : (context as MethodContext).name;
-      addToMetadataObject(target, { name, route, type, args });
-    };
-  };
-}
+// /**
+//  * Function signature for method decorators that define HTTP endpoints.
+//  */
+// export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; // ClassMethodDecorator;
+//
+// /**
+//  * Creates a method decorator for the given HTTP method.
+//  *
+//  * Why the decorator function check the context type?
+//  * Because there are two different decorator proposals:
+//  * - TC39 stage 3 proposal (ESM/Deno/TS > 5.0)
+//  * - TS experimental decorators (Bun, Experimental TS decorators, reflect-metadata, etc.)
+//  *
+//  * They have different context types.
+//  *
+//  * @param type HTTP method type (GET, POST, etc.)
+//  * @return {MethodDecoratorFn}
+//  */
+// function createMethodDecorator(type: string): MethodDecoratorFn {
+//   return function (route: string, args: MethodArgType[] = []): ClassMethodDecorator {
+//     return function (target, context) {
+//       const name = typeof context === "string" ? context : (context as MethodContext).name;
+//       addToMetadataObject(target, { name, route, type, args });
+//     };
+//   };
+// }
 
 /**
  * Marks a class as a web controller.
@@ -38,14 +40,16 @@ function createMethodDecorator(type: string): MethodDecoratorFn {
  * @param route
  * @param desc
  */
-export function Controller(route: string, desc?: ControllerDescriptor): ClassDecorator {
+export function Controller(route?: string | ControllerDescriptor, desc?: ControllerDescriptor): ClassDecorator {
+  const r = route && typeof route === "string" ? route : "";
+  const d = route && typeof route === "object" ? route : desc;
   return (target: Target) => {
     const data = {
       // routed
-      route: route ?? "",
-      middlewares: desc?.middlewares ?? [],
+      route: r,
+      middlewares: d?.middlewares ?? [],
       // injectable
-      deps: desc?.deps ?? [],
+      deps: d?.deps ?? [],
     };
     addToMetadataObject(target, data);
   };

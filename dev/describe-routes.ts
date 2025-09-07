@@ -18,9 +18,10 @@ export function describeRoutes(input: Ctr) {
 
     const route = `${prefix}${meta.route}`;
     const padding = "  ".repeat(depth * 2);
+    const m = (meta.middlewares ?? []).length;
     const type = green(meta.type);
 
-    console.log(padding, `    ${type} ${route}`);
+    console.log(padding, `    ${type} ${route} (${m} middleware${m === 1 ? "" : "s"})`);
   }
 
   function describeController(ctr: Ctr, depth: number, prefix: string) {
@@ -31,8 +32,9 @@ export function describeRoutes(input: Ctr) {
 
     const route = `${prefix}${meta.route}`;
     const padding = "  ".repeat(depth * 2);
+    const m = (meta.middlewares ?? []).length;
 
-    console.log(padding, `  ${route} (${C})`);
+    console.log(padding, `  ${route} (${C}, ${m} middleware${m === 1 ? "" : "s"})`);
 
     const props = Object.getOwnPropertyNames(
       ctr.prototype,
@@ -51,8 +53,9 @@ export function describeRoutes(input: Ctr) {
     }
     const route = `${prefix}${meta.route}`;
     const padding = "  ".repeat(depth * 2);
+    const m = (meta.middlewares ?? []).length;
 
-    console.log(padding, `${route} (${F})`);
+    console.log(padding, `${route} (${F}, ${m} middleware${m === 1 ? "" : "s"})`);
 
     for (const c of meta.controllers ?? []) describeController(c, depth, route);
 

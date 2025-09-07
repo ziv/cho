@@ -17,6 +17,7 @@ import type {
 } from "./types.ts";
 import type { Context } from "./context.ts";
 import {
+  CircularDependencyError,
   EmptyControllerError,
   InvalidInputError,
   NotControllerError,
@@ -173,6 +174,7 @@ export function compile(ctr: Ctr): Promise<LinkedFeature> {
   ): Promise<LinkedController> {
     const meta = readMetadataObject<ControllerDescriptor>(ctr);
     if (!meta) {
+      // todo add option for silence errors
       throw new NotControllerError(ctr);
     }
 
@@ -221,7 +223,7 @@ export function compile(ctr: Ctr): Promise<LinkedFeature> {
     if (!meta) {
       throw new NotFeatureError(ctr);
     }
-    const injector = Injector.read(ctr) ?? await Injector.create(ctr);
+    const injector = await Injector.get(ctr);
 
     const controllers: LinkedController[] = [];
     for (const c of meta.controllers ?? []) {
@@ -244,4 +246,51 @@ export function compile(ctr: Ctr): Promise<LinkedFeature> {
   }
 
   return feature(ctr);
+}
+
+/**
+ * Why a class when we have a function?
+ * - Because we need to keep track of circular dependencies.
+ * - Because we might want to add options in the future.
+ * - Because we might want to extend it.
+ */
+export class Compiler {
+  options = { silent: true };
+  resolved = new WeakSet();
+  controllers = new WeakSet();
+  features = new WeakSet();
+  async compile(ctr: Ctr): Promise<LinkedFeature> {
+  }
+
+  protected async controller(ctr: Ctr, injector: Injector): Promise<LinkedController> {
+    // circular dependency guard
+    if (this.controllers.has(ctr)) {
+      throw new CircularDependencyError();
+    }
+    this.controllers.add(ctr);
+
+    // type guard
+    const meta = readMetadataObject<ControllerDescriptor>(ctr);
+    if (!meta) {
+      // todo add option for silence errors
+      throw new NotControllerError(ctr);
+    }
+  }
+
+  protected async feature(ctr: Ctr): Promise<LinkedFeature> {
+    // circular dependency guard
+    if (this.features.has(ctr)) {
+      throw new CircularDependencyError();
+    }
+    this.features.add(ctr);
+
+    // type guard
+    const meta = readMetadataObject<FeatureDescriptor>(ctr);
+    if (!meta) {
+      throw new NotFeatureError(ctr);
+    }
+
+    // resolving self
+    const injector = await Injector.get(ctr);
+  }
 }

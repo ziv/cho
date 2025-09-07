@@ -29,7 +29,9 @@ export interface Adapter<
   createStreamEndpoint(mw: Target, factory: MethodArgFactory): Middleware;
 
   /**
-   * Takes cho SSE endpoint handler and converts it to the framework's SSE endpoint
+   * Takes cho SSE endpoint handler and converts it to the framework's streaming endpoint
+   * The endpoint handler should be an async generator function
+   *
    * @param mw
    * @param factory
    */

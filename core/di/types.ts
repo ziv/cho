@@ -13,7 +13,7 @@ export type Token = string | symbol | Ctr;
  * Implemented by the Injector class.
  * @internal
  */
-export type Resolver = { resolve: (token: Token) => Promise<Any | undefined> };
+export type Resolver = { resolve: <T>(token: Token) => Promise<T> };
 
 /**
  * Factory type for creating instances of a dependency from a token.
@@ -28,8 +28,8 @@ export type Factory<T = Any> = (injector: Resolver) => T;
  * @internal
  */
 export type Provider<T = Any> = {
-  provide: Token;
-  factory: Factory<T>;
+    provide: Token;
+    factory: Factory<T>;
 };
 
 /**
@@ -38,7 +38,7 @@ export type Provider<T = Any> = {
  * @internal
  */
 export type InjectableDescriptor = {
-  deps?: Token[];
+    deps?: Token[];
 };
 
 /**
@@ -48,8 +48,8 @@ export type InjectableDescriptor = {
  * @internal
  */
 export type ModuleDescriptor = InjectableDescriptor & {
-  imports: Ctr[];
-  providers: (Provider | Ctr)[];
+    imports: Ctr[];
+    providers: (Provider | Ctr)[];
 };
 
 /**
@@ -59,13 +59,13 @@ export type ModuleDescriptor = InjectableDescriptor & {
  * @internal
  */
 export type MethodContext = {
-  kind: string;
-  name: string;
-  static: boolean;
-  private: boolean;
-  metadata: object;
-  addInitializer: (fn: () => void) => void;
-  access: { get: () => unknown };
+    kind: string;
+    name: string;
+    static: boolean;
+    private: boolean;
+    metadata: object;
+    addInitializer: (fn: () => void) => void;
+    access: { get: () => unknown };
 };
 
 /**
@@ -76,9 +76,9 @@ export type MethodContext = {
  * @see https://github.com/tc39/proposal-decorators?tab=readme-ov-file#class-methods
  */
 export type ClassDecorator = (value: Function, context: {
-  kind: "class";
-  name: string | undefined;
-  addInitializer(initializer: () => void): void;
+    kind: "class";
+    name: string | undefined;
+    addInitializer(initializer: () => void): void;
 }) => Function | void | Any;
 
 /**
@@ -88,10 +88,10 @@ export type ClassDecorator = (value: Function, context: {
  * @see https://github.com/tc39/proposal-decorators?tab=readme-ov-file#class-methods
  */
 export type ClassMethodDecorator = (value: Function, context: {
-  kind: "method";
-  name: string | symbol;
-  access: { get(): unknown };
-  static: boolean;
-  private: boolean;
-  addInitializer(initializer: () => void): void;
+    kind: "method";
+    name: string | symbol;
+    access: { get(): unknown };
+    static: boolean;
+    private: boolean;
+    addInitializer(initializer: () => void): void;
 }) => Function | void;

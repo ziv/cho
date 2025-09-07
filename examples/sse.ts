@@ -1,6 +1,7 @@
-import { ChoWebApplication, Controller, Controllers, Feature, Get, Sse } from "@chojs/web";
-import { showRoutes } from "hono/dev";
-import { Context } from "npm:hono@4.9.2";
+#!/usr/bin/env -S deno run --allow-all examples/sse.ts
+import { compile, Context, Controller, Feature, Get, linker, Sse } from "@chojs/web";
+import { HonoAdapter } from "@chojs/vendor-hono";
+import { describeRoutes } from "@chojs/dev";
 
 @Controller()
 class SSEController {
@@ -10,28 +11,36 @@ class SSEController {
   }
 
   @Sse("sse")
-  async example(c: Context, stream: WritableStreamDefaultWriter) {
-    let id = 0;
-    while (true) {
+  async *example(c: Context) {
+    for (let id = 0; id < 10; id++) {
       const message = `It is ${new Date().toISOString()}`;
-      await stream.writeSSE({
+      yield {
         data: message,
         event: "time-update",
-        id: String(id++),
-      });
+        id: String(id),
+      };
       console.log(message);
-      await stream.sleep(1000);
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      // await stream.writeSSE({
+      //     data: message,
+      //     event: "time-update",
+      //     id: String(id),
+      // });
+      // console.log(message);
+      // await stream.sleep(500);
     }
+    // await stream.close();
   }
 }
 
-@Feature(
-  Controllers(SSEController),
-)
+@Feature({
+  controllers: [SSEController],
+})
 class AppFeature {
 }
 
-const app = await ChoWebApplication.create(AppFeature);
+const compiled = await compile(AppFeature);
+const linked = linker(compiled, new HonoAdapter());
 
-showRoutes(app.link.ref());
-Deno.serve(app.link.handler());
+describeRoutes(AppFeature);
+Deno.serve(linked.fetch);
