@@ -3,9 +3,8 @@ const Fuse = window.Fuse;
 const searchInput = document.querySelector("#searchbar");
 const contentDiv = document.querySelector("#content");
 const searchResultsDiv = document.querySelector("#searchResults");
-const currentFile =
-  document.querySelector("meta[name='doc-current-file']").attributes
-    .getNamedItem("content").value;
+const currentFile = document.querySelector("meta[name='doc-current-file']").attributes
+  .getNamedItem("content").value;
 const pathToRoot = "../".repeat(
   currentFile ? (currentFile.split("/").length + 1) : 0,
 );
