@@ -1,4 +1,4 @@
-import type { ClassMethodDecorator, MethodContext } from "@chojs/core";
+import type { Any, ClassMethodDecorator, MethodContext } from "@chojs/core";
 import { addToMetadataObject } from "@chojs/core";
 import type { MethodArgType } from "./types.ts";
 
