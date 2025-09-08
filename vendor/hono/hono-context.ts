@@ -1,5 +1,8 @@
 import type { Context as WebContext } from "@chojs/web";
-import type { Context } from "hono";
+import type { Context, RedirectStatusCode, StatusCode } from "hono";
+import type { Any } from "@chojs/core/meta";
+
+export type RequestItem<T = string> = Record<string, T> | T | undefined;
 
 /**
  * HonoContext is a wrapper around Hono's Context to provide a unified interface.
@@ -24,8 +27,8 @@ export class HonoContext implements WebContext<Context> {
 
   // request part
 
-  url(): string {
-    return this.raw.req.url();
+  url(): URL {
+    return new URL(this.raw.req.url());
   }
 
   method(): string {
@@ -41,20 +44,25 @@ export class HonoContext implements WebContext<Context> {
     return this.raw.get(key) as T | undefined;
   }
 
-  params(key?: string): Record<string, string> | string | undefined {
+  params(key?: string): RequestItem {
     return this.raw.req.param(key);
   }
 
-  query(key?: string): Record<string, string | string[]> | string | string[] | undefined {
+  query(key?: string): RequestItem {
     return this.raw.req.query(key);
   }
 
-  headers(key?: string): Record<string, string | string[]> | string | string[] | undefined {
+  queries(key?: string): RequestItem<string[]> {
+    return this.raw.req.query(key);
+  }
+
+  headers(key?: string): RequestItem {
     return this.raw.req.header(key);
   }
 
   rawBody(): Promise<Uint8Array> {
-    return this.raw.req.arrayBuffer();
+    // new Uint8Array();
+    return this.raw.req.arrayBuffer() as Promise<Uint8Array>;
   }
 
   jsonBody<T>(): Promise<T> {
@@ -65,14 +73,15 @@ export class HonoContext implements WebContext<Context> {
     return this.raw.req.blob();
   }
 
-  textBody(): Promise<string> {
-    return this.raw.req.text();
+  textBody<T = Uint8Array>(): Promise<T> {
+    // return this.raw.req.text().then((text) => new Response(text));
+    return Promise.resolve(new Uint8Array() as T);
   }
 
   // response part
 
   status(status: number): this {
-    this.raw.status(status);
+    this.raw.status(status as StatusCode);
     return this;
   }
 
@@ -94,10 +103,12 @@ export class HonoContext implements WebContext<Context> {
   }
 
   notFound(): Response {
-    return this.raw.notFound();
+    return new Response("Not Found", {
+      status: 404,
+    });
   }
 
-  redirect(url: string, code: number = 302): Response {
-    return this.raw.redirect(url, code);
+  redirect(url: string, code = 302): Response {
+    return this.raw.redirect(url, code as RedirectStatusCode);
   }
 }

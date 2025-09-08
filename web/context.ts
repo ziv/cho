@@ -73,11 +73,6 @@ export interface Context<
   headers(): Record<string, string | string[]>;
 
   /**
-   * Get the request body as raw bytes.
-   */
-  rawBody(): Promise<Uint8Array>;
-
-  /**
    * Get the request body parsed as JSON.
    */
   jsonBody<T>(): Promise<T>;
@@ -85,17 +80,17 @@ export interface Context<
   /**
    * Get the request body as blob.
    */
-  blobBody(): Promise<string>;
+  blobBody(): Promise<Blob>;
 
   /**
    * Get the request body as text.
    */
-  textBody<T = Uint8Array>(): Promise<T>;
+  textBody(): Promise<string>;
 
   /**
    * Get the request body parsed as form data.
    */
-  // formBody(): Promise<Record<string, string | string[]>>;
+  formBody(): Promise<FormData>;
 
   // response section
 
