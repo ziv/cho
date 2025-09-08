@@ -23,5 +23,5 @@ features:
   - title: Fast Development
     details: Tooling and ecosystem to speed up your development process.
   - title: Free Support
-    details: Free in person support for startups and open source projects.
+    details: Free support for startups.
 ---
