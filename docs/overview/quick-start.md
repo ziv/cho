@@ -1,6 +1,6 @@
 # CHO Quick Start
 
-TBD create a cli tool to make a cho project
+TBD: create a CLI tool to make a CHO project
 
 ## Installation
 

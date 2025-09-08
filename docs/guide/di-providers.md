@@ -13,7 +13,7 @@ and `factory` properties.
 
 The `provide` property is a **token** that identifies the entity. It can be a **class**, a **string**, or a **symbol**.
 
-The `factory` property is an **async function** returns a promise that resolve the entity. The factory function gets
+The `factory` property is an **async function** that returns a promise that resolves the entity. The factory function gets
 an injector as an argument. This injector can be used to resolve other dependencies.
 
 Example:
@@ -40,7 +40,7 @@ Since there is only single type of provider, there are techniques to achieve dif
 #### Value Providers
 
 Value providers are used to provide a constant value. The factory function simply returns the value. Note that the
-factory function must be async and return a promise event for non-async values.
+factory function must be async and return a promise even for non-async values.
 
 ```ts
 const valueProvider: Provider = {

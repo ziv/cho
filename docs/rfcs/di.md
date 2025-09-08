@@ -209,7 +209,7 @@ injector cause the module to instantiate while resolving its dependencies.
 
 - The injector search imported modules’ injectors for resolution.
 - The injector caches a module’s singleton instances by token.
-- Global singletons can be archived using self injection.
+- Global singletons can be achieved using self injection.
 - Throws if a token cannot be resolved.
 
 ##### `Injector` Definition:

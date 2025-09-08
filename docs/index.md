@@ -17,7 +17,7 @@ hero:
 
 features:
   - title: Engine Agnostic
-    details: Support most of Javascript runtimes (Node.js, Deno, Bun, Cloudflare Workers and more...).
+    details: Support for most JavaScript runtimes (Node.js, Deno, Bun, Cloudflare Workers and more...).
   - title: Blazing Fast
     details: Choose the right runtime for your needs, and enjoy the performance benefits.
   - title: Fast Development
