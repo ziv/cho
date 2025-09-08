@@ -43,3 +43,15 @@ export function linker<App>(root: LinkedFeature, adapter: Adapter): App {
 
   return adapter.mountApp<App>(process(root));
 }
+
+// convert linker to class to support extensions for more than HTTP protocols
+
+export interface LinkerPlugin {
+}
+export class HttpLinker implements LinkerPlugin {
+}
+
+export class Linker<App> {
+  constructor(private readonly plugins: LinkerPlugin[]) {
+  }
+}

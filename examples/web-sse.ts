@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-all examples/sse.ts
+#!/usr/bin/env -S deno run --allow-all
 import { compile, Context, Controller, Feature, Get, linker, Sse } from "@chojs/web";
 import { HonoAdapter } from "@chojs/vendor-hono";
 import { describeRoutes } from "@chojs/dev";
@@ -20,16 +20,8 @@ class SSEController {
         id: String(id),
       };
       console.log(message);
-      await new Promise((resolve) => setTimeout(resolve, 250));
-      // await stream.writeSSE({
-      //     data: message,
-      //     event: "time-update",
-      //     id: String(id),
-      // });
-      // console.log(message);
-      // await stream.sleep(500);
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
-    // await stream.close();
   }
 }
 

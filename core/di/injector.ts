@@ -246,7 +246,7 @@ export class Injector implements Resolver {
 
         const next = [...ref, this];
         for (const im of this.imports) {
-            const injector = Injector.read(im) || await Injector.create(im);
+            const injector = await Injector.get(im);
             const res = await injector.search(token, next);
             if (res.type !== "not-found") {
                 // propagate resolved, provider or circular results

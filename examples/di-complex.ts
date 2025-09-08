@@ -1,5 +1,6 @@
 #!/usr/bin/env -S deno run --allow-env --allow-net
 import { Injectable, Injector, Module } from "@chojs/core";
+import { assert } from "@std/assert";
 
 // service
 
@@ -27,6 +28,9 @@ class Foo {}
 })
 class Bar {}
 
-const inj = await Injector.create(Bar);
+const inj = await Injector.get(Bar);
 const service = await inj.resolve(Service);
 console.log(service);
+
+assert(service instanceof Service);
+assert(service.config === "This is a config string");

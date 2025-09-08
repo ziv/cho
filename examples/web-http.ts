@@ -1,5 +1,7 @@
-import { Controller, createApplication, Feature, Get } from "@chojs/web";
-import { HonoLinker } from "@chojs/vendor";
+#!/usr/bin/env -S deno run --allow-all
+import {compile, Controller, Feature, Get, linker} from "@chojs/web";
+import {HonoAdapter} from "@chojs/vendor-hono";
+import {describeRoutes} from "@chojs/dev";
 
 @Controller("")
 class RootController {
@@ -36,5 +38,8 @@ class DataController {
 class AppFeature {
 }
 
-const app = await createApplication<Application>(AppFeature, { linker: new HonoLinker() });
-Deno.serve(app.handler());
+const compiled = await compile(AppFeature);
+const linked = linker(compiled, new HonoAdapter());
+
+describeRoutes(AppFeature);
+Deno.serve(linked.fetch);

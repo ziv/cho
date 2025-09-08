@@ -21,7 +21,7 @@ export class NotMiddlewareError extends Error {
  */
 export class NotControllerError extends Error {
   constructor(readonly input: unknown) {
-    super("the controller is not a class");
+    super("the class is not a controller");
   }
 }
 
@@ -30,7 +30,7 @@ export class NotControllerError extends Error {
  */
 export class NotFeatureError extends Error {
   constructor(readonly input: unknown) {
-    super("the feature is not a class");
+    super("the class is not a feature");
   }
 }
 
@@ -50,5 +50,4 @@ export class UnauthorizedError extends Error {
 }
 
 export class CircularDependencyError extends Error {
-
 }
