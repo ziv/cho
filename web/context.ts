@@ -56,8 +56,8 @@ export interface Context<
   /**
    * Get query parameters as a record object or a specific parameter by key.
    */
-  query(key: string): string[] | string | undefined;
-  query(): Record<string, string | string[]>;
+  query(key: string): string | undefined;
+  query(): Record<string, string>;
 
   /**
    * Get all query parameters lists as a record object or a specific parameter by key.
