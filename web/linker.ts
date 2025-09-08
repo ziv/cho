@@ -41,7 +41,7 @@ export function linker<App>(root: LinkedFeature, adapter: Adapter): App {
     return feature;
   }
 
-  return adapter.mountApp<App>(process(root));
+  return adapter.mountApp<App>(process(root), root.route);
 }
 
 // convert linker to class to support extensions for more than HTTP protocols

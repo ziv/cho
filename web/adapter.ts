@@ -84,6 +84,7 @@ export interface Adapter<
   /**
    * Mounts a top-level feature to the application
    * @param feature
+   * @param route
    */
-  mountApp<R = Application>(feature: Feature): R;
+  mountApp<R = Application>(feature: Feature, route: string): R;
 }
