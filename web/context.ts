@@ -116,29 +116,29 @@ export interface Context<
    * Send a JSON response.
    * @param data
    */
-  json(data: unknown): Response;
+  json(data: unknown): Promise<Response> | Response;
 
   /**
    * Send a text response.
    * @param data
    */
-  text(data: string): Response;
+  text(data: string): Promise<Response> | Response;
 
   /**
    * Send an HTML response.
    * @param data
    */
-  html(data: string): Response;
+  html(data: string): Promise<Response> | Response;
 
   /**
    * Send a 404 Not Found response.
    */
-  notFound(): Response;
+  notFound(): Promise<Response> | Response;
 
   /**
    * Send a redirect response.
    * @param url
    * @param code default to 302
    */
-  redirect(url: string, code?: number): Response;
+  redirect(url: string, code?: number): Promise<Response> | Response;
 }
