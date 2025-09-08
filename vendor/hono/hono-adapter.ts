@@ -94,7 +94,9 @@ export class HonoAdapter implements
     return this.mountController(to, feat, route);
   }
 
-  mountApp<R = Hono>(feature: Hono): R {
-    return feature as R;
+  mountApp<R = Hono>(feature: Hono, route: string): R {
+    const app = new Hono();
+    app.route(route, feature);
+    return app as R;
   }
 }
