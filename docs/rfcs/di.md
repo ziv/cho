@@ -229,7 +229,7 @@ interface Injector {
 
 ## Error Handling
 
-- Creating injector for a module that already contain injector:
+- Creating injector for a module that already contains injector:
   - Throw: `Injector already set for this module.`
 
 - Creating injector for non-module class:

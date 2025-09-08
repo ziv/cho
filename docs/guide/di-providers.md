@@ -52,7 +52,7 @@ const valueProvider: Provider = {
 #### Class Providers
 
 Class providers are used to create overrides for classes (create instance of class A as class B). In **CHO**, instead of
-using class provider, create a provider that resolve the override instance.
+using a class provider, create a provider that resolves the override instance.
 
 ```ts
 const classProvider: Provider = {
@@ -65,5 +65,5 @@ const classProvider: Provider = {
 
 #### Existing Providers
 
-Existing providers are used to create aliases for existing providers. In **CHO**, instead of using existing provider,
-create a provider that resolve the existing provider. See the example of class provider above.
+Existing providers are used to create aliases for existing providers. In **CHO**, instead of using an existing provider,
+create a provider that resolves the existing provider. See the example of class provider above.

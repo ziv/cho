@@ -37,13 +37,13 @@ class Service {
     // explicit providers definition
     {
       provide: "Config",
-      useFactory: (injector) => {
+      factory: (injector) => {
         return Promise.resolve({ apiUrl: "https://api.example.com" });
       },
     },
     {
       provide: ApiService,
-      useFactory: async (injector) => {
+      factory: async (injector) => {
         const config = await injector.resolve("Config");
         return new ApiService(config.apiUrl);
       },
