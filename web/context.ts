@@ -27,7 +27,7 @@ export interface Context<
   /**
    * Get the request URL
    */
-  url(): string;
+  url(): URL;
 
   /**
    * Get the request method
@@ -50,17 +50,27 @@ export interface Context<
   /**
    * Get all path parameters as a record object or a specific parameter by key.
    */
-  params(key?: string): Record<string, string> | string;
+  params(key: string): string | undefined;
+  params(): Record<string, string>;
 
   /**
    * Get query parameters as a record object or a specific parameter by key.
    */
-  query(key?: string): Record<string, string | string[]>;
+  query(key: string): string[] | string | undefined;
+  query(): Record<string, string | string[]>;
+
+  /**
+   * Get all query parameters lists as a record object or a specific parameter by key.
+   * @param key
+   */
+  queries(key: string): string[] | undefined;
+  queries(): Record<string, string[]>;
 
   /**
    * Get headers as a record object or a specific header by key.
    */
-  headers(key?: string): Record<string, string | string[]>;
+  headers(key: string): string | undefined;
+  headers(): Record<string, string | string[]>;
 
   /**
    * Get the request body as raw bytes.
@@ -85,7 +95,7 @@ export interface Context<
   /**
    * Get the request body parsed as form data.
    */
-  formBody(): Promise<Record<string, string | string[]>>;
+  // formBody(): Promise<Record<string, string | string[]>>;
 
   // response section
 
