@@ -115,8 +115,8 @@ export class HonoContext implements WebContext<Context> {
     return this.raw.html(data);
   }
 
-  notFound(): Response {
-    return new Response("Not Found", {
+  notFound(message = "Not Found"): Response {
+    return new Response(message, {
       status: 404,
     });
   }

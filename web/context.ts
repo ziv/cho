@@ -127,8 +127,9 @@ export interface Context<
 
   /**
    * Send a 404 Not Found response.
+   * @param message optional message default to "Not Found"
    */
-  notFound(): Promise<Response> | Response;
+  notFound(message?: string): Promise<Response> | Response;
 
   /**
    * Send a redirect response.
