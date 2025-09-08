@@ -70,7 +70,7 @@ export interface Context<
    * Get headers as a record object or a specific header by key.
    */
   headers(key: string): string | undefined;
-  headers(): Record<string, string | string[]>;
+  headers(): Record<string, string>;
 
   /**
    * Get the request body parsed as JSON.
