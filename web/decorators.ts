@@ -1,8 +1,8 @@
-import type {ClassDecorator, ClassMethodDecorator, Ctr, Target} from "@chojs/core";
-import {addToMetadataObject} from "@chojs/core";
-import {ControllerDescriptor, FeatureDescriptor} from "./types.ts";
-import type {MethodDecoratorFn} from "./meta.ts";
-import {createMethodDecorator} from "./meta.ts";
+import type { ClassDecorator, ClassMethodDecorator, Ctr, Target } from "@chojs/core";
+import { addToMetadataObject } from "@chojs/core";
+import { ControllerDescriptor, FeatureDescriptor } from "./types.ts";
+import type { MethodDecoratorFn } from "./meta.ts";
+import { createMethodDecorator } from "./meta.ts";
 
 /**
  * Marks a class as a web controller.
