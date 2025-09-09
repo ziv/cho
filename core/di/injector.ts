@@ -75,42 +75,10 @@ export class Injector implements Resolver {
     readonly cache: Map<Token, Any> = new Map<Token, Any>();
 
     /**
-     * Create an injector for a given module class.
-     * This method initializes the injector, registers the module itself as a provider,
-     * and resolves the module to ensure all its dependencies are instantiated.
-     *
-     * @deprecated
-     * @param ctr
-     * @returns Promise of the created Injector instance
-     */
-    static async create(ctr: Ctr): Promise<Injector> {
-        console.log(
-            "DEPRECATED: Injector.create() is deprecated. Use Injector.get() instead.",
-        );
-        log(`creating ${ctr.name} injector`);
-        const injector = new Injector(ctr);
-        // add self to providers
-        await injector.register(ctr).resolve(ctr);
-        return injector;
-    }
-
-    /**
-     * Read the injector instance associated with a module class.
-     * @deprecated
-     * @param ctr
-     */
-    static read(ctr: Ctr): Injector | undefined {
-        console.log(
-            "DEPRECATED: Injector.read() is deprecated. Use Injector.get() instead.",
-        );
-        return read<Injector>(ctr, InjectorMetadata);
-    }
-
-    /**
      * Get the injector instance for a module class, creating it if it doesn't exist.
      * @param ctr
      */
-    static async get(ctr: Ctr) {
+    static async get(ctr: Ctr): Promise<Injector> {
         let inj = read<Injector>(ctr, InjectorMetadata);
         if (!inj) {
             inj = new Injector(ctr);
