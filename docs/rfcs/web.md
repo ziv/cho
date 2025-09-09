@@ -59,12 +59,12 @@ type Method = (route: string, args: MethodArgType = []) => MethodDecorator;
 
 #### Context Argument
 
-The context is always passes to the method, and it is always the last argument of the method. By default, if no extra
-arguments provided, the method will receive only the context object as its argument.
+The context is always passed to the method, and it is always the last argument of the method. By default, if no extra
+arguments are provided, the method will receive only the context object as its argument.
 
 #### Input Arguments
 
-We can use any of the following input arguments function to extract specific parts of the request and validate them if a
+We can use any of the following input argument functions to extract specific parts of the request and validate them if a
 validator is provided.
 
 | Type                        | Description                                       |
@@ -91,7 +91,7 @@ type Validator = {
 };
 ```
 
-Libraries support this interface include Zod, Yup, Joi, Valibot, and many others.
+Libraries that support this interface include Zod, Yup, Joi, Valibot, and many others.
 
 #### HTTP Methods Decorators
 
@@ -115,7 +115,7 @@ class ExampleController {
   handle(
     body: typeof validator,
     key: string,
-    sessionsId: string,
+    sessionId: string, // Fixed variable name
     ctx: ChoContext, // the context is always the last argument
   ) {
   }
@@ -134,7 +134,7 @@ Each of these decorators explained in its own RFC document as extensions to this
 
 ### Middlewares Decorator
 
-Takes a list of middlewares to be applied to the feature, controller or endpoint. Middlewares are executed in the order
+Takes a list of middlewares to be applied to the feature, controller, or endpoint. Middlewares are executed in the order
 they are defined. Middleware can be either a function or an injectable class that implements the `ChoMiddleware`
 interface.
 

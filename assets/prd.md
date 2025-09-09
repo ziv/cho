@@ -20,10 +20,10 @@
 3. [ ] Should define input validation using extension functions
 4. [ ] Should define output serialization using extension functions
 
-#### None-HTTP Endpoints
+#### Non-HTTP Endpoints
 
 1. [ ] Should define websocket endpoints using decorators
-2. [ ] Should define server sent events endpoints using decorators
+2. [ ] Should define server-sent events endpoints using decorators
 
 ## Endpoints
 

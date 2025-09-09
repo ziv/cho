@@ -81,13 +81,13 @@ export class HonoContext implements WebContext<Context> {
   }
 
   textBody<T = Uint8Array>(): Promise<T> {
-    // todo complete
+    // TODO: complete
     // return this.raw.req.text().then((text) => new Response(text));
     return Promise.resolve(new Uint8Array() as T);
   }
 
   formBody(): Promise<FormData> {
-    // todo complete
+    // TODO: complete
     return Promise.resolve(new FormData());
   }
 

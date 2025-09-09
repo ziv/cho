@@ -186,7 +186,7 @@ export function compile(ctr: Ctr): Promise<LinkedFeature> {
   ): Promise<LinkedController> {
     const meta = readMetadataObject<ControllerDescriptor>(ctr);
     if (!meta) {
-      // todo add option for silence errors
+      // TODO: add option for silence errors
       throw new NotControllerError(ctr);
     }
 
