@@ -27,7 +27,7 @@ export interface Context<
   /**
    * Get the request URL
    */
-  url(): string;
+  url(): URL;
 
   /**
    * Get the request method
@@ -50,22 +50,27 @@ export interface Context<
   /**
    * Get all path parameters as a record object or a specific parameter by key.
    */
-  params(key?: string): Record<string, string> | string;
+  params(key: string): string | undefined;
+  params(): Record<string, string>;
 
   /**
    * Get query parameters as a record object or a specific parameter by key.
    */
-  query(key?: string): Record<string, string | string[]>;
+  query(key: string): string | undefined;
+  query(): Record<string, string>;
+
+  /**
+   * Get all query parameters lists as a record object or a specific parameter by key.
+   * @param key
+   */
+  queries(key: string): string[] | undefined;
+  queries(): Record<string, string[]>;
 
   /**
    * Get headers as a record object or a specific header by key.
    */
-  headers(key?: string): Record<string, string | string[]>;
-
-  /**
-   * Get the request body as raw bytes.
-   */
-  rawBody(): Promise<Uint8Array>;
+  headers(key: string): string | undefined;
+  headers(): Record<string, string>;
 
   /**
    * Get the request body parsed as JSON.
@@ -75,17 +80,17 @@ export interface Context<
   /**
    * Get the request body as blob.
    */
-  blobBody(): Promise<string>;
+  blobBody(): Promise<Blob>;
 
   /**
    * Get the request body as text.
    */
-  textBody<T = Uint8Array>(): Promise<T>;
+  textBody(): Promise<string>;
 
   /**
    * Get the request body parsed as form data.
    */
-  formBody(): Promise<Record<string, string | string[]>>;
+  formBody(): Promise<FormData>;
 
   // response section
 
@@ -106,29 +111,30 @@ export interface Context<
    * Send a JSON response.
    * @param data
    */
-  json(data: unknown): Response;
+  json(data: unknown): Promise<Response> | Response;
 
   /**
    * Send a text response.
    * @param data
    */
-  text(data: string): Response;
+  text(data: string): Promise<Response> | Response;
 
   /**
    * Send an HTML response.
    * @param data
    */
-  html(data: string): Response;
+  html(data: string): Promise<Response> | Response;
 
   /**
    * Send a 404 Not Found response.
+   * @param message optional message default to "Not Found"
    */
-  notFound(): Response;
+  notFound(message?: string): Promise<Response> | Response;
 
   /**
    * Send a redirect response.
    * @param url
    * @param code default to 302
    */
-  redirect(url: string, code?: number): Response;
+  redirect(url: string, code?: number): Promise<Response> | Response;
 }

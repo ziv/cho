@@ -50,4 +50,7 @@ export class UnauthorizedError extends Error {
 }
 
 export class CircularDependencyError extends Error {
+  constructor(readonly input: unknown) {
+    super("circular dependency detected");
+  }
 }

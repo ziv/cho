@@ -2,6 +2,8 @@
 
     Under development - not production ready!
 
+[![Release](https://github.com/ziv/cho/actions/workflows/release.yml/badge.svg)](https://github.com/ziv/cho/actions/workflows/release.yml)
+
 CHO is a tiny decorators based framework for building modular applications. It utilizes modern JavaScript decorators (
 see [About Javascript Decorators](#about-javascript-decorators)) to provide a clean and efficient way to define
 application structure.
@@ -16,9 +18,9 @@ Use the language standard features (or in our case, stage 3 decorators proposal)
 
 The framework does not depend on any engine and on the environment (Node.js, Deno, Bun, Cloudflare Workers, etc.).
 
-### Minimal
+### Fast
 
-Provide only the essential features to build modular applications.
+Minimalistic and optimized for performance.
 
 ---
 
@@ -36,3 +38,9 @@ more information, see:
 <img src="./assets/cho.svg"  alt="CHO" width="200"/>
 
 soon...
+
+Dev:
+
+```shell
+docker run -d --name=kafka -p 9092:9092 apache/kafka
+```

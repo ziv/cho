@@ -13,21 +13,23 @@ and `factory` properties.
 
 The `provide` property is a **token** that identifies the entity. It can be a **class**, a **string**, or a **symbol**.
 
+
 The `factory` property is an **async function** that returns a promise that resolves the entity. The factory function gets
 an injector as an argument. This injector can be used to resolve other dependencies.
+
 
 Example:
 
 ```ts
-import type {Provider} from "@chojs/core";
+import type { Provider } from "@chojs/core";
 
 const myProvider: Provider = {
-    provide: MyService,
-    factory: async (injector) => {
-        const dep1 = await injector.resolve(Dep1);
-        const dep2 = await injector.resolve(Dep2);
-        return new MyService(dep1, dep2);
-    },
+  provide: MyService,
+  factory: async (injector) => {
+    const dep1 = await injector.resolve(Dep1);
+    const dep2 = await injector.resolve(Dep2);
+    return new MyService(dep1, dep2);
+  },
 };
 ```
 
@@ -44,8 +46,8 @@ factory function must be async and return a promise even for non-async values.
 
 ```ts
 const valueProvider: Provider = {
-    provide: "API_URL",
-    factory: () => Promise.resolve("https://api.example.com"),
+  provide: "API_URL",
+  factory: () => Promise.resolve("https://api.example.com"),
 };
 ```
 
@@ -56,10 +58,10 @@ using a class provider, create a provider that resolves the override instance.
 
 ```ts
 const classProvider: Provider = {
-    provide: MyService,
-    factory: async (injector) => {
-        return injector.resolve(OtherService);
-    },
+  provide: MyService,
+  factory: async (injector) => {
+    return injector.resolve(OtherService);
+  },
 };
 ```
 

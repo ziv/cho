@@ -1,6 +1,6 @@
 import type { Target } from "@chojs/core";
 import { Adapter, Context, MethodArgFactory, Next } from "@chojs/web";
-import { Hono, type MiddlewareHandler } from "hono";
+import { type Context as RawContext, Hono, type MiddlewareHandler, type Next as RawNext } from "hono";
 import { stream, streamSSE } from "hono/streaming";
 import { createMiddleware } from "hono/factory";
 import { HonoContext } from "./hono-context.ts";
@@ -10,16 +10,16 @@ export class HonoAdapter implements
     Hono,
     Hono,
     Hono,
-    MiddlewareHandler
+    Target
   > {
-  createMiddleware(handler: (ctx: Context, next: Next) => void): MiddlewareHandler {
-    return createMiddleware((c, next) => {
+  createMiddleware(handler: (ctx: Context, next: Next) => void): Target {
+    return createMiddleware(async (c: RawContext, next: RawNext) => {
       return handler(new HonoContext(c), next);
     });
   }
 
-  createEndpoint(handler: Target, factory: MethodArgFactory): MiddlewareHandler {
-    return async function (c) {
+  createEndpoint(handler: Target, factory: MethodArgFactory): Target {
+    return async function (c: RawContext) {
       const ctx = new HonoContext(c);
       const args = [...(await factory(ctx)), ctx];
       const ret = await handler(...args);
@@ -28,8 +28,8 @@ export class HonoAdapter implements
     } as MiddlewareHandler;
   }
 
-  createStreamEndpoint(handler: Target, factory: MethodArgFactory): MiddlewareHandler {
-    return function (c) {
+  createStreamEndpoint(handler: Target, factory: MethodArgFactory): Target {
+    return function (c: RawContext) {
       return stream(c, async (stream) => {
         const ctx = new HonoContext(c);
         const args = [...(await factory(ctx)), stream, ctx];
@@ -38,8 +38,8 @@ export class HonoAdapter implements
     };
   }
 
-  createSseEndpoint(handler: Target, factory: MethodArgFactory): MiddlewareHandler {
-    return function (c) {
+  createSseEndpoint(handler: Target, factory: MethodArgFactory): Target {
+    return function (c: RawContext) {
       return streamSSE(c, async (stream) => {
         const ctx = new HonoContext(c);
         const args = [...(await factory(ctx)), ctx];
@@ -94,7 +94,9 @@ export class HonoAdapter implements
     return this.mountController(to, feat, route);
   }
 
-  mountApp<R = Hono>(feature: Hono): R {
-    return feature as R;
+  mountApp<R = Hono>(feature: Hono, route: string): R {
+    const app = new Hono();
+    app.route(route, feature);
+    return app as R;
   }
 }

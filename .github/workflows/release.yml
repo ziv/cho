@@ -1,23 +1,20 @@
 name: Release
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to publish (e.g., 1.0.0 or major/minor/patch)"
-        required: true
-      lib:
-        description: "Library to publish (core or web)"
-        required: true
-#  push:
-#    branches:
-#      - main
+  push:
+    branches:
+      - main
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
+      issues: write
       id-token: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,19 +25,17 @@ jobs:
         with:
           node-version: "24"
 
-      #      - name: setup version
-      #        run: |
-      #          ./scripts/next.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
+      - name: install semantic-release
+        run: npm ci --no-fund
 
-      - name: install
-        run: |
-          cd ${{ github.event.inputs.lib }}
-          npm ci --no-fund
+      - name: 🦋release core
+        if: contains(github.event.head_commit.message, '(core)')
+        run: cd core && npx semantic-release
 
-      - name: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          cd ${{ github.event.inputs.lib }}
-          npx semantic-release --dry-run
+      - name: 🦋release web
+        if: contains(github.event.head_commit.message, '(web)')
+        run: cd web && npx semantic-release
+
+      - name: 🦋release vendor-hono
+        if: contains(github.event.head_commit.message, '(hono)')
+        run: cd vendor/hono && npx semantic-release

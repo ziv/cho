@@ -213,6 +213,13 @@
       "jsr:@std/semver@^1.0.5",
       "jsr:@std/testing@^1.0.15",
       "npm:mongodb@^6.18.0"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@semantic-release/exec@^7.1.0",
+        "npm:jsr@~0.13.5",
+        "npm:semantic-release@^24.2.7"
+      ]
+    }
   }
 }

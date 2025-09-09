@@ -2,8 +2,11 @@
   "name": "@chojs/web",
   "version": "0.0.0",
   "license": "MIT",
-  "exports": "./mod.ts",
+  "exports": {
+    ".": "./mod.ts",
+    "./meta": "./meta.ts"
+  },
   "imports": {
-    "@chojs/core": "jsr:@chojs/core@^0.4.2"
+    "@chojs/core": "jsr:@chojs/core@^0.4.3"
   }
 }
