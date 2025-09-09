@@ -2,6 +2,8 @@
 
     Under development - not production ready!
 
+[![Release](https://github.com/ziv/cho/actions/workflows/release.yml/badge.svg)](https://github.com/ziv/cho/actions/workflows/release.yml)
+
 CHO is a tiny decorators based framework for building modular applications. It utilizes modern JavaScript decorators (
 see [About Javascript Decorators](#about-javascript-decorators)) to provide a clean and efficient way to define
 application structure.

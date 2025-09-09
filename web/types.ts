@@ -1,10 +1,4 @@
-import type {
-  Any,
-  Ctr,
-  InjectableDescriptor,
-  ModuleDescriptor,
-  Target,
-} from "@chojs/core";
+import type { Any, Ctr, InjectableDescriptor, ModuleDescriptor, Target } from "@chojs/core";
 import type { Context } from "./context.ts";
 
 export type Routed = {
@@ -45,6 +39,8 @@ export type FeatureDescriptor = Partial<
   ModuleDescriptor & Routed & {
     controllers: Ctr[];
     features: Ctr[];
+    // support any extra metadata
+    [key: string]: unknown[];
   }
 >;
 

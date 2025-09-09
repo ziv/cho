@@ -26,9 +26,7 @@ export function createMethodDecorator(type: string): MethodDecoratorFn {
     args: MethodArgType[] = [],
   ): ClassMethodDecorator {
     return function (target, context) {
-      const name = typeof context === "string"
-        ? context
-        : (context as MethodContext).name;
+      const name = typeof context === "string" ? context : (context as MethodContext).name;
       addToMetadataObject(target, { name, route, type, args });
     };
   };
