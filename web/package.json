@@ -1,5 +1,5 @@
 {
-  "name": "@chojs/core",
+  "name": "@chojs/web",
   "version": "0.0.0",
   "sideEffects": false,
   "publishConfig": {
@@ -15,7 +15,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ziv/cho.git"
+    "url": "git+https://github.com/ziv/cho.git",
+    "directory": "web"
   },
   "bugs": {
     "url": "https://github.com/ziv/cho/issues"
@@ -23,7 +24,21 @@
   "homepage": "https://github.com/ziv/cho#readme",
   "devDependencies": {
     "@semantic-release/exec": "^7.1.0",
-    "jsr": "^0.13.5",
     "semantic-release": "^24.2.7"
+  },
+  "release": {
+    "tagFormat": "web-v${version}",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github",
+      [
+        "@semantic-release/exec",
+        {
+          "prepareCmd": "sed -i \"s/0.0.0/${nextRelease.version}/g\" jsr.json && cat jsr.json",
+          "publishCmd": "npx jsr publish --allow-dirty"
+        }
+      ]
+    ]
   }
 }
