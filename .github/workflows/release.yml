@@ -12,6 +12,9 @@ jobs:
       contents: write
       issues: write
       id-token: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,8 +28,9 @@ jobs:
       - name: install semantic-release
         run: npm ci --no-fund
 
-      - name: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: cd core && npx semantic-release --dry-run
+      - name: 🦋release core
+        if: contains(github.event.head_commit.message, '(core)')
+        run: cd core && npx semantic-release
+
+
+
