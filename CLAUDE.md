@@ -32,14 +32,14 @@ decorators). The framework is designed to be engine-agnostic and minimal.
 
 **Web Module (`web/`):**
 
-- Building blocks decorators for web application: `@Controller`, `@Feature`
-- HTTP endpoints decorators: `@Controller`, `@Feature`, `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`
+- Building block decorators for web applications: `@Controller`, `@Feature`
+- HTTP endpoint decorators: `@Controller`, `@Feature`, `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`
 - Parameter functions: `@Params()`, `@Body()`, `@Query()`, `@Header()`, `@Cookie()`
 - Advanced HTTP decorators: `@Sse`, `@WebSocket`, `@Stream`, `@Middlewares`
 
 **Vendor Module (`vendor/`):**
 
-- Integrations with 3rd party libraries (e.g., Oak framework for Deno)
+- Integrations with third-party libraries (e.g., Oak framework for Deno)
 
 ### Key Concepts
 

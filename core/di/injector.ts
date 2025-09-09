@@ -160,7 +160,7 @@ export class Injector implements Resolver {
       return instance as T;
     }
 
-    // todo missing tests
+    // TODO: missing tests
     if (type === "circular-dependency-detected") {
       const path = value.map((i) => i.name).join(" → ");
       throw new Error(

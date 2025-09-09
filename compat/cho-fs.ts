@@ -76,7 +76,7 @@ export interface ChoFs {
   truncate(name: string, len?: number): Promise<void>;
   truncateSync(name: string, len?: number): void;
 
-  // todo umask
+  // TODO: umask
 
   utime(path: string | URL, atime: number | Date, mtime: number | Date): Promise<void>;
   utimeSync(path: string | URL, atime: number | Date, mtime: number | Date): void;

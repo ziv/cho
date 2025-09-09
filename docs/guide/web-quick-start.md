@@ -9,9 +9,9 @@ different HTTP requests. The controller groups related endpoints together, while
 and HTTP methods.
 
 In CHO, a controller is a class decorated with `@Controller` that contains methods with `@Get`, `@Post`, etc. Controllers
-have to contain at least one endpoint
+have to contain at least one endpoint.
 
-Controller is a routable entity, meaning it can have a route prefix that applies to all its endpoints and can have
+A Controller is a routable entity, meaning it can have a route prefix that applies to all its endpoints and can have
 middleware attached to it.
 
 By default, the return value from an endpoint is transformed to a JSON response. If you want to return a different type
@@ -31,17 +31,17 @@ class MyController {
 
 Explanation:
 
-<sup>3</sup> define a controller with the `@Controller` decorator without a prefix.
+<sup>3</sup> Define a controller with the `@Controller` decorator without a prefix.
 
-<sup>5</sup> define a GET endpoint with the `@Get` decorator.
+<sup>5</sup> Define a GET endpoint with the `@Get` decorator.
 
-<sup>7</sup> any plain object returned from the endpoint will be transformed to a JSON response.
+<sup>7</sup> Any plain object returned from the endpoint will be transformed to a JSON response.
 
 ---
 
 ## Feature
 
-A feature is a routable module, meaning it can have a route prefix that applies to all its controllers, it can have
+A feature is a routable module, meaning it can have a route prefix that applies to all its controllers and can have
 middleware attached to it. A feature can contain multiple controllers and sub-features.
 
 ```ts

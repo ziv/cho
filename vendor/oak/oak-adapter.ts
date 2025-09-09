@@ -16,13 +16,13 @@ export class OakAdapter extends ChoAdapter<Application, Router, Router, RouterMi
     return async function (c: RouterContext) {
       const ret = await handler(new OakContext(c));
       if (ret instanceof Response) {
-        // todo need to be checked...
-        c.respons.body = ret.body;
+        // TODO: need to be checked...
+        c.response.body = ret.body;
       } else {
-        // in order to make default behavior
-        // consistent, we set body as json
+        // In order to make default behavior
+        // consistent, we set body as JSON
         c.response.headers.set("content-type", "application/json");
-        c.response.body = res; // oak auto stringify object
+        c.response.body = ret; // Oak auto-stringifies objects
       }
     };
   }
@@ -59,7 +59,7 @@ export class OakAdapter extends ChoAdapter<Application, Router, Router, RouterMi
     }
   }
 
-  // todo check the mounting with route
+  // TODO: check the mounting with route
   mountController(feat: Router, controller: Router, route: string): void {
     if (route === "") {
       feat.use(controller.routes(), controller.allowedMethods());

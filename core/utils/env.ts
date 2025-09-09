@@ -17,7 +17,7 @@
 export function env(key: string): string | undefined {
   // @ts-ignore: used to support multiple runtimes
   if ("Deno" in globalThis && Deno?.env?.get) {
-    // todo remove the try-catch? let the user know about permission errors?
+    // TODO: remove the try-catch? Let the user know about permission errors?
     try {
       // @ts-ignore: used to support multiple runtimes
       return globalThis.Deno.env.get(key);
