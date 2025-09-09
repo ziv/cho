@@ -1,4 +1,9 @@
-import type { ClassDecorator, ClassMethodDecorator, Ctr, Target } from "@chojs/core";
+import type {
+  ClassDecorator,
+  ClassMethodDecorator,
+  Ctr,
+  Target,
+} from "@chojs/core";
 import { addToMetadataObject } from "@chojs/core";
 import { ControllerDescriptor, FeatureDescriptor } from "./types.ts";
 import type { MethodDecoratorFn } from "./meta.ts";
@@ -11,7 +16,10 @@ import { createMethodDecorator } from "./meta.ts";
  * @param route
  * @param desc
  */
-export function Controller(route?: string | ControllerDescriptor, desc?: ControllerDescriptor): ClassDecorator {
+export function Controller(
+  route?: string | ControllerDescriptor,
+  desc?: ControllerDescriptor,
+): ClassDecorator {
   const r = route && typeof route === "string" ? route : "";
   const d = route && typeof route === "object" ? route : desc;
   return (target: Target) => {
@@ -67,7 +75,9 @@ export function Feature(desc: FeatureDescriptor): ClassDecorator {
  * }
  * ```
  */
-export function Middlewares(...middlewares: (Ctr | Target)[]): ClassDecorator & ClassMethodDecorator {
+export function Middlewares(
+  ...middlewares: (Ctr | Target)[]
+): ClassDecorator & ClassMethodDecorator {
   return (target: Target) => {
     addToMetadataObject(target, { middlewares });
   };

@@ -9,7 +9,9 @@ export function linker<App>(root: LinkedFeature, adapter: Adapter): App {
 
     // controllers
     for (const c of ref.controllers) {
-      const controller = adapter.createController(c.middlewares.map(toMiddleware));
+      const controller = adapter.createController(
+        c.middlewares.map(toMiddleware),
+      );
 
       // endpoints
       for (const e of c.methods) {

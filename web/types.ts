@@ -1,4 +1,10 @@
-import type { Any, Ctr, InjectableDescriptor, ModuleDescriptor, Target } from "@chojs/core";
+import type {
+  Any,
+  Ctr,
+  InjectableDescriptor,
+  ModuleDescriptor,
+  Target,
+} from "@chojs/core";
 import type { Context } from "./context.ts";
 
 export type Routed = {
@@ -69,11 +75,18 @@ export type Next = () => void | Promise<void>;
 /**
  * Function type for middleware that processes request context and calls next.
  */
-export type Middleware<T = Any> = (ctx: Context<T>, next: Next) => void | Response | Promise<void | Response>;
+export type Middleware<T = Any> = (
+  ctx: Context<T>,
+  next: Next,
+) => void | Response | Promise<void | Response>;
 /**
  * Interface for input validators that can safely parse and validate data.
  */
-export type Validator = { safeParse: (data: unknown) => { success: boolean; data: unknown; error: unknown } };
+export type Validator = {
+  safeParse: (
+    data: unknown,
+  ) => { success: boolean; data: unknown; error: unknown };
+};
 
 /**
  * HTTP method types supported by the framework, including standard HTTP methods and special types like SSE and WebSocket.
@@ -94,7 +107,11 @@ export type MethodType =
 /**
  * Validator interface for method arguments with safe parsing capabilities.
  */
-export type ArgValidator = { safeParse: (data: unknown) => { success: boolean; data: unknown; error: unknown } };
+export type ArgValidator = {
+  safeParse: (
+    data: unknown,
+  ) => { success: boolean; data: unknown; error: unknown };
+};
 /**
  * Types of arguments that can be extracted from HTTP requests.
  */
@@ -123,7 +140,9 @@ export type Linked<T> = T & { route: string; middlewares: Middleware[] };
  * A compiled method with its handler, HTTP method type, and argument factory.
  */
 
-export type LinkedMethod = Linked<{ handler: Target; type: MethodType; args: MethodArgFactory }>;
+export type LinkedMethod = Linked<
+  { handler: Target; type: MethodType; args: MethodArgFactory }
+>;
 /**
  * A compiled controller with its methods and routing information.
  */
@@ -133,4 +152,6 @@ export type LinkedController = Linked<{ methods: LinkedMethod[] }>;
 /**
  * A compiled feature with its controllers and sub-features, forming a tree structure.
  */
-export type LinkedFeature = Linked<{ controllers: LinkedController[]; features: LinkedFeature[] }>;
+export type LinkedFeature = Linked<
+  { controllers: LinkedController[]; features: LinkedFeature[] }
+>;

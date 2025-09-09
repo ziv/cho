@@ -163,9 +163,10 @@ export function compile(ctr: Ctr): Promise<LinkedFeature> {
         );
         const args = createMethodArgFactory(meta.args);
         const handler =
-            (controller[method as keyof typeof controller] as Target).bind(
-                controller,
-            );
+            (controller[method as keyof typeof controller] as Target)
+                .bind(
+                    controller,
+                );
 
         return {
             route: meta.route,
@@ -284,7 +285,7 @@ export type CompilerOptions = {
  * - Because we might want to add lifecycle hooks.
  */
 export class Compiler {
-    protected readonly resolved = new WeakSet();
+    protected readonly resolved: WeakSet<Target> = new WeakSet<Target>();
 
     constructor(readonly options: Partial<CompilerOptions> = {}) {
         this.options.silent = this.options.silent ?? false; // set explicit default
@@ -297,7 +298,7 @@ export class Compiler {
      * @param ctr
      */
     async compile(ctr: Ctr): Promise<LinkedFeature> {
-        const compiled = this.feature(ctr);
+        const compiled = await this.feature(ctr);
         if (!compiled) {
             // maybe silent mode, so no feature created,
             // but here we expect at least one feature
@@ -323,7 +324,7 @@ export class Compiler {
             ) {
                 const instance = await injector
                     .register(mw as Ctr)
-                    .resolve<ChoMiddleware>(mw);
+                    .resolve<ChoMiddleware>(mw as Ctr);
                 middlewares.push(instance.handle.bind(instance) as Middleware);
                 continue;
             }
@@ -332,9 +333,9 @@ export class Compiler {
                 // is guard class
                 mw.prototype && typeof mw.prototype.canActivate === "function"
             ) {
-                const instance = await injector.register(mw as Ctr).resolve<
-                    ChoGuard
-                >(mw);
+                const instance = await injector
+                    .register(mw as Ctr)
+                    .resolve<ChoGuard>(mw as Ctr);
                 const handler = instance.canActivate.bind(instance);
                 middlewares.push(async (c: Context<Any>, next: Next) => {
                     const pass = await handler(c, next);
@@ -347,12 +348,12 @@ export class Compiler {
                 continue;
             }
             // mw is a function
-            middlewares.push(mw);
+            middlewares.push(mw as Middleware);
         }
         return middlewares;
     }
 
-    protected method(
+    protected async method(
         ctr: Target,
         controller: Instance,
         method: string,
@@ -370,9 +371,10 @@ export class Compiler {
         );
         const args = this.createMethodArgFactory(meta.args);
         const handler =
-            (controller[method as keyof typeof controller] as Target).bind(
-                controller,
-            );
+            (controller[method as keyof typeof controller] as Target)
+                .bind(
+                    controller,
+                );
 
         return {
             route: meta.route,

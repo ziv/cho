@@ -21,9 +21,14 @@ export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; 
  * @return {MethodDecoratorFn}
  */
 export function createMethodDecorator(type: string): MethodDecoratorFn {
-  return function (route: string, args: MethodArgType[] = []): ClassMethodDecorator {
+  return function (
+    route: string,
+    args: MethodArgType[] = [],
+  ): ClassMethodDecorator {
     return function (target, context) {
-      const name = typeof context === "string" ? context : (context as MethodContext).name;
+      const name = typeof context === "string"
+        ? context
+        : (context as MethodContext).name;
       addToMetadataObject(target, { name, route, type, args });
     };
   };

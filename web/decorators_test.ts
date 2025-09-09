@@ -2,7 +2,9 @@ import { expect } from "@std/expect";
 import { readMetadataObject } from "@chojs/core";
 import { Body, Controller, Get, Post, Query } from "./decorators.ts";
 
-const validator = { safeParse: (data: unknown) => ({ success: true, data, error: null }) };
+const validator = {
+  safeParse: (data: unknown) => ({ success: true, data, error: null }),
+};
 
 Deno.test("decorated controller", () => {
   @Controller("test-route")
@@ -14,7 +16,10 @@ Deno.test("decorated controller", () => {
     testPost() {}
   }
 
-  expect(readMetadataObject(TestController)).toEqual({ route: "test-route", deps: [] });
+  expect(readMetadataObject(TestController)).toEqual({
+    route: "test-route",
+    deps: [],
+  });
   expect(readMetadataObject(TestController.prototype.testGet)).toEqual({
     name: "testGet",
     route: "test-get",

@@ -24,7 +24,10 @@ export type ArgTypeFunction = {
  * @internal
  */
 function createTypeFunction(type: ArgType): ArgTypeFunction {
-  return function (keyOrValidator?: string | Validator, validatorIfKey?: Validator) {
+  return function (
+    keyOrValidator?: string | Validator,
+    validatorIfKey?: Validator,
+  ) {
     if (!validatorIfKey) {
       if (!keyOrValidator) {
         return {
