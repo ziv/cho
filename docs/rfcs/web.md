@@ -69,9 +69,9 @@ validator is provided.
 
 | Type                        | Description                                       |
 | --------------------------- | ------------------------------------------------- |
-| `Param(name?, validator?)`  | Extracts a path parameter(s) from the request URL |
+| `Param(name?, validator?)`  | Extracts a path parameter from the request URL    |
 | `Query(name?, validator?)`  | Extracts a query parameter from the request URL   |
-| `Body(name?, validator?)`   | Extracts path from request body                   |
+| `Body(name?, validator?)`   | Extracts data from request body                   |
 | `Header(name?, validator?)` | Extracts a header from the request                |
 | `Cookie(name, validator?)`  | Extracts a cookie from the request                |
 | `Context`                   | The context object                                |

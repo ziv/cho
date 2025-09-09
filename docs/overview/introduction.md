@@ -30,7 +30,7 @@ adopting these features.
 
 ## What Can You Do With It?
 
-Any Nodejs application can be deployed using this project. Here are some examples:
+Any Node.js application can be deployed using this project. Here are some examples:
 
 - HTTP Server
 - Any TCP Server

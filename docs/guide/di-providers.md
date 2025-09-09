@@ -13,8 +13,10 @@ and `factory` properties.
 
 The `provide` property is a **token** that identifies the entity. It can be a **class**, a **string**, or a **symbol**.
 
-The `factory` property is an **async function** returns a promise that resolve the entity. The factory function gets an
-injector as an argument. This injector can be used to resolve other dependencies.
+
+The `factory` property is an **async function** that returns a promise that resolves the entity. The factory function gets
+an injector as an argument. This injector can be used to resolve other dependencies.
+
 
 Example:
 
@@ -40,7 +42,7 @@ Since there is only single type of provider, there are techniques to achieve dif
 #### Value Providers
 
 Value providers are used to provide a constant value. The factory function simply returns the value. Note that the
-factory function must be async and return a promise event for non-async values.
+factory function must be async and return a promise even for non-async values.
 
 ```ts
 const valueProvider: Provider = {
@@ -52,7 +54,7 @@ const valueProvider: Provider = {
 #### Class Providers
 
 Class providers are used to create overrides for classes (create instance of class A as class B). In **CHO**, instead of
-using class provider, create a provider that resolve the override instance.
+using a class provider, create a provider that resolves the override instance.
 
 ```ts
 const classProvider: Provider = {
@@ -65,5 +67,5 @@ const classProvider: Provider = {
 
 #### Existing Providers
 
-Existing providers are used to create aliases for existing providers. In **CHO**, instead of using existing provider,
-create a provider that resolve the existing provider. See the example of class provider above.
+Existing providers are used to create aliases for existing providers. In **CHO**, instead of using an existing provider,
+create a provider that resolves the existing provider. See the example of class provider above.

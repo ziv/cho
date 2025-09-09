@@ -36,7 +36,7 @@ const provider = {
   factory: async (injector) => {
     const a = await injector.resolve("token");
     const b = await injector.resolve(OtherService);
-    return new SmeService(a, b);
+    return new SomeService(a, b);
   },
 };
 ```
