@@ -69,7 +69,7 @@ export type Next = () => void | Promise<void>;
 /**
  * Function type for middleware that processes request context and calls next.
  */
-export type Middleware<T = Any> = (ctx: Context<T>, next: Next) => void | Promise<void>;
+export type Middleware<T = Any> = (ctx: Context<T>, next: Next) => void | Response | Promise<void | Response>;
 /**
  * Interface for input validators that can safely parse and validate data.
  */
