@@ -1,5 +1,5 @@
 {
-  "name": "@chojs/web",
+  "name": "@chojs/vendor-hono",
   "version": "0.0.0",
   "sideEffects": false,
   "publishConfig": {
@@ -16,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ziv/cho.git",
-    "directory": "web"
+    "directory": "vendor/hono"
   },
   "bugs": {
     "url": "https://github.com/ziv/cho/issues"
@@ -28,7 +28,7 @@
     "semantic-release": "^24.2.7"
   },
   "release": {
-    "tagFormat": "web-v${version}",
+    "tagFormat": "hono-v${version}",
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
