@@ -1,5 +1,6 @@
 import { cors as honoCors } from "hono/cors";
 import type { Context as WebContext, Next } from "@chojs/web";
+import type { MiddlewareHandler } from "hono";
 
 type CORSOptions = {
   origin:
@@ -16,6 +17,6 @@ type CORSOptions = {
   exposeHeaders?: string[];
 };
 
-export function cors(opt?: CORSOptions) {
+export function cors(opt?: CORSOptions): MiddlewareHandler {
   return (ctx: WebContext, next: Next) => honoCors(opt)(ctx.rawCtx(), next);
 }
