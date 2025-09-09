@@ -36,7 +36,7 @@
         "@semantic-release/exec",
         {
           "prepareCmd": "scripts/next.sh core/jsr.json ${nextRelease.version}",
-          "publishCmd": "cd core && npx jsr publish --allow-dirty"
+          "publishCmd": "cd core && npx jsr publish --allow-dirty --dry-run"
         }
       ]
     ]

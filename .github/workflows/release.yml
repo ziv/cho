@@ -1,13 +1,6 @@
 name: Release
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to publish (e.g., 1.0.0 or major/minor/patch)"
-        required: true
-      lib:
-        description: "Library to publish (core or web)"
-        required: true
 #  push:
 #    branches:
 #      - main
@@ -28,14 +21,8 @@ jobs:
         with:
           node-version: "24"
 
-      #      - name: setup version
-      #        run: |
-      #          ./scripts/next.sh ${{ github.event.inputs.lib }}/jsr.json ${{ github.event.inputs.version }}
-
-      - name: install
-        run: |
-          cd ${{ github.event.inputs.lib }}
-          npm ci --no-fund
+      - name: install semantic-release
+        run: cd core && npm ci --no-fund
 
       - name: release
         env:
