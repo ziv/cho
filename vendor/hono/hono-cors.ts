@@ -1,6 +1,8 @@
+import { Context } from "hono";
 import { cors as honoCors } from "hono/cors";
 import type { Context as WebContext, Middleware, Next } from "@chojs/web";
 
+// taken from
 type CORSOptions = {
   origin:
     | string
