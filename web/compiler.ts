@@ -207,6 +207,7 @@ export class Compiler {
       if (!this.options.silent) {
         throw new EmptyControllerError(ctr);
       }
+      return null;
     }
 
     // create the controller instance
