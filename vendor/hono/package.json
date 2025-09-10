@@ -36,7 +36,7 @@
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": "sed -i \"s/0.0.0/${nextRelease.version}/g\" jsr.json && cat jsr.json",
+          "prepareCmd": "sed -i \"s/0.0.0/${nextRelease.version}/g\" deno.json && cat jsr.json",
           "publishCmd": "npx jsr publish --allow-dirty"
         }
       ]
