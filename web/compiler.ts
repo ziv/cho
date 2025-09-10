@@ -14,6 +14,7 @@ import type {
   MethodType,
   Middleware,
   Next,
+  Routed,
 } from "./types.ts";
 import type { Context } from "./context.ts";
 import {
@@ -74,16 +75,16 @@ export class Compiler {
    * Process an array of middlewares and guards into an array of middlewares.
    * Guards are converted into middlewares that throw UnauthorizedError if the guard fails.
    *
-   * @param mws
+   * @param routed
    * @param injector
    * @protected
    */
   protected async middlewares(
-    mws: (Target | Ctr)[],
+    routed: Routed,
     injector: Injector,
   ): Promise<Middleware[]> {
     const middlewares: Middleware[] = [];
-    for (const mw of mws) {
+    for (const mw of (routed.middlewares ?? [])) {
       if (typeof mw !== "function") {
         if (this.options.silent) {
           continue;
@@ -132,34 +133,25 @@ export class Compiler {
    * and process its middlewares.
    * Return null if the method has no metadata (not a route handler).
    *
-   * @param ctr
+   * @param meta
    * @param controller
-   * @param method
    * @param injector
    * @protected
    */
   protected async method(
-    ctr: Target,
+    meta: MethodDescriptor,
     controller: Instance,
-    method: string,
     injector: Injector,
   ): Promise<LinkedMethod | null> {
-    const meta = readMetadataObject<MethodDescriptor>(
-      ctr.prototype[method],
-    );
-    if (!meta) {
-      return null;
-    }
-    const middlewares: Middleware[] = await this.middlewares(
-      meta.middlewares ?? [],
-      injector,
-    );
-    const args = this.createMethodArgFactory(meta.args);
-    const handler = (controller[method as keyof typeof controller] as Target)
+    const handler = (controller[meta.name as keyof typeof controller] as Target)
       .bind(
         controller,
       );
-
+    const args = this.createMethodArgFactory(meta.args);
+    const middlewares: Middleware[] = await this.middlewares(
+      meta,
+      injector,
+    );
     return {
       route: meta.route,
       type: meta.type as MethodType,
@@ -198,12 +190,16 @@ export class Compiler {
       ctr.prototype,
     ) as (string & keyof typeof ctr.prototype)[];
 
-    // take only methods
-    const metaMethods = props
+    // take only methods with metadata
+    // ignore constructor
+    // if no methods with metadata, throw error (unless silent)
+    const metas = props
       .filter((name) => name !== "constructor")
-      .filter((name) => typeof ctr.prototype[name] === "function");
+      .filter((name) => typeof ctr.prototype[name] === "function")
+      .map((name) => readMetadataObject<MethodDescriptor>(ctr.prototype[name]))
+      .filter(Boolean);
 
-    if (0 === metaMethods.length) {
+    if (0 === metas.length) {
       if (!this.options.silent) {
         throw new EmptyControllerError(ctr);
       }
@@ -214,15 +210,12 @@ export class Compiler {
     const controller = await injector.register(ctr).resolve<Instance>(ctr);
 
     const methods: LinkedMethod[] = [];
-    for (const name of metaMethods) {
-      const m = await this.method(ctr, controller, name, injector);
-      if (m) {
-        methods.push(m);
-      }
+    for (const m of metas) {
+      methods.push(await this.method(m, controller, injector));
     }
 
     const middlewares: Middleware[] = await this.middlewares(
-      meta.middlewares ?? [],
+      meta,
       injector,
     );
 
@@ -275,7 +268,7 @@ export class Compiler {
     }
 
     const middlewares: Middleware[] = await this.middlewares(
-      meta.middlewares ?? [],
+      meta,
       injector,
     );
 
