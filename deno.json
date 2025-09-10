@@ -4,6 +4,12 @@
     "docs": "./scripts/docs.sh",
     "dev": "deno run --watch main.ts"
   },
+  "workspace": [
+    "./core",
+    "./dev",
+    "./web",
+    "./vendor/hono"
+  ],
   "imports": {
     "@chojs/core": "./core/mod.ts",
     "@chojs/core/di": "./core/di/mod.ts",
