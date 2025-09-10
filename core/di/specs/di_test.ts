@@ -53,7 +53,7 @@ Deno.test("di specs", async () => {
   })
   class TestModule {}
 
-  const injector = await Injector.create(TestModule);
+  const injector = await Injector.get(TestModule);
   const ib = await injector.resolve<IB>(IB);
 
   expect(ib).toBeDefined();
