@@ -1,4 +1,22 @@
 import { createMethodDecorator } from "@chojs/web/meta";
+import type { Routed } from "@chojs/web";
+import { addToMetadataObject, type InjectableDescriptor } from "@chojs/core";
+
+// todo temporary list of supported gateway types
+// const GatewayTypes = {
+//   Redis: "redis",
+//   NATS: "nats",
+//   MQTT: "mqtt",
+//   RabbitMQ: "rabbitmq",
+//   Kafka: "kafka",
+// } as const;
+// export type GatewayTypesKey = keyof typeof GatewayTypes;
+export type GatewayType = "redis" | "nats" | "mqtt" | "rabbitmq" | "kafka";
+
+export type GatewayDescriptor =
+  & InjectableDescriptor
+  & Partial<Pick<Routed, "middlewares">>
+  & { type: GatewayType };
 
 /**
  * Gateway class decorator for marking a class as a message broker gateway.
@@ -10,10 +28,18 @@ import { createMethodDecorator } from "@chojs/web/meta";
  * @Gateway()
  * class RedisGateway {}
  * ```
- * @param type
  * @constructor
+ * @param desc
  */
-export function Gateway(type: string) {
+export function Gateway(desc: GatewayDescriptor) {
+  return (target: Function) => {
+    const data = {
+      type: desc.type,
+      middlewares: desc?.middlewares ?? [],
+      deps: desc?.deps ?? [],
+    };
+    addToMetadataObject(target, data);
+  };
 }
 
 /**
@@ -22,12 +48,12 @@ export function Gateway(type: string) {
  * @example
  * ```ts
  * class MyController {
- *   @Message("event.name")
+ *   @MessageListener("event.name")
  *   streamEvents(stream, context) { ... }
  * }
  * ```
  */
-const Message = createMethodDecorator("Message");
+const MessageListener = createMethodDecorator<any, GatewayType>("Message");
 
 /**
  * Method decorator for listening to events (messages) from a message broker
@@ -35,9 +61,9 @@ const Message = createMethodDecorator("Message");
  * @example
  * ```ts
  * class MyController {
- *   @Event("event.name")
+ *   @EventListener("event.name")
  *   streamEvents(stream, context) { ... }
  * }
  * ```
  */
-const Event = createMethodDecorator("Event");
+const EventListener = createMethodDecorator<any, GatewayType>("Event");

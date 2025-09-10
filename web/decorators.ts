@@ -1,9 +1,4 @@
-import type {
-    ClassDecorator,
-    ClassMethodDecorator,
-    Ctr,
-    Target,
-} from "@chojs/core";
+import type { ClassDecorator, ClassMethodDecorator, Ctr, Target } from "@chojs/core";
 import { addToMetadataObject } from "@chojs/core";
 import { ControllerDescriptor, FeatureDescriptor } from "./types.ts";
 import type { MethodDecoratorFn } from "./meta.ts";
@@ -17,21 +12,21 @@ import { createMethodDecorator } from "./meta.ts";
  * @param desc
  */
 export function Controller(
-    route?: string | ControllerDescriptor,
-    desc?: ControllerDescriptor,
+  route?: string | ControllerDescriptor,
+  desc?: ControllerDescriptor,
 ): ClassDecorator {
-    const r = route && typeof route === "string" ? route : "";
-    const d = route && typeof route === "object" ? route : desc;
-    return (target: Target) => {
-        const data = {
-            // routed
-            route: r,
-            middlewares: d?.middlewares ?? [],
-            // injectable
-            deps: d?.deps ?? [],
-        };
-        addToMetadataObject(target, data);
+  const r = route && typeof route === "string" ? route : "";
+  const d = route && typeof route === "object" ? route : desc;
+  return (target: Target) => {
+    const data = {
+      // routed
+      route: r,
+      middlewares: d?.middlewares ?? [],
+      // injectable
+      deps: d?.deps ?? [],
     };
+    addToMetadataObject(target, data);
+  };
 }
 
 /**
@@ -41,26 +36,26 @@ export function Controller(
  * @param desc
  */
 export function Feature(desc: FeatureDescriptor): ClassDecorator {
-    return (target: Target) => {
-        const data = {
-            ...desc,
+  return (target: Target) => {
+    const data = {
+      ...desc,
 
-            // add defaults:
+      // add defaults:
 
-            // routed
-            route: desc.route ?? "",
-            middlewares: desc.middlewares ?? [],
-            // injectable
-            deps: desc.deps ?? [],
-            // module
-            imports: desc.imports ?? [],
-            providers: desc.providers ?? [],
-            // feature
-            features: desc.features ?? [],
-            controllers: desc.controllers ?? [],
-        };
-        addToMetadataObject(target, data);
+      // routed
+      route: desc.route ?? "",
+      middlewares: desc.middlewares ?? [],
+      // injectable
+      deps: desc.deps ?? [],
+      // module
+      imports: desc.imports ?? [],
+      providers: desc.providers ?? [],
+      // feature
+      features: desc.features ?? [],
+      controllers: desc.controllers ?? [],
     };
+    addToMetadataObject(target, data);
+  };
 }
 
 /**
@@ -80,11 +75,11 @@ export function Feature(desc: FeatureDescriptor): ClassDecorator {
  * ```
  */
 export function Middlewares(
-    ...middlewares: (Ctr | Target)[]
+  ...middlewares: (Ctr | Target)[]
 ): ClassDecorator & ClassMethodDecorator {
-    return (target: Target) => {
-        addToMetadataObject(target, { middlewares });
-    };
+  return (target: Target) => {
+    addToMetadataObject(target, { middlewares });
+  };
 }
 
 // HTTP Method decorators

@@ -22,9 +22,8 @@ hinder the adoption of these features in production environments. This project a
 way to use decorators across multiple JavaScript runtimes, ensuring that developers can leverage these powerful features
 without worrying about compatibility issues.
 
-We embraced the [latest (stage 3) TC39 proposals for decorators](https://github.com/tc39/proposal-decorators),
-following [Deno's lead](https://decorators.deno.dev/) in
-adopting these features.
+We embraced the [latest (stage 3) TC39 proposals for decorators](https://github.com/tc39/proposal-decorators), following
+[Deno's lead](https://decorators.deno.dev/) in adopting these features.
 
 ## Philosophy
 
@@ -38,5 +37,3 @@ Any Node.js application can be deployed using this project. Here are some exampl
 - WebSocket Server
 - Cron Jobs
 - And More...
-
-

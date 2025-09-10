@@ -1,6 +1,7 @@
 # Web Server Quick Start
 
-This guide will help you set up a basic web server using CHO's web framework. This is useful for building modern web applications with dependency injection and decorator-based routing.
+This guide will help you set up a basic web server using CHO's web framework. This is useful for building modern web
+applications with dependency injection and decorator-based routing.
 
 ## Controller & Endpoints
 
@@ -8,8 +9,8 @@ Controllers and endpoints are the basic building blocks of a web server. They de
 different HTTP requests. The controller groups related endpoints together, while endpoints define the specific routes
 and HTTP methods.
 
-In CHO, a controller is a class decorated with `@Controller` that contains methods with `@Get`, `@Post`, etc. Controllers
-have to contain at least one endpoint.
+In CHO, a controller is a class decorated with `@Controller` that contains methods with `@Get`, `@Post`, etc.
+Controllers have to contain at least one endpoint.
 
 A Controller is a routable entity, meaning it can have a route prefix that applies to all its endpoints and can have
 middleware attached to it.

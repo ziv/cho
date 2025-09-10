@@ -116,8 +116,8 @@ export type ArgType = "param" | "query" | "header" | "body" | "cookie";
 /**
  * Configuration for a method argument, specifying how to extract and validate data from the request.
  */
-export type MethodArgType = {
-  type: ArgType;
+export type MethodArgType<AT = ArgType> = {
+  type: AT;
   key?: string;
   validator?: ArgValidator;
 };

@@ -82,5 +82,19 @@ export function debuglog(
     }
   };
 
+  log.start = () => {
+    const x = new Date();
+    return () => {
+      // log the elapsed time since start
+      const now = new Date();
+      const diff = now.getTime() - x.getTime();
+      console.log(
+        yellow(format(new Date(), TIMESTAMP)),
+        magenta(`[ ${header()} ]`),
+        gray(duration(diff, { ignoreZero: true }) || "+0ms"),
+      );
+    };
+  };
+
   return log;
 }

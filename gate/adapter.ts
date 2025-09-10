@@ -1,6 +1,5 @@
 export interface Adapter {
+  createMessageHandler(): Promise<any>;
 
-    createMessageHandler(): Promise<any>;
-
-    createEventHandler(): Promise<any>;
+  createEventHandler(): Promise<any>;
 }

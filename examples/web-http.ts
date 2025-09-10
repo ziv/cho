@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-all
-import {Compiler, Controller, Feature, Get, linker} from "@chojs/web";
-import {HonoAdapter} from "@chojs/vendor-hono";
-import {describeRoutes} from "@chojs/dev";
+import { Compiler, Controller, Feature, Get, linker } from "@chojs/web";
+import { HonoAdapter } from "@chojs/vendor-hono";
+import { describeRoutes } from "@chojs/dev";
 
 @Controller("")
 class RootController {

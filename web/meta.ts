@@ -1,6 +1,6 @@
 import type { Any, ClassMethodDecorator, MethodContext } from "@chojs/core";
 import { addToMetadataObject } from "@chojs/core";
-import type { MethodArgType } from "./types.ts";
+import { ArgType, MethodArgType } from "./types.ts";
 
 /**
  * Function signature for method decorators that define HTTP endpoints.
@@ -20,10 +20,12 @@ export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; 
  * @param type HTTP method type (GET, POST, etc.)
  * @return {MethodDecoratorFn}
  */
-export function createMethodDecorator(type: string): MethodDecoratorFn {
+export function createMethodDecorator<R = string, AT = ArgType>(
+  type: string,
+): MethodDecoratorFn {
   return function (
-    route: string,
-    args: MethodArgType[] = [],
+    route: R,
+    args: MethodArgType<AT>[] = [],
   ): ClassMethodDecorator {
     return function (target, context) {
       const name = typeof context === "string" ? context : (context as MethodContext).name;

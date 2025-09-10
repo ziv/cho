@@ -67,16 +67,16 @@ arguments are provided, the method will receive only the context object as its a
 We can use any of the following input argument functions to extract specific parts of the request and validate them if a
 validator is provided.
 
-| Type                        | Description                                       |
-| --------------------------- | ------------------------------------------------- |
-| `Param(name?, validator?)`  | Extracts a path parameter from the request URL    |
-| `Query(name?, validator?)`  | Extracts a query parameter from the request URL   |
-| `Body(name?, validator?)`   | Extracts data from request body                   |
-| `Header(name?, validator?)` | Extracts a header from the request                |
-| `Cookie(name, validator?)`  | Extracts a cookie from the request                |
-| `Context`                   | The context object                                |
-| `RawRequest`                | The raw request object                            |
-| `RawResponse`               | The raw response object                           |
+| Type                        | Description                                     |
+| --------------------------- | ----------------------------------------------- |
+| `Param(name?, validator?)`  | Extracts a path parameter from the request URL  |
+| `Query(name?, validator?)`  | Extracts a query parameter from the request URL |
+| `Body(name?, validator?)`   | Extracts data from request body                 |
+| `Header(name?, validator?)` | Extracts a header from the request              |
+| `Cookie(name, validator?)`  | Extracts a cookie from the request              |
+| `Context`                   | The context object                              |
+| `RawRequest`                | The raw request object                          |
+| `RawResponse`               | The raw response object                         |
 
 The validator should be an object with a `safeParse` method that takes the input and returns an object with the
 following properties:
