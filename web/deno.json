@@ -7,6 +7,6 @@
     "./meta": "./meta.ts"
   },
   "imports": {
-    "@chojs/core": "latest"
+    "@chojs/core": "jsr:@chojs/core@latest"
   }
 }
