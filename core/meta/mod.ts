@@ -82,6 +82,7 @@ export type ClassMethodDecorator = (value: Function, context: {
 // ------------------------------------
 
 const MetaKey = Symbol("meta");
+
 /**
  * Read a metadata value from a target.
  * Returns undefined if the key does not exist.
@@ -181,6 +182,16 @@ export type MetaDecoratorFactory<T extends Metadata> = (
 
 /**
  * class decorator factory that writes metadata to the target
+ *
+ * @example
+ * ```ts
+ * interface MyMeta {
+ *   role: string;
+ *   permissions: string[];
+ * }
+ *
+ * const MyMetaDecorator = createMetaDecorator<MyMeta>();
+ * ```
  */
 export function createMetaDecorator<T extends Metadata>(): MetaDecoratorFactory<T> {
   return (desc: Partial<T> = {}) => (target: Target) => {
