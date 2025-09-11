@@ -2,7 +2,7 @@
  * Context is an ion over different web frameworks to provide a unified interface.
  */
 export interface Context<
-  Ctx extends any = any,
+  Ctx extends unknown = unknown,
   Req = Request,
   Res = Response,
 > {

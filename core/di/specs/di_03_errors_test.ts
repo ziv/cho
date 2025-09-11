@@ -33,14 +33,13 @@ Deno.test("should throw for import non module class ", async () => {
 });
 
 Deno.test("should throw for resolving not found", async () => {
-    @Module({
-    })
-    class TestModule {}
-    const injector = await Injector.get(TestModule);
-    try {
-        await injector.resolve('nothing');
-        expect(true).toBe(false);
-    } catch (e) {
-        expect((e as Error).message).toContain('not found');
-    }
+  @Module({})
+  class TestModule {}
+  const injector = await Injector.get(TestModule);
+  try {
+    await injector.resolve("nothing");
+    expect(true).toBe(false);
+  } catch (e) {
+    expect((e as Error).message).toContain("not found");
+  }
 });

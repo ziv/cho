@@ -1,6 +1,6 @@
 import type { ClassDecorator, ClassMethodDecorator, Ctr, Target } from "@chojs/core";
 import { addToMetadataObject } from "@chojs/core";
-import { ControllerDescriptor, FeatureDescriptor } from "./types.ts";
+import type { ControllerDescriptor, FeatureDescriptor } from "./types.ts";
 import type { MethodDecoratorFn } from "./meta.ts";
 import { createMethodDecorator } from "./meta.ts";
 
@@ -35,7 +35,7 @@ export function Controller(
  * @return {ClassDecorator}
  * @param desc
  */
-export function Feature(desc: FeatureDescriptor): ClassDecorator {
+export function Feature(desc: Partial<FeatureDescriptor> = {}): ClassDecorator {
   return (target: Target) => {
     const data = {
       ...desc,
@@ -185,6 +185,7 @@ export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
 
 /**
  * Method decorator for streaming endpoints.
+ * This stream method take Unit8Array chunks and writes them to the response as they are produced.
  *
  * @example
  * ```ts
@@ -195,3 +196,72 @@ export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
  * ```
  */
 export const Stream: MethodDecoratorFn = createMethodDecorator("STREAM");
+
+/**
+ * Method decorator for text streaming endpoints.
+ * This stream method take string chunks and writes them to the response as they are produced.
+ *
+ * @example
+ * ```ts
+ * class DataController {
+ *   @StreamText("data/logs")
+ *   streamLogs(stream: WritableStream) { ... }
+ * }
+ * ```
+ */
+export const StreamText: MethodDecoratorFn = createMethodDecorator("STREAM_TEXT");
+
+/**
+ * Method decorator for streaming endpoints.
+ * This stream should return an async iterator that yields Unit8Array chunks to be written to the response.
+ *
+ * @example
+ * ```ts
+ * class DataController {
+ *  @StreamAsync("data/async")
+ *   async *streamAsyncData() {
+ *     for (let i = 0; i < 10; i++) {
+ *       yield new TextEncoder().encode(`Chunk ${i}\n`);
+ *       await new Promise((res) => setTimeout(res, 1000));
+ *     }
+ *   }
+ * }
+ *       ```
+ */
+export const StreamAsync: MethodDecoratorFn = createMethodDecorator("STREAM_ASYNC");
+
+/**
+ * Method decorator for text streaming endpoints.
+ * This stream should return an async iterator that yields string chunks to be written to the response.
+ *
+ * @example
+ * ```ts
+ * class DataController {
+ *   @StreamAsyncText("data/async-text")
+ *     async *streamAsyncTextData() {
+ *       for (let i = 0; i < 10; i++) {
+ *         yield `Line ${i}\n`;
+ *         await new Promise((res) => setTimeout(res, 1000));
+ *       }
+ *    }
+ * }
+ * ```
+ */
+export const StreamAsyncText: MethodDecoratorFn = createMethodDecorator("STREAM_ASYNC_TEXT");
+
+/**
+ * Method decorator for streaming endpoints that pipe from a ReadableStream.
+ * This method should return a ReadableStream to be piped to the response.
+ *
+ * @example
+ * ```ts
+ * class FileController {
+ *   @StreamPipe("files/download")
+ *   downloadFile(): ReadableStream {
+ *     const fileStream = getFileStreamSomehow();
+ *     return fileStream;
+ *   }
+ * }
+ * ```
+ */
+export const StreamPipe: MethodDecoratorFn = createMethodDecorator("STREAM_PIPE");

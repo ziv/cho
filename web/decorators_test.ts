@@ -1,31 +1,59 @@
+import { readMetadataObject } from "@chojs/core/meta";
+import { Controller, Delete, Get, Patch, Post, Put } from "./decorators.ts";
 import { expect } from "@std/expect";
-import { readMetadataObject } from "@chojs/core";
-import { Controller, Get, Post } from "./decorators.ts";
-import { Body, Query } from "./inputs.ts";
 
-const validator = {
-  safeParse: (data: unknown) => ({ success: true, data, error: null }),
-};
+// sanity, class decorators
 
-Deno.test("decorated controller", () => {
-  @Controller("test-route")
-  class TestController {
-    @Get("test-get")
-    testGet() {}
+Deno.test("@Controller", () => {
+  @Controller("test")
+  class TestClass {}
+  const meta = readMetadataObject(TestClass);
+  expect(meta).toEqual({ deps: [], middlewares: [], route: "test" });
+});
 
-    @Post("test-post", [Body(), Query("key", validator)])
-    testPost() {}
+// sanity, method decorators
+
+Deno.test("@Get", () => {
+  class TestClass {
+    @Get("test")
+    test() {}
   }
+  const meta = readMetadataObject(TestClass.prototype.test);
+  expect(meta).toEqual({ name: "test", route: "test", type: "GET", args: [] });
+});
 
-  expect(readMetadataObject(TestController)).toEqual({
-    route: "test-route",
-    deps: [],
-  });
-  expect(readMetadataObject(TestController.prototype.testGet)).toEqual({
-    name: "testGet",
-    route: "test-get",
-    type: "GET",
-    args: [],
-  });
-  // console.log(readMetadataObject(TestController.prototype.testPost));
+Deno.test("@Post", () => {
+  class TestClass {
+    @Post("test")
+    test() {}
+  }
+  const meta = readMetadataObject(TestClass.prototype.test);
+  expect(meta).toEqual({ name: "test", route: "test", type: "POST", args: [] });
+});
+
+Deno.test("@Put", () => {
+  class TestClass {
+    @Put("test")
+    test() {}
+  }
+  const meta = readMetadataObject(TestClass.prototype.test);
+  expect(meta).toEqual({ name: "test", route: "test", type: "PUT", args: [] });
+});
+
+Deno.test("@Patch", () => {
+  class TestClass {
+    @Patch("test")
+    test() {}
+  }
+  const meta = readMetadataObject(TestClass.prototype.test);
+  expect(meta).toEqual({ name: "test", route: "test", type: "PATCH", args: [] });
+});
+
+Deno.test("@Delete", () => {
+  class TestClass {
+    @Delete("test")
+    test() {}
+  }
+  const meta = readMetadataObject(TestClass.prototype.test);
+  expect(meta).toEqual({ name: "test", route: "test", type: "DELETE", args: [] });
 });

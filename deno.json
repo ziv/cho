@@ -30,6 +30,10 @@
     "mongodb": "npm:mongodb@^6.18.0"
   },
   "fmt": {
-    "lineWidth": 120
+    "lineWidth": 120,
+    "exclude": [
+      "docs/**",
+      "node_modules/**"
+    ]
   }
 }

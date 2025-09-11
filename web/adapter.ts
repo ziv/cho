@@ -1,6 +1,26 @@
 import type { Any, Target } from "@chojs/core";
-import { MethodArgFactory, Next } from "./types.ts";
+import type { MethodArgFactory, Middleware, Next } from "./types.ts";
 import type { Context } from "./context.ts";
+
+export interface StreamAdapter {
+  /**
+   * Takes cho streaming endpoint handler and converts it to the framework's streaming endpoint
+   * @param mw
+   * @param factory
+   */
+  createStreamEndpoint(mw: Target, factory: MethodArgFactory): Middleware;
+}
+
+export interface SseAdapter {
+  /**
+   * Takes cho SSE endpoint handler and converts it to the framework's streaming endpoint
+   * The endpoint handler should be an async generator function
+   *
+   * @param mw
+   * @param factory
+   */
+  createSseEndpoint(mw: Target, factory: MethodArgFactory): Middleware;
+}
 
 export interface Adapter<
   Application = Any,
@@ -20,22 +40,6 @@ export interface Adapter<
    * @param factory
    */
   createEndpoint(mw: Target, factory: MethodArgFactory): Middleware;
-
-  /**
-   * Takes cho streaming endpoint handler and converts it to the framework's streaming endpoint
-   * @param mw
-   * @param factory
-   */
-  createStreamEndpoint(mw: Target, factory: MethodArgFactory): Middleware;
-
-  /**
-   * Takes cho SSE endpoint handler and converts it to the framework's streaming endpoint
-   * The endpoint handler should be an async generator function
-   *
-   * @param mw
-   * @param factory
-   */
-  createSseEndpoint(mw: Target, factory: MethodArgFactory): Middleware;
 
   /**
    * Takes cho controller and converts it to the framework's controller
@@ -88,3 +92,5 @@ export interface Adapter<
    */
   mountApp<R = Application>(feature: Feature, route: string): R;
 }
+
+export type Adapters = Adapter & Partial<StreamAdapter & SseAdapter>;

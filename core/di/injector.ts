@@ -80,6 +80,8 @@ export class Injector implements Resolver {
     return inj;
   }
 
+  // todo convert to protected, should be created via Injector.get()
+  //  fix tests first to not use constructor directly
   constructor(
     readonly ctr: Ctr,
   ) {

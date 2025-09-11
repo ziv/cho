@@ -54,8 +54,8 @@ export class Compiler {
 
   /**
    * Compile a feature module into a linked feature.
-   * Build a tree of features, controllers, methods and middlewares
-   * with all dependencies resolved.
+   * Build a tree of features, controllers (instances),
+   * methods and middlewares with all dependencies resolved.
    * @param ctr
    */
   async compile(
@@ -142,7 +142,7 @@ export class Compiler {
     meta: MethodDescriptor,
     controller: Instance,
     injector: Injector,
-  ): Promise<LinkedMethod | null> {
+  ): Promise<LinkedMethod> {
     const handler = (controller[meta.name as keyof typeof controller] as Target)
       .bind(
         controller,
@@ -197,7 +197,7 @@ export class Compiler {
       .filter((name) => name !== "constructor")
       .filter((name) => typeof ctr.prototype[name] === "function")
       .map((name) => readMetadataObject<MethodDescriptor>(ctr.prototype[name]))
-      .filter(Boolean);
+      .filter(Boolean) as MethodDescriptor[];
 
     if (0 === metas.length) {
       if (!this.options.silent) {
@@ -215,7 +215,7 @@ export class Compiler {
     }
 
     const middlewares: Middleware[] = await this.middlewares(
-      meta,
+      meta as Routed,
       injector,
     );
 
@@ -268,7 +268,7 @@ export class Compiler {
     }
 
     const middlewares: Middleware[] = await this.middlewares(
-      meta,
+      meta as Routed,
       injector,
     );
 
@@ -309,7 +309,7 @@ export class Compiler {
     args: MethodArgType[],
   ): MethodArgFactory {
     return async function (ctx: Context) {
-      let body: any = undefined;
+      let body: unknown = undefined;
       const fromRequest = async (type: string) => {
         switch (type) {
           case "param":
@@ -326,7 +326,7 @@ export class Compiler {
 
       const ret = [];
       for (const arg of args) {
-        const temp = await fromRequest(arg.type);
+        const temp = (await fromRequest(arg.type)) as Record<string, unknown>;
         const value = arg.key ? temp?.[arg.key] : temp;
         if (!arg.validator) {
           ret.push(value);

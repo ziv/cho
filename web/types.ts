@@ -40,7 +40,7 @@ export type FeatureDescriptor = Partial<
     controllers: Ctr[];
     features: Ctr[];
     // support any extra metadata
-    [key: string]: unknown[];
+    [key: string]: unknown[] | unknown;
   }
 >;
 
