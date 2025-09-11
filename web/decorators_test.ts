@@ -1,5 +1,5 @@
 import { readMetadataObject } from "@chojs/core/meta";
-import { Controller, Delete, Get, Patch, Post, Put } from "./decorators.ts";
+import { Controller, Delete, Get, Patch, Post, Put, Sse, Stream } from "./decorators.ts";
 import { expect } from "@std/expect";
 
 // sanity, class decorators
@@ -56,4 +56,13 @@ Deno.test("@Delete", () => {
   }
   const meta = readMetadataObject(TestClass.prototype.test);
   expect(meta).toEqual({ name: "test", route: "test", type: "DELETE", args: [] });
+});
+
+Deno.test("@Sse", () => {
+  class TestClass {
+    @Sse("test")
+    test() {}
+  }
+  const meta = readMetadataObject(TestClass.prototype.test);
+  expect(meta).toEqual({ name: "test", route: "test", type: "SSE", args: [] });
 });

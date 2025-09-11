@@ -82,6 +82,14 @@ export function Middlewares(
   };
 }
 
+export function Catch(
+  errorHandler: Ctr | Target,
+): ClassDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { errorHandler });
+  };
+}
+
 // HTTP Method decorators
 
 /**
