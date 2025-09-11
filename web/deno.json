@@ -5,5 +5,8 @@
   "exports": {
     ".": "./mod.ts",
     "./meta": "./meta.ts"
+  },
+  "imports": {
+    "@chojs/core": "latest"
   }
 }
