@@ -34,6 +34,50 @@ export type Instance<T extends object = object> = T;
  */
 export type Ctr<T = Any> = new (...args: Any[]) => T;
 
+/**
+ * Class decorator context (decorators stage 3, TC39)
+ * This is used in class decorators to provide metadata and utilities.
+ * @see https://github.com/tc39/proposal-decorators
+ * @internal
+ */
+export type MethodContext = {
+  kind: string;
+  name: string;
+  static: boolean;
+  private: boolean;
+  metadata: object;
+  addInitializer: (fn: () => void) => void;
+  access: { get: () => unknown };
+};
+
+/**
+ * Class method decorators receive the method that is being decorated as the first value,
+ * and can optionally return a new method to replace it. If a new method is returned,
+ * it will replace the original on the prototype (or on the class itself in the case of static methods).
+ * If any other type of value is returned, an error will be thrown.
+ * @see https://github.com/tc39/proposal-decorators?tab=readme-ov-file#class-methods
+ */
+export type ClassDecorator = (value: Function, context: {
+  kind: "class";
+  name: string | undefined;
+  addInitializer(initializer: () => void): void;
+}) => Function | void | Any;
+
+/**
+ * Class decorators receive the class that is being decorated as the first parameter,
+ * and may optionally return a new callable (a class, function, or Proxy) to replace it.
+ * If a non-callable value is returned, then an error is thrown.
+ * @see https://github.com/tc39/proposal-decorators?tab=readme-ov-file#class-methods
+ */
+export type ClassMethodDecorator = (value: Function, context: {
+  kind: "method";
+  name: string | symbol;
+  access: { get(): unknown };
+  static: boolean;
+  private: boolean;
+  addInitializer(initializer: () => void): void;
+}) => Function | void;
+
 // metadata read/write utilities
 // ------------------------------------
 
@@ -128,4 +172,18 @@ export function addToMetadataObject(
     }
   }
   writeMetadataObject(target, existing);
+}
+
+export type Metadata = Record<string, unknown>;
+export type MetaDecoratorFactory<T extends Metadata> = (
+  desc?: Partial<T>,
+) => ClassDecorator;
+
+/**
+ * class decorator factory that writes metadata to the target
+ */
+export function createMetaDecorator<T extends Metadata>(): MetaDecoratorFactory<T> {
+  return (desc: Partial<T> = {}) => (target: Target) => {
+    addToMetadataObject(target, desc);
+  };
 }

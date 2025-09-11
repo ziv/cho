@@ -91,6 +91,7 @@ export class Injector implements Resolver {
     if (!meta) {
       throw new Error(`${ctr.name} is not a module`);
     }
+    this.name = `${ctr.name}Injector`;
 
     for (const p of meta.providers ?? []) {
       this.register(p);
@@ -99,12 +100,9 @@ export class Injector implements Resolver {
     for (const im of meta.imports ?? []) {
       this.registerImport(im);
     }
-
-    this.name = `${ctr.name}Injector`;
-    log(`${this.name} created`);
-
     // set the injector instance on the module constructor
     write(ctr, InjectorMetadata, this);
+    log(`${this.name} created`);
   }
 
   /**
@@ -205,6 +203,10 @@ export class Injector implements Resolver {
 
     const next = [...ref, this];
     for (const im of this.imports) {
+      // Injector & Module must initialize before searching
+      // for providers. The initialization is part of the
+      // system lifecycle. This is the opportunity to early
+      // create entities using the module constructor (its dependencies)
       const injector = await Injector.get(im);
       const res = await injector.search(token, next);
       if (res.type !== "not-found") {
