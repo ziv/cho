@@ -1,11 +1,11 @@
 import type { Any, ClassMethodDecorator, MethodContext } from "@chojs/core";
 import { addToMetadataObject } from "@chojs/core";
-import { ArgType, MethodArgType } from "./types.ts";
+import { MethodArgType } from "./types.ts";
 
 /**
  * Function signature for method decorators that define HTTP endpoints.
  */
-export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; // ClassMethodDecorator;
+export type MethodDecoratorFn<R = string> = (route: R, args?: MethodArgType[]) => Any; // ClassMethodDecorator;
 
 /**
  * Creates a method decorator for the given HTTP method.
@@ -20,15 +20,24 @@ export type MethodDecoratorFn = (route: string, args?: MethodArgType[]) => Any; 
  * @param type HTTP method type (GET, POST, etc.)
  * @return {MethodDecoratorFn}
  */
-export function createMethodDecorator<R = string, AT = ArgType>(
+export function createMethodDecorator<R = string>(
   type: string,
-): MethodDecoratorFn {
+): MethodDecoratorFn<R> {
   return function (
     route: R,
-    args: MethodArgType<AT>[] = [],
+    args: MethodArgType[] = [],
   ): ClassMethodDecorator {
     return function (target, context) {
-      const name = typeof context === "string" ? context : (context as MethodContext).name;
+      let name: string;
+      if (typeof context === "string") {
+        name = context;
+      } else if ("name" in context) {
+        name = (context as MethodContext).name;
+      } else {
+        // todo should we throw an error here? there is no type safety guarantee
+        // Fallback for unknown context types
+        name = String(context);
+      }
       addToMetadataObject(target, { name, route, type, args });
     };
   };

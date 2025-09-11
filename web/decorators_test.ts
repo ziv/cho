@@ -1,6 +1,7 @@
 import { expect } from "@std/expect";
 import { readMetadataObject } from "@chojs/core";
-import { Body, Controller, Get, Post, Query } from "./decorators.ts";
+import { Controller, Get, Post } from "./decorators.ts";
+import { Body, Query } from "./inputs.ts";
 
 const validator = {
   safeParse: (data: unknown) => ({ success: true, data, error: null }),
