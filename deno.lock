@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@chojs/core@0.6": "0.6.0",
     "jsr:@hono/hono@^4.9.4": "4.9.6",
     "jsr:@oak/commons@1": "1.0.1",
     "jsr:@oak/oak@^17.1.6": "17.1.6",
@@ -33,6 +34,13 @@
     "npm:semantic-release@^24.2.7": "24.2.7_marked@15.0.12"
   },
   "jsr": {
+    "@chojs/core@0.6.0": {
+      "integrity": "05045ede4dd92132a87cde6e63d01bf2525697f967b1e8704d5f127435f939a5",
+      "dependencies": [
+        "jsr:@std/datetime",
+        "jsr:@std/fmt"
+      ]
+    },
     "@hono/hono@4.9.4": {
       "integrity": "de006e32f3bab18e5a5bed4c75c5e0aaa46958d3653e6646b534a874d690dccc"
     },
@@ -2959,13 +2967,9 @@
         }
       },
       "web": {
-        "packageJson": {
-          "dependencies": [
-            "npm:@semantic-release/exec@^7.1.0",
-            "npm:jsr@~0.13.5",
-            "npm:semantic-release@^24.2.7"
-          ]
-        }
+        "dependencies": [
+          "jsr:@chojs/core@0.6"
+        ]
       }
     }
   }

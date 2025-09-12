@@ -1,35 +1,51 @@
-import { gray, magenta, red, yellow } from "@std/fmt/colors";
+import { cyan, gray, magenta, red, yellow } from "@std/fmt/colors";
 import { format } from "@std/datetime";
 import { format as duration } from "@std/fmt/duration";
-import { env, envbool, envnum } from "./env.ts";
+import { env, envbool } from "./env.ts";
 
 const TIMESTAMP = env("CHO_DEBUGLOG_TIMESTAMP") ?? "HH:mm:ss.SSS";
-const CONTEXT_LEN = isNaN(envnum("CHO_DEBUGLOG_CONTEXT_LEN")) ? 15 : envnum("CHO_DEBUGLOG_CONTEXT_LEN");
 
-let last = Date.now();
+export type Debuglog = {
+  (...args: unknown[]): void;
+  error(...args: unknown[]): void;
+  start(): (...args: unknown[]) => void;
+};
 
 /**
  * Debug log function factory.
  *
  * Returns a logging function that prefixes messages with a timestamp and context.
- * The logging function has an `error` method for error messages.
+ * The logging destination is STDERR to avoid interfering with program output.
+ *
+ * The logging function expose 2 methods:
+ * - `error` for error messages (colored red).
+ * - `start` which returns a new logging function that appends the elapsed time since `start` was called.
  *
  * The logging configured using the following environment variables:
  * - `CHO_DEBUG`: Enable all debug logging if set to a truthy value.
  * - `CHO_DEBUGLOG`: Comma-separated list of contexts to enable logging for, or `*` for all contexts.
  * - `CHO_DEBUGLOG_TIMESTAMP`: Timestamp format (default: `HH:MM:SS.mmm`).
- * - `CHO_DEBUGLOG_CONTEXT_LEN`: Maximum length of the context string (default: `15`).
  *
- * @example Usage:
+ * @example Creating logging function:
  * ```ts
  * const log = debuglog("context");
- * log("This is a debug message");
- * log.error("This is an error message");
  * ```
  *
- * @example Output:
+ * @example Logging messages:
+ * ```ts
+ * log("example message");
  * ```
- * 13:13:13.131 [ ExampleContext… ] example message +1ms
+ *
+ * @example Logging error messages:
+ * ```ts
+ * log.error("example error message");
+ * ```
+ *
+ * @example Logging with elapsed time:
+ * ```ts
+ * const end = log.start();
+ * // some code...
+ * end("example message");
  * ```
  *
  * @private
@@ -39,8 +55,11 @@ let last = Date.now();
  */
 export function debuglog(
   context: string,
-): { (...args: unknown[]): void; error(...args: unknown[]): void } {
-  const canLog = () => {
+): Debuglog {
+  /**
+   * indicates weather to log or not
+   */
+  function canLog() {
     // system-wide debug logging
     if (envbool("CHO_DEBUG")) {
       return true;
@@ -48,25 +67,16 @@ export function debuglog(
     // context-specific debug logging
     const debuglog: string = env("CHO_DEBUGLOG") ?? "";
     return debuglog.includes(context) || debuglog.includes("*");
-  };
+  }
 
-  const elapsed = () => {
-    const now = Date.now();
-    const diff = now - last;
-    last = now;
-    return diff;
-  };
-
-  const header = () =>
-    (context.length > CONTEXT_LEN) ? context.substring(0, CONTEXT_LEN - 1) + "…" : context.padEnd(CONTEXT_LEN, " ");
+  const timestamp = () => format(new Date(), TIMESTAMP);
 
   function log(...args: unknown[]) {
     if (canLog()) {
-      console.log(
-        yellow(format(new Date(), TIMESTAMP)),
-        magenta(`[ ${header()} ]`),
+      console.error(
+        yellow(timestamp()),
+        magenta(context),
         ...args,
-        gray(duration(elapsed(), { ignoreZero: true }) || "+0ms"),
       );
     }
   }
@@ -74,25 +84,26 @@ export function debuglog(
   log.error = (...args: unknown[]) => {
     if (canLog()) {
       console.error(
-        yellow(format(new Date(), TIMESTAMP)),
-        red(`[ ${header()} ]`),
+        yellow(timestamp()),
+        red(context),
         ...args,
-        gray(duration(elapsed(), { ignoreZero: true }) || "+0ms"),
       );
     }
   };
 
   log.start = () => {
-    const x = new Date();
-    return () => {
-      // log the elapsed time since start
-      const now = new Date();
-      const diff = now.getTime() - x.getTime();
-      console.log(
-        yellow(format(new Date(), TIMESTAMP)),
-        magenta(`[ ${header()} ]`),
-        gray(duration(diff, { ignoreZero: true }) || "+0ms"),
-      );
+    // log the elapsed time since start
+    const now = Date.now();
+    return (...args: unknown[]) => {
+      if (canLog()) {
+        const diff = Date.now() - now;
+        console.error(
+          yellow(timestamp()),
+          cyan(context),
+          ...args,
+          gray(duration(diff, { ignoreZero: true }) || "+0ms"),
+        );
+      }
     };
   };
 

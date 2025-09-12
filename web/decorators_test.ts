@@ -1,4 +1,4 @@
-import { readMetadataObject } from "@chojs/core/meta";
+import { readMetadataObject } from "@chojs/core";
 import { Controller, Delete, Get, Patch, Post, Put, Sse, Stream } from "./decorators.ts";
 import { expect } from "@std/expect";
 
