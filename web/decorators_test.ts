@@ -1,6 +1,7 @@
-import {readMetadataObject} from "@chojs/core";
-import {Controller, Delete, Get, Patch, Post, Put, Sse} from "./decorators.ts";
-import {expect} from "@std/expect";
+import { readMetadataObject } from "@chojs/core";
+import { Catch, Controller, Delete, Feature, Get, Middlewares, Patch, Post, Put, Sse } from "./decorators.ts";
+import { expect } from "@std/expect";
+import { Context, ErrorHandler } from "./interfaces/mod.ts";
 
 // sanity, class decorators
 
@@ -8,7 +9,50 @@ Deno.test("@Controller", () => {
   @Controller("test")
   class TestClass {}
   const meta = readMetadataObject(TestClass);
-  expect(meta).toEqual({ deps: [], middlewares: [], route: "test" });
+  expect(meta).toEqual({
+    route: "test",
+    deps: [],
+    middlewares: [],
+  });
+});
+
+Deno.test("@Feature", () => {
+  @Feature()
+  class TestClass {}
+  const meta = readMetadataObject(TestClass);
+  expect(meta).toEqual({
+    route: "",
+    deps: [],
+    middlewares: [],
+    controllers: [],
+    features: [],
+    imports: [],
+    providers: [],
+  });
+});
+
+Deno.test("@Middlewares", () => {
+  @Middlewares()
+  class TestClass {}
+  const meta = readMetadataObject(TestClass);
+  expect(meta).toEqual({
+    middlewares: [],
+  });
+});
+
+Deno.test("@Catch", () => {
+  class Handler implements ErrorHandler {
+    catch(err: unknown, ctx: Context): Promise<Response> {
+      return Promise.resolve(new Response());
+    }
+  }
+
+  @Catch(Handler)
+  class TestClass {}
+  const meta = readMetadataObject(TestClass);
+  expect(meta).toEqual({
+    errorHandler: Handler,
+  });
 });
 
 // sanity, method decorators
