@@ -48,10 +48,3 @@ This project uses the TC39 stage 3 decorators proposal (JavaScript decorators).
 
 <img src="./assets/cho.svg"  alt="CHO" width="200"/>
 
-soon...
-
-Dev:
-
-```shell
-docker run -d --name=kafka -p 9092:9092 apache/kafka
-```
