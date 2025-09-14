@@ -5,12 +5,19 @@
   "exports": {
     ".": "./mod.ts",
     "./di": "./di/mod.ts",
-    "./meta": "./di/mod.ts",
+    "./meta": "./meta/mod.ts",
     "./utils": "./utils/mod.ts"
   },
   "imports": {
     "@std/datetime": "jsr:@std/datetime@^0.225.5",
     "@std/fmt": "jsr:@std/fmt@^1.0.8",
     "@std/expect": "jsr:@std/expect@^1.0.17"
+  },
+  "publish": {
+    "exclude": [
+      "./di/specs/**/*",
+      "./**/*_test.ts",
+      "./package.json"
+    ]
   }
 }

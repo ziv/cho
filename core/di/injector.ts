@@ -9,26 +9,41 @@ const InjectorMetadata = Symbol("ModuleInjector");
 
 const tokenName = (token: Token) => (typeof token === "function" && token.name) ? token.name : String(token);
 
+/**
+ * Provider found during search.
+ */
 export type SearchResultProvider = {
   type: "provider";
   value: Provider;
 };
 
+/**
+ * Resolved value found in cache.
+ */
 export type SearchResultResolved = {
   type: "resolved";
   value: Any;
 };
 
+/**
+ * Token not found in the injector or its imports.
+ */
 export type SearchResultNotFound = {
   type: "not-found";
   value: null;
 };
 
+/**
+ * Circular dependency detected during search.
+ */
 export type SearchResultCircular = {
   type: "circular-dependency-detected";
   value: Injector[];
 };
 
+/**
+ * Search result can be a provider, a resolved value, not found, or circular dependency.
+ */
 export type SearchResult =
   | SearchResultProvider
   | SearchResultResolved
