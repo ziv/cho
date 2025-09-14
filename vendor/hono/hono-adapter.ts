@@ -1,74 +1,24 @@
 import type { Target } from "@chojs/core";
-import { Adapter, Context, MethodArgFactory, Next, SseAdapter, StreamAdapter } from "@chojs/web";
-import { type Context as RawContext, Hono, type MiddlewareHandler, type Next as RawNext } from "hono";
-import { stream, streamSSE } from "hono/streaming";
+import { Adapter, Context, Next, SseAdapter, StreamAdapter, TextStreamAdapter } from "@chojs/web";
+import { type Context as RawContext, Hono, type MiddlewareHandler } from "hono";
+import { stream, streamSSE, streamText } from "hono/streaming";
 import { createMiddleware } from "hono/factory";
-import { HonoContext } from "./hono-context.ts";
 
 export class HonoAdapter implements
   SseAdapter,
   StreamAdapter,
+  TextStreamAdapter,
   Adapter<
     Hono,
     Hono,
     Hono,
-    Target
+    Target,
+    RawContext
   > {
-  createMiddleware(handler: (ctx: Context, next: Next) => void): Target {
-    return createMiddleware(async (c: RawContext, next: RawNext) => {
-      return handler(new HonoContext(c), next);
-    });
-  }
+  // Adapter
 
-  createEndpoint(handler: Target, factory: MethodArgFactory): Target {
-    return async function (c: RawContext) {
-      const ctx = new HonoContext(c);
-      const args = await factory(ctx);
-      const ret = await handler(...args, ctx);
-      if (ret instanceof Response) {
-        return ret;
-      }
-      return c.json(ret);
-    } as MiddlewareHandler;
-  }
-
-  createStreamEndpoint(handler: Target, factory: MethodArgFactory): Target {
-    return function (c: RawContext) {
-      return stream(c, async (stream) => {
-        const ctx = new HonoContext(c);
-        const args = await factory(ctx);
-        await handler(...args, stream, ctx);
-        // for await (const next of handler(...args, stream, ctx)) {
-        //   await stream.write(next);
-        // }
-        // stream.close();
-      });
-    };
-  }
-
-  createSseEndpoint(handler: Target, factory: MethodArgFactory): Target {
-    return function (c: RawContext) {
-      return streamSSE(c, async (stream) => {
-        const ctx = new HonoContext(c);
-        const args = [...(await factory(ctx)), ctx];
-        for await (const next of handler(...args)) {
-          await stream.writeSSE(next);
-        }
-        await stream.close();
-      });
-    };
-  }
-
-  createController(mws: MiddlewareHandler[]): Hono {
-    const c = new Hono();
-    for (const mw of mws) c.use(mw);
-    return c;
-  }
-
-  createFeature(mws: MiddlewareHandler[]): Hono {
-    const c = new Hono();
-    for (const mw of mws) c.use(mw);
-    return c;
+  createContext(raw: RawContext): Context {
+    return raw as Context;
   }
 
   mountEndpoint(
@@ -87,12 +37,9 @@ export class HonoAdapter implements
         ctr[httpMethod](route, ...middlewares, endpoint);
         break;
       case "get":
-      case "stream":
-      case "sse":
+      default: // all non http methods are treated as get
         ctr.get(route, ...middlewares, endpoint);
         break;
-      default:
-        throw new Error(`Method type "${httpMethod}" not implemented yet in HonoAdapter`);
     }
   }
 
@@ -108,5 +55,45 @@ export class HonoAdapter implements
     const app = new Hono();
     app.route(route, feature);
     return app as R;
+  }
+
+  createMiddleware(handler: (ctx: Context, next: Next) => void): Target {
+    return createMiddleware(handler);
+  }
+
+  createController(mws: MiddlewareHandler[]): Hono {
+    const c = new Hono();
+    for (const mw of mws) c.use(mw);
+    return c;
+  }
+
+  createFeature(mws: MiddlewareHandler[]): Hono {
+    const c = new Hono();
+    for (const mw of mws) c.use(mw);
+    return c;
+  }
+
+  // SseAdapter
+
+  createSseEndpoint(handler: Target): Target {
+    return function (ctx: RawContext) {
+      return streamSSE(ctx, (stream) => handler(ctx, stream));
+    };
+  }
+
+  // StreamAdapter
+
+  createStreamEndpoint(handler: Target): Target {
+    return function (ctx: RawContext) {
+      return stream(ctx, (stream) => handler(ctx, stream));
+    };
+  }
+
+  // TextStreamAdapter
+
+  createTextStreamEndpoint(handler: Target): Target {
+    return function (ctx: RawContext) {
+      return streamText(ctx, (stream) => handler(ctx, stream));
+    };
   }
 }
