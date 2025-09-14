@@ -1,8 +1,8 @@
-import type { Any, Target } from "@chojs/core";
+import type { Any, Target } from "@chojs/core/meta";
+import { debuglog } from "@chojs/core/utils";
 import type { CompiledFeature, CompiledMethod } from "./compiler.ts";
 import type { SseAdapter, StreamAdapter, StreamingApi, TextStreamAdapter } from "./interfaces/adpater-extends.ts";
-import type { Adapter } from "./interfaces/adapter.ts";
-import { debuglog } from "@chojs/core/utils";
+import type { Adapter } from "./interfaces/mod.ts";
 
 // todo add error handler...
 

@@ -1,10 +1,7 @@
 import type { Ctr, Instance, Target } from "@chojs/core/meta";
 import { Injector, readMetadataObject } from "@chojs/core";
 import type { ControllerDescriptor, FeatureDescriptor, MethodArgType, MethodDescriptor, Routed } from "./types.ts";
-import type { ChoGuard } from "./interfaces/guard.ts";
-import type { Context } from "./interfaces/context.ts";
-import type { ErrorHandler } from "./interfaces/error-handler.ts";
-import type { MethodArgFactory, Middleware, Next } from "./interfaces/adapter.ts";
+import type { ChoGuard, Context, ErrorHandler, MethodArgFactory, Middleware, Next } from "./interfaces/mod.ts";
 import {
   CircularDependencyError,
   EmptyControllerError,
@@ -16,7 +13,7 @@ import {
 } from "./errors.ts";
 import { debuglog } from "@chojs/core/utils";
 import { isClass } from "./utils.ts";
-import {ChoMiddleware} from "./interfaces/middleware.ts";
+import { ChoMiddleware } from "./interfaces/middleware.ts";
 
 const log = debuglog("web:compiler");
 

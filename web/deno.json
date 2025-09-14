@@ -4,7 +4,8 @@
   "license": "MIT",
   "exports": {
     ".": "./mod.ts",
-    "./meta": "./meta.ts"
+    "./meta": "./meta.ts",
+    "./interfaces": "./interfaces/mod.ts"
   },
   "imports": {
     "@chojs/core": "jsr:@chojs/core@0.8.1",
