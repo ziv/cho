@@ -16,6 +16,11 @@
  */
 export function env(key: string): string | undefined {
   // @ts-ignore: used to support multiple runtimes
+  if ("process" in globalThis && globalThis.process?.env) {
+    // @ts-ignore: used to support multiple runtimes
+    return globalThis.process.env[key];
+  }
+  // @ts-ignore: used to support multiple runtimes
   if ("Deno" in globalThis && Deno?.env?.get) {
     // TODO: remove the try-catch? Let the user know about permission errors?
     try {
@@ -29,11 +34,6 @@ export function env(key: string): string | undefined {
   if ("Bun" in globalThis && globalThis.Bun?.env) {
     // @ts-ignore: used to support multiple runtimes
     return globalThis.Bun.env[key];
-  }
-  // @ts-ignore: used to support multiple runtimes
-  if ("process" in globalThis && globalThis.process?.env) {
-    // @ts-ignore: used to support multiple runtimes
-    return globalThis.process.env[key];
   }
   return undefined;
 }
