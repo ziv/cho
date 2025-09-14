@@ -8,6 +8,12 @@
     "./interfaces": "./interfaces/mod.ts"
   },
   "imports": {
-    "@chojs/core": "jsr:@chojs/core@0.8.1"
+    "@chojs/core": "jsr:@chojs/core@0.9.0"
+  },
+  "publish": {
+    "exclude": [
+      "./**/*_test.ts",
+      "./*.mjs"
+    ]
   }
 }
