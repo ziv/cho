@@ -20,12 +20,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: 🌸Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
 
-      - name: install semantic-release
+      - name: 🌼 Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: 🧪 testing
+        run: deno test --allow-env
+
+      - name: 🛫 install semantic-release
         run: npm ci --no-fund
 
       - name: 🦋release core

@@ -1,9 +1,8 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@chojs/core@0.8.1": "0.8.1",
+    "jsr:@hono/hono@*": "4.9.7",
     "jsr:@hono/hono@^4.9.4": "4.9.7",
-    "jsr:@hono/hono@^4.9.7": "4.9.7",
     "jsr:@oak/commons@1": "1.0.1",
     "jsr:@oak/oak@^17.1.6": "17.1.6",
     "jsr:@std/assert@1": "1.0.14",
@@ -29,26 +28,12 @@
     "jsr:@std/testing@^1.0.15": "1.0.15",
     "npm:@semantic-release/exec@^7.1.0": "7.1.0_semantic-release@24.2.7__marked@15.0.12",
     "npm:@types/node@*": "24.2.0",
-    "npm:hono@4.9.2": "4.9.2",
     "npm:jsr@~0.13.5": "0.13.5",
-    "npm:mongodb@^6.18.0": "6.18.0",
+    "npm:mongodb@^6.18.0": "6.19.0",
     "npm:path-to-regexp@^6.3.0": "6.3.0",
     "npm:semantic-release@^24.2.7": "24.2.7_marked@15.0.12"
   },
   "jsr": {
-    "@chojs/core@0.8.1": {
-      "integrity": "740031f6eff6c30ca470f71267dcb9645e59c26a6dded49e040a66ba62e2bbdf",
-      "dependencies": [
-        "jsr:@std/datetime",
-        "jsr:@std/fmt@^1.0.8"
-      ]
-    },
-    "@hono/hono@4.9.4": {
-      "integrity": "de006e32f3bab18e5a5bed4c75c5e0aaa46958d3653e6646b534a874d690dccc"
-    },
-    "@hono/hono@4.9.6": {
-      "integrity": "b85abb0013d167a290b1808d1d4d542dee269df31d4f47122023259fdd7e184b"
-    },
     "@hono/hono@4.9.7": {
       "integrity": "5293d82fc6d25782ff9e0a89680f99cdd27ed19eb0558e2786c22a46a4594424"
     },
@@ -1282,9 +1267,6 @@
     "highlight.js@10.7.3": {
       "integrity": "sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A=="
     },
-    "hono@4.9.2": {
-      "integrity": "sha512-UG2jXGS/gkLH42l/1uROnwXpkjvvxkl3kpopL3LBo27NuaDPI6xHNfuUSilIHcrBkPfl4y0z6y2ByI455TjNRw=="
-    },
     "hook-std@3.0.0": {
       "integrity": "sha512-jHRQzjSDzMtFy34AGj1DN+vq54WVuhSvKgrHf0OMiFQTwDD4L/qqofVEWjLOBMTn5+lCD3fPg32W9yOfnEJTTw=="
     },
@@ -1802,8 +1784,8 @@
         "whatwg-url"
       ]
     },
-    "mongodb@6.18.0": {
-      "integrity": "sha512-fO5ttN9VC8P0F5fqtQmclAkgXZxbIkYRTUi1j8JO6IYwvamkhtYDilJr35jOPELR49zqCJgXZWwCtW7B+TM8vQ==",
+    "mongodb@6.19.0": {
+      "integrity": "sha512-H3GtYujOJdeKIMLKBT9PwlDhGrQfplABNF1G904w6r5ZXKWyv77aB0X9B+rhmaAwjtllHzaEkvi9mkGVZxs2Bw==",
       "dependencies": [
         "@mongodb-js/saslprep",
         "bson",
@@ -2959,15 +2941,15 @@
       },
       "vendor/hono": {
         "dependencies": [
-          "jsr:@chojs/core@0.8.1",
-          "jsr:@chojs/web@1.3.1",
+          "jsr:@chojs/core@*",
+          "jsr:@chojs/web@*",
           "jsr:@hono/hono@^4.9.4"
         ]
       },
       "web": {
         "dependencies": [
-          "jsr:@chojs/core@0.8.1",
-          "jsr:@hono/hono@^4.9.7"
+          "jsr:@chojs/core@*",
+          "jsr:@hono/hono@*"
         ]
       }
     }
