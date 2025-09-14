@@ -1,7 +1,15 @@
 import type { Ctr, Instance, Target } from "@chojs/core/meta";
 import { Injector, readMetadataObject } from "@chojs/core";
 import type { ControllerDescriptor, FeatureDescriptor, MethodArgType, MethodDescriptor, Routed } from "./types.ts";
-import type { ChoGuard, Context, ErrorHandler, MethodArgFactory, Middleware, Next } from "./interfaces/mod.ts";
+import type {
+  ChoGuard,
+  Context,
+  ErrorHandler,
+  ErrorHandlerFn,
+  MethodArgFactory,
+  Middleware,
+  Next,
+} from "./interfaces/mod.ts";
 import {
   CircularDependencyError,
   EmptyControllerError,
@@ -39,7 +47,7 @@ export type MethodType =
 /**
  * Generic type for linking objects with route and middleware information.
  */
-export type Linked<T> = T & { route: string; middlewares: Middleware[]; errorHandler?: Target };
+export type Linked<T> = T & { route: string; middlewares: Middleware[]; errorHandler?: ErrorHandlerFn };
 
 /**
  * A compiled method with its handler, HTTP method type, and argument factory.
@@ -72,12 +80,8 @@ export type CompilerOptions = {
 };
 
 /**
- * Why a class when we have a function? (already debated)
- * - Because we need to keep track of circular dependencies (done).
- * - Because we might want to add options in the future (done).
- * - Because we might want to extend it.
- * - Because we might want to keep some state.
- * - Because we might want to add lifecycle hooks.
+ * The Compiler class processes feature modules, controllers, methods, and middlewares.
+ * It reads metadata, resolves dependencies, and builds a tree of compiled features.
  */
 export class Compiler {
   protected readonly resolved: WeakSet<Target> = new WeakSet<Target>();
@@ -190,12 +194,18 @@ export class Compiler {
       injector,
     );
 
+    const errorHandler = await this.errorHandler(
+      meta as Routed,
+      injector,
+    );
+
     return {
       route: meta.route,
       type: meta.type as MethodType,
       args,
       middlewares,
       handler,
+      errorHandler,
     };
   }
 
@@ -259,7 +269,10 @@ export class Compiler {
       injector,
     );
 
-    const errorHandler = await this.errorHandler(meta as Routed, injector);
+    const errorHandler = await this.errorHandler(
+      meta as Routed,
+      injector,
+    );
 
     return {
       route: meta.route ?? "",
@@ -316,7 +329,10 @@ export class Compiler {
       injector,
     );
 
-    const errorHandler = await this.errorHandler(meta as Routed, injector);
+    const errorHandler = await this.errorHandler(
+      meta as Routed,
+      injector,
+    );
 
     return {
       route: meta.route ?? "",
@@ -329,7 +345,8 @@ export class Compiler {
 
   // utils
 
-  async errorHandler(meta: Routed, injector: Injector): Promise<Target | undefined> {
+  // todo the return value is a specific function and not target
+  async errorHandler(meta: Routed, injector: Injector): Promise<ErrorHandlerFn | undefined> {
     const errorHandler = meta.errorHandler;
 
     if (typeof errorHandler !== "function") {
@@ -337,7 +354,7 @@ export class Compiler {
     }
 
     if (!isClass(errorHandler)) {
-      return errorHandler;
+      return errorHandler as ErrorHandlerFn;
     }
 
     if (typeof errorHandler.prototype.catch !== "function") {
@@ -345,7 +362,7 @@ export class Compiler {
     }
 
     const instance = await injector.register(errorHandler as Ctr).resolve<ErrorHandler>(errorHandler as Ctr);
-    return instance.catch.bind(instance);
+    return instance.catch.bind(instance) as ErrorHandlerFn;
   }
 
   /**

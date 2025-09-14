@@ -15,5 +15,7 @@ import type { Context } from "./context.ts";
  * ```
  */
 export interface ErrorHandler {
-  catch(err: unknown, ctx: Context): void | Promise<void>;
+  catch(err: unknown, ctx: Context): Promise<Response>;
 }
+
+export type ErrorHandlerFn = (ctx: Context) => Promise<Response>;

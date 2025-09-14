@@ -1,8 +1,9 @@
-import type { ClassDecorator, ClassMethodDecorator, Ctr, Target } from "@chojs/core";
-import { addToMetadataObject } from "@chojs/core";
-import type { ControllerDescriptor, FeatureDescriptor, MethodArgType } from "./types.ts";
-import type { MethodDecoratorFn } from "./meta.ts";
-import { createMethodDecorator } from "./meta.ts";
+import type {ClassDecorator, ClassMethodDecorator, Target} from "@chojs/core";
+import {addToMetadataObject} from "@chojs/core";
+import type {ChoMiddleware, ErrorHandler} from "./interfaces/mod.ts";
+import type {ControllerDescriptor, FeatureDescriptor, MethodArgType} from "./types.ts";
+import type {MethodDecoratorFn} from "./meta.ts";
+import {createMethodDecorator} from "./meta.ts";
 
 /**
  * Marks a class as a web controller.
@@ -75,7 +76,7 @@ export function Feature(desc: Partial<FeatureDescriptor> = {}): ClassDecorator {
  * ```
  */
 export function Middlewares(
-  ...middlewares: (Ctr | Target)[]
+  ...middlewares: (ChoMiddleware | Target)[]
 ): ClassDecorator & ClassMethodDecorator {
   return (target: Target) => {
     addToMetadataObject(target, { middlewares });
@@ -88,7 +89,7 @@ export function Middlewares(
  * @constructor
  */
 export function Catch(
-  errorHandler: Ctr | Target,
+  errorHandler: ErrorHandler | Target,
 ): ClassDecorator {
   return (target: Target) => {
     addToMetadataObject(target, { errorHandler });
