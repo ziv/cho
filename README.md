@@ -29,9 +29,8 @@ without worrying about compatibility issues.
 In the modern software development landscape, the ability to deploy applications across various environments and
 platforms is crucial. Developers often face challenges when trying to ensure that their applications run seamlessly on
 different runtimes such as **Node.js**, **Deno**, **Bun**, **Cloudflare Workers**, **AWS Lambda** and more. Each of
-these runtimes has its own set
-of
-features, performance characteristics, and limitations, making it difficult to write code that is truly portable.
+these runtimes has its own set of features, performance characteristics, and limitations, making it difficult to write
+code that is truly portable.
 
 ### Build for Performance
 

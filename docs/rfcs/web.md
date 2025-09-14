@@ -26,7 +26,7 @@ An endpoint is a **routable** method within a controller that handles a specific
 Endpoints are asynchronous methods, resolving a plain value, a response object, or throwing an error:
 
 | Return Type     | Behavior                                                                                          |
-| --------------- | ------------------------------------------------------------------------------------------------- |
+|-----------------|---------------------------------------------------------------------------------------------------|
 | Plain value     | Serialize to JSON and send as response body with 200 status code code unless otherwise specified. |
 | Response object | Used as the response.                                                                             |
 | Error thrown    | Propagate to the error handler.                                                                   |
@@ -64,39 +64,36 @@ arguments are provided, the method will receive only the context object as its a
 
 #### Input Arguments
 
-We can use any of the following input argument functions to extract specific parts of the request and validate them if a
+We can use any of the following input functions to extract specific parts of the request and validate them if a
 validator is provided.
 
 | Type                        | Description                                     |
-| --------------------------- | ----------------------------------------------- |
+|-----------------------------|-------------------------------------------------|
 | `Param(name?, validator?)`  | Extracts a path parameter from the request URL  |
 | `Query(name?, validator?)`  | Extracts a query parameter from the request URL |
 | `Body(name?, validator?)`   | Extracts data from request body                 |
 | `Header(name?, validator?)` | Extracts a header from the request              |
-| `Cookie(name, validator?)`  | Extracts a cookie from the request              |
-| `Context`                   | The context object                              |
-| `RawRequest`                | The raw request object                          |
-| `RawResponse`               | The raw response object                         |
 
 The validator should be an object with a `safeParse` method that takes the input and returns an object with the
 following properties:
 
 ```ts
 type Validator = {
-  safeParse: (input: any) => {
-    success: boolean;
-    data?: any;
-    error?: any;
-  };
+    safeParse: (input: any) => {
+        success: boolean;
+        data?: any;
+        error?: any;
+    };
 };
 ```
 
-Libraries that support this interface include Zod, Yup, Joi, Valibot, and many others.
+Libraries that support this interface include [Zod](https://zod.dev/), ([Yup](https://github.com/jquense/yup)
+no), ([Joi](https://joi.dev/) no), [Valibot](https://valibot.dev/), and many others.
 
 #### HTTP Methods Decorators
 
 | Method    | Description               |
-| --------- | ------------------------- |
+|-----------|---------------------------|
 | `@Get`    | Defines a GET endpoint    |
 | `@Post`   | Defines a POST endpoint   |
 | `@Put`    | Defines a PUT endpoint    |
@@ -107,28 +104,31 @@ Example:
 
 ```ts
 class ExampleController {
-  @Post("route", [
-    Body(validator),
-    Header("x-api-key"),
-    Cookie("session_id"),
-  ])
-  handle(
-    body: typeof validator,
-    key: string,
-    sessionId: string, // Fixed variable name
-    ctx: ChoContext, // the context is always the last argument
-  ) {
-  }
+    @Post("route", [
+        Body(validator),
+        Header("x-api-key"),
+    ])
+    handle(
+        body: typeof validator,
+        key: string,
+        sessionId: string, // Fixed variable name
+        ctx: ChoContext, // the context is always the last argument
+    ) {
+    }
 }
 ```
 
 #### Other Input Decorators
 
-| Decorator    | Description                 |
-| ------------ | --------------------------- |
-| `@Sse`       | Server-Sent Events endpoint |
-| `@WebSocket` | WebSocket endpoint          |
-| `@Stream`    | Stream endpoint             |
+| Decorator          | Description                           |
+|--------------------|---------------------------------------|
+| `@WebSocket`       | WebSocket endpoint                    |
+| `@Sse`             | Server-Sent Events Stream endpoint    |
+| `@Stream`          | Raw Stream endpoint                   |
+| `@TextStream`      | String Stream endpoint                |
+| `@SseAsync`        | Server-Sent Events Generator endpoint |
+| `@SseStream`       | Raw Generator endpoint                |
+| `@TextAsyncStream` | String Generator endpoint             |
 
 Each of these decorators explained in its own RFC document as extensions to this base framework.
 
