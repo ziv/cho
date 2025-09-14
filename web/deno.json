@@ -8,7 +8,6 @@
     "./interfaces": "./interfaces/mod.ts"
   },
   "imports": {
-    "@chojs/core": "jsr:@chojs/core@*",
-    "@hono/hono": "jsr:@hono/hono@*"
+    "@chojs/core": "jsr:@chojs/core@0.8.1"
   }
 }
