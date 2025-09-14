@@ -731,7 +731,7 @@
     }, {
       "id": "namespace_LinkedController",
       "kind": [{ "char": "T", "kind": "TypeAlias", "title": "Type Alias" }],
-      "name": "LinkedController",
+      "name": "CompiledController",
       "file": "web/mod.ts",
       "doc": "",
       "url": "./web/mod.ts/~/LinkedController.html",
@@ -739,7 +739,7 @@
     }, {
       "id": "namespace_LinkedFeature",
       "kind": [{ "char": "T", "kind": "TypeAlias", "title": "Type Alias" }],
-      "name": "LinkedFeature",
+      "name": "CompiledFeature",
       "file": "web/mod.ts",
       "doc": "",
       "url": "./web/mod.ts/~/LinkedFeature.html",
@@ -747,7 +747,7 @@
     }, {
       "id": "namespace_LinkedMethod",
       "kind": [{ "char": "T", "kind": "TypeAlias", "title": "Type Alias" }],
-      "name": "LinkedMethod",
+      "name": "CompiledMethod",
       "file": "web/mod.ts",
       "doc": "",
       "url": "./web/mod.ts/~/LinkedMethod.html",

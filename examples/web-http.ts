@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-all
+#!/usr/bin/env deno run --allow-all
 import { Compiler, Controller, Feature, Get, Linker } from "@chojs/web";
 import { HonoAdapter } from "@chojs/vendor-hono";
 import { describeRoutes } from "@chojs/dev";
@@ -39,7 +39,7 @@ class AppFeature {
 }
 
 const compiled = await new Compiler().compile(AppFeature);
-const linked = linker(compiled, new HonoAdapter());
+const linked = new Linker(new HonoAdapter()).link(compiled);
 
-describeRoutes(AppFeature);
+describeRoutes(compiled);
 Deno.serve(linked.fetch);
