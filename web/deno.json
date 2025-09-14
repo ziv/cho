@@ -7,6 +7,7 @@
     "./meta": "./meta.ts"
   },
   "imports": {
-    "@chojs/core": "jsr:@chojs/core@^0.6"
+    "@chojs/core": "jsr:@chojs/core@*",
+    "@hono/hono": "jsr:@hono/hono@^4.9.7"
   }
 }

@@ -80,7 +80,7 @@
  * ### Type Definitions (`./types.ts`)
  * - **Core Types**: `MethodType`, `ArgType`, `MethodArgType`
  * - **Descriptor Types**: `ControllerDescriptor`, `FeatureDescriptor`
- * - **Compilation Types**: `LinkedMethod`, `LinkedController`, `LinkedFeature`
+ * - **Compilation Types**: `CompiledMethod`, `CompiledController`, `CompiledFeature`
  * - **Middleware Types**: `Middleware`, `Next`, `ChoMiddleware`, `ChoGuard`
  * - **Validation Types**: `Validator`, `ArgValidator`
  *
@@ -121,8 +121,6 @@
  * class AppFeature {}
  * ```
  */
-export * from "./adapter.ts";
-export * from "./context.ts";
 export * from "./compiler.ts";
 export * from "./linker.ts";
 export * from "./decorators.ts";

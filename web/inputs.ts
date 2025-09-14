@@ -1,4 +1,4 @@
-import type { ArgType, MethodArgType, Validator } from "./types.ts";
+import type {ArgType, MethodArgType, Validator} from "./types.ts";
 
 /**
  * Function overloads for creating method argument type objects.
@@ -93,6 +93,7 @@ function createTypeFunction(type: ArgType): ArgTypeFunction {
  * ```
  */
 export const Params: ArgTypeFunction = createTypeFunction("param");
+
 /**
  * Create request body argument input.
  *
@@ -245,4 +246,4 @@ export const Header: ArgTypeFunction = createTypeFunction("header");
  * }
  * ```
  */
-export const Cookie: ArgTypeFunction = createTypeFunction("cookie");
+// export const Cookie: ArgTypeFunction = createTypeFunction("cookie");

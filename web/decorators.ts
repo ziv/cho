@@ -1,6 +1,6 @@
 import type { ClassDecorator, ClassMethodDecorator, Ctr, Target } from "@chojs/core";
 import { addToMetadataObject } from "@chojs/core";
-import type { ControllerDescriptor, FeatureDescriptor } from "./types.ts";
+import type { ControllerDescriptor, FeatureDescriptor, MethodArgType } from "./types.ts";
 import type { MethodDecoratorFn } from "./meta.ts";
 import { createMethodDecorator } from "./meta.ts";
 
@@ -82,11 +82,50 @@ export function Middlewares(
   };
 }
 
+/**
+ * Adds an error handler to a controller or a feature.
+ * @param errorHandler
+ * @constructor
+ */
 export function Catch(
   errorHandler: Ctr | Target,
 ): ClassDecorator {
   return (target: Target) => {
     addToMetadataObject(target, { errorHandler });
+  };
+}
+
+// Methods args decorators
+
+/**
+ * Define a method arguments list.
+ * Used instead of calling the second argument of HTTP method decorators.
+ *
+ * @example without Args:
+ * ```ts
+ * class MyController {
+ *  @Get("items", [
+ *   Query("page"),
+ *   Query("limit"),
+ *  ])
+ *  getItems(page: number, limit: number) { ... }
+ *  }
+ * ```
+ *
+ * @example with Args:
+ * ```ts
+ * class MyController {
+ * @Get("items")
+ * @Args(Query("page"), Query("limit"))
+ * getItems(page: number, limit: number) { ... }
+ * }
+ * ```
+ * @param args
+ * @constructor
+ */
+export function Args(...args: MethodArgType[]): ClassMethodDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { args });
   };
 }
 
@@ -166,6 +205,19 @@ export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");
 // Other HTTP decorators
 
 /**
+ * Method decorator for WebSocket endpoints.
+ *
+ * @example
+ * ```ts
+ * class ChatController {
+ *   @WebSocket("chat/:room", [Params("room")])
+ *   handleChat(socket: WebSocket, roomId: string) { ... }
+ * }
+ * ```
+ */
+export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
+
+/**
  * Method decorator for Server-Sent Events (SSE) endpoints.
  *
  * @example
@@ -179,17 +231,17 @@ export const Patch: MethodDecoratorFn = createMethodDecorator("PATCH");
 export const Sse: MethodDecoratorFn = createMethodDecorator("SSE");
 
 /**
- * Method decorator for WebSocket endpoints.
+ * Method decorator for Server-Sent Events (SSE) endpoints.
  *
  * @example
  * ```ts
- * class ChatController {
- *   @WebSocket("chat/:room", [Params("room")])
- *   handleChat(socket: WebSocket, roomId: string) { ... }
+ * class MyController {
+ *   @Sse("events")
+ *   streamEvents(stream, context) { ... }
  * }
  * ```
  */
-export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
+export const SseAsync: MethodDecoratorFn = createMethodDecorator("SSE_ASYNC");
 
 /**
  * Method decorator for streaming endpoints.
@@ -204,20 +256,6 @@ export const WebSocket: MethodDecoratorFn = createMethodDecorator("WS");
  * ```
  */
 export const Stream: MethodDecoratorFn = createMethodDecorator("STREAM");
-
-/**
- * Method decorator for text streaming endpoints.
- * This stream method take string chunks and writes them to the response as they are produced.
- *
- * @example
- * ```ts
- * class DataController {
- *   @StreamText("data/logs")
- *   streamLogs(stream: WritableStream) { ... }
- * }
- * ```
- */
-export const StreamText: MethodDecoratorFn = createMethodDecorator("STREAM_TEXT");
 
 /**
  * Method decorator for streaming endpoints.
@@ -240,6 +278,20 @@ export const StreamAsync: MethodDecoratorFn = createMethodDecorator("STREAM_ASYN
 
 /**
  * Method decorator for text streaming endpoints.
+ * This stream method take string chunks and writes them to the response as they are produced.
+ *
+ * @example
+ * ```ts
+ * class DataController {
+ *   @StreamText("data/logs")
+ *   streamLogs(stream: WritableStream) { ... }
+ * }
+ * ```
+ */
+export const StreamText: MethodDecoratorFn = createMethodDecorator("STREAM_TEXT");
+
+/**
+ * Method decorator for text streaming endpoints.
  * This stream should return an async iterator that yields string chunks to be written to the response.
  *
  * @example
@@ -255,7 +307,7 @@ export const StreamAsync: MethodDecoratorFn = createMethodDecorator("STREAM_ASYN
  * }
  * ```
  */
-export const StreamAsyncText: MethodDecoratorFn = createMethodDecorator("STREAM_ASYNC_TEXT");
+export const StreamTextAsync: MethodDecoratorFn = createMethodDecorator("STREAM_TEXT_ASYNC");
 
 /**
  * Method decorator for streaming endpoints that pipe from a ReadableStream.

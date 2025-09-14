@@ -1,22 +1,10 @@
-import type { Any, Ctr, Instance, Target } from "@chojs/core";
+import type { Ctr, Instance, Target } from "@chojs/core/meta";
 import { Injector, readMetadataObject } from "@chojs/core";
-import type {
-  ChoGuard,
-  ChoMiddleware,
-  ControllerDescriptor,
-  FeatureDescriptor,
-  LinkedController,
-  LinkedFeature,
-  LinkedMethod,
-  MethodArgFactory,
-  MethodArgType,
-  MethodDescriptor,
-  MethodType,
-  Middleware,
-  Next,
-  Routed,
-} from "./types.ts";
-import type { Context } from "./context.ts";
+import type { ControllerDescriptor, FeatureDescriptor, MethodArgType, MethodDescriptor, Routed } from "./types.ts";
+import type { ChoGuard } from "./interfaces/guard.ts";
+import type { Context } from "./interfaces/context.ts";
+import type { ErrorHandler } from "./interfaces/error-handler.ts";
+import type { MethodArgFactory, Middleware, Next } from "./interfaces/adapter.ts";
 import {
   CircularDependencyError,
   EmptyControllerError,
@@ -26,6 +14,55 @@ import {
   NotMiddlewareError,
   UnauthorizedError,
 } from "./errors.ts";
+import { debuglog } from "@chojs/core/utils";
+import { isClass } from "./utils.ts";
+import {ChoMiddleware} from "./interfaces/middleware.ts";
+
+const log = debuglog("web:compiler");
+
+/**
+ * HTTP method types supported by the framework, including standard HTTP methods and special types like SSE and WebSocket.
+ */
+export type MethodType =
+  // standard HTTP methods
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "PATCH"
+  // extended methods
+  | "SSE"
+  | "WS"
+  | "STREAM"
+  | "STREAM_TEXT"
+  | "STREAM_ASYNC"
+  | "STREAM_ASYNC_TEXT"
+  | "STREAM_PIPE";
+
+/**
+ * Generic type for linking objects with route and middleware information.
+ */
+export type Linked<T> = T & { route: string; middlewares: Middleware[]; errorHandler?: Target };
+
+/**
+ * A compiled method with its handler, HTTP method type, and argument factory.
+ */
+
+export type CompiledMethod = Linked<
+  { handler: Target; type: MethodType; args: MethodArgFactory }
+>;
+/**
+ * A compiled controller with its methods and routing information.
+ */
+
+export type CompiledController = Linked<{ methods: CompiledMethod[] }>;
+
+/**
+ * A compiled feature with its controllers and sub-features, forming a tree structure.
+ */
+export type CompiledFeature = Linked<
+  { controllers: CompiledController[]; features: CompiledFeature[] }
+>;
 
 /**
  * Compiler options for customizing the behavior of the Compiler.
@@ -60,8 +97,10 @@ export class Compiler {
    */
   async compile(
     ctr: Ctr,
-  ): Promise<LinkedFeature> {
+  ): Promise<CompiledFeature> {
+    const end = log.start();
     const compiled = await this.feature(ctr);
+    end("feature compiled");
     if (!compiled) {
       // maybe silent mode, so no feature created,
       // but here we expect at least one feature
@@ -87,6 +126,7 @@ export class Compiler {
     for (const mw of (routed.middlewares ?? [])) {
       if (typeof mw !== "function") {
         if (this.options.silent) {
+          log.error(`Middleware is not a function: ${mw}`);
           continue;
         }
         throw new NotMiddlewareError(mw);
@@ -111,8 +151,8 @@ export class Compiler {
           .register(mw as Ctr)
           .resolve<ChoGuard>(mw as Ctr);
         const handler = instance.canActivate.bind(instance);
-        middlewares.push(async (c: Context<Any>, next: Next) => {
-          const pass = await handler(c, next);
+        middlewares.push(async (c: Context, next: Next) => {
+          const pass = await handler(c);
           if (pass) {
             next();
           } else {
@@ -142,7 +182,7 @@ export class Compiler {
     meta: MethodDescriptor,
     controller: Instance,
     injector: Injector,
-  ): Promise<LinkedMethod> {
+  ): Promise<CompiledMethod> {
     const handler = (controller[meta.name as keyof typeof controller] as Target)
       .bind(
         controller,
@@ -152,6 +192,7 @@ export class Compiler {
       meta,
       injector,
     );
+
     return {
       route: meta.route,
       type: meta.type as MethodType,
@@ -173,13 +214,14 @@ export class Compiler {
   protected async controller(
     ctr: Ctr,
     injector: Injector,
-  ): Promise<LinkedController | null> {
+  ): Promise<CompiledController | null> {
     this.circularDependencyGuard(ctr);
 
     // type guard
     const meta = readMetadataObject<ControllerDescriptor>(ctr);
     if (!meta) {
       if (this.options.silent) {
+        log.error(`Class is not a controller: ${ctr.name}`);
         return null;
       }
       throw new NotControllerError(ctr);
@@ -201,6 +243,7 @@ export class Compiler {
 
     if (0 === metas.length) {
       if (!this.options.silent) {
+        log.error(`Controller has no routes: ${ctr.name}`);
         throw new EmptyControllerError(ctr);
       }
       return null;
@@ -209,7 +252,7 @@ export class Compiler {
     // create the controller instance
     const controller = await injector.register(ctr).resolve<Instance>(ctr);
 
-    const methods: LinkedMethod[] = [];
+    const methods: CompiledMethod[] = [];
     for (const m of metas) {
       methods.push(await this.method(m, controller, injector));
     }
@@ -219,10 +262,13 @@ export class Compiler {
       injector,
     );
 
+    const errorHandler = await this.errorHandler(meta as Routed, injector);
+
     return {
       route: meta.route ?? "",
       middlewares,
       methods,
+      errorHandler,
     };
   }
 
@@ -236,13 +282,14 @@ export class Compiler {
    */
   protected async feature(
     ctr: Ctr,
-  ): Promise<LinkedFeature | null> {
+  ): Promise<CompiledFeature | null> {
     this.circularDependencyGuard(ctr);
 
     // type guard
     const meta = readMetadataObject<FeatureDescriptor>(ctr);
     if (!meta) {
       if (this.options.silent) {
+        log.error(`Class is not a feature: ${ctr.name}`);
         return null;
       }
       throw new NotFeatureError(ctr);
@@ -251,7 +298,7 @@ export class Compiler {
     // resolving self
     const injector = await Injector.get(ctr);
 
-    const controllers: LinkedController[] = [];
+    const controllers: CompiledController[] = [];
     for (const c of meta.controllers ?? []) {
       const ctrl = await this.controller(c, injector);
       if (ctrl) {
@@ -259,7 +306,7 @@ export class Compiler {
       }
     }
 
-    const features: LinkedFeature[] = [];
+    const features: CompiledFeature[] = [];
     for (const f of meta.features ?? []) {
       const feat = await this.feature(f);
       if (feat) {
@@ -272,15 +319,37 @@ export class Compiler {
       injector,
     );
 
+    const errorHandler = await this.errorHandler(meta as Routed, injector);
+
     return {
       route: meta.route ?? "",
       middlewares,
       controllers,
       features,
+      errorHandler,
     };
   }
 
   // utils
+
+  async errorHandler(meta: Routed, injector: Injector): Promise<Target | undefined> {
+    const errorHandler = meta.errorHandler;
+
+    if (typeof errorHandler !== "function") {
+      return undefined;
+    }
+
+    if (!isClass(errorHandler)) {
+      return errorHandler;
+    }
+
+    if (typeof errorHandler.prototype.catch !== "function") {
+      throw new Error("Error handler class must have a catch method");
+    }
+
+    const instance = await injector.register(errorHandler as Ctr).resolve<ErrorHandler>(errorHandler as Ctr);
+    return instance.catch.bind(instance);
+  }
 
   /**
    * Guard against circular dependencies by tracking resolved classes.
@@ -308,31 +377,42 @@ export class Compiler {
   protected createMethodArgFactory(
     args: MethodArgType[],
   ): MethodArgFactory {
-    return async function (ctx: Context) {
-      let body: unknown = undefined;
-      const fromRequest = async (type: string) => {
-        switch (type) {
-          case "param":
-            return ctx.params();
-          case "query":
-            return ctx.query();
-          case "header":
-            return ctx.headers();
-          case "body":
-            if (!body) body = await ctx.jsonBody();
-            return body;
-        }
-      };
+    return async function (ctx: Context): Promise<unknown[]> {
+      // unable to read body multiple times, so cache it
+      let body: any = undefined;
 
-      const ret = [];
+      const ret: unknown[] = [];
+
       for (const arg of args) {
-        const temp = (await fromRequest(arg.type)) as Record<string, unknown>;
-        const value = arg.key ? temp?.[arg.key] : temp;
+        let value;
+        switch (arg.type) {
+          case "param":
+            value = arg.key ? ctx.req.param(arg.key) : ctx.req.param();
+            break;
+          case "query":
+            value = arg.key ? ctx.req.query(arg.key) : ctx.req.query();
+            break;
+          case "header":
+            value = arg.key ? ctx.req.header(arg.key) : ctx.req.header();
+            break;
+          case "body":
+            if (!body) {
+              body = await ctx.req.json();
+            }
+            value = (arg.key && arg.key in body) ? body[arg.key] : body;
+            break;
+          default:
+            // todo convert to internal error
+            throw new Error(`Unrecognized method: ${arg.type}`);
+        }
+
         if (!arg.validator) {
           ret.push(value);
           continue;
         }
+
         const parsed = arg.validator.safeParse(value);
+
         if (!parsed.success) {
           const message = arg.key
             ? `Input validation failed at argument ${arg.type}.${arg.key}`
