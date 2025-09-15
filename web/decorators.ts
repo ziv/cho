@@ -1,9 +1,9 @@
-import type {ClassDecorator, ClassMethodDecorator, Target} from "@chojs/core";
-import {addToMetadataObject} from "@chojs/core";
-import type {ChoMiddleware, ErrorHandler} from "./interfaces/mod.ts";
-import type {ControllerDescriptor, FeatureDescriptor, MethodArgType} from "./types.ts";
-import type {MethodDecoratorFn} from "./meta.ts";
-import {createMethodDecorator} from "./meta.ts";
+import type { Any, ClassDecorator, ClassMethodDecorator, Target } from "@chojs/core";
+import { addToMetadataObject } from "@chojs/core";
+import type { ChoMiddleware, ErrorHandler } from "./interfaces/mod.ts";
+import { ControllerDescriptor, FeatureDescriptor, InputFactory } from "./types.ts";
+import type { MethodDecoratorFn } from "./meta.ts";
+import { createMethodDecorator } from "./meta.ts";
 
 /**
  * Marks a class as a web controller.
@@ -124,7 +124,7 @@ export function Catch(
  * @param args
  * @constructor
  */
-export function Args(...args: MethodArgType[]): ClassMethodDecorator {
+export function Args(...args: InputFactory[]): ClassMethodDecorator & Any {
   return (target: Target) => {
     addToMetadataObject(target, { args });
   };
