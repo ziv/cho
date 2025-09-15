@@ -76,7 +76,7 @@ function createInputFunctionFactory(name: string, retriever: ValueRetriever): In
       if (!validator) {
         return value;
       }
-      const parsed = validator.parse(value);
+      const parsed = validator.safeParse(value);
       if (!parsed.success) {
         const message = key
           ? `Input validation failed at argument ${name}("${key}")`
