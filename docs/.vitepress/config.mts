@@ -69,7 +69,7 @@ export default defineConfig({
                 link: "/guide/di-injectables",
               },
               { text: "Modules", link: "/guide/di-modules" },
-              { text: "Injector", link: "/guide/injectables" },
+              { text: "Injector", link: "/guide/di-injector" },
               { text: "Testing", link: "/guide/injectables" },
             ],
           },

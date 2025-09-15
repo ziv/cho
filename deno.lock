@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@hono/hono@*": "4.9.7",
+    "jsr:@chojs/core@0.9.0": "0.9.0",
     "jsr:@hono/hono@^4.9.4": "4.9.7",
     "jsr:@oak/commons@1": "1.0.1",
     "jsr:@oak/oak@^17.1.6": "17.1.6",
@@ -34,6 +34,13 @@
     "npm:semantic-release@^24.2.7": "24.2.7_marked@15.0.12"
   },
   "jsr": {
+    "@chojs/core@0.9.0": {
+      "integrity": "0242c971d3c661dcac04492e2e7ff3ca6b24e7a5127d585ee57b61daa2a239a4",
+      "dependencies": [
+        "jsr:@std/datetime",
+        "jsr:@std/fmt@^1.0.8"
+      ]
+    },
     "@hono/hono@4.9.7": {
       "integrity": "5293d82fc6d25782ff9e0a89680f99cdd27ed19eb0558e2786c22a46a4594424"
     },
@@ -2916,14 +2923,7 @@
           "jsr:@std/datetime@~0.225.5",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.8"
-        ],
-        "packageJson": {
-          "dependencies": [
-            "npm:@semantic-release/exec@^7.1.0",
-            "npm:jsr@~0.13.5",
-            "npm:semantic-release@^24.2.7"
-          ]
-        }
+        ]
       },
       "dev": {
         "dependencies": [
@@ -2948,8 +2948,7 @@
       },
       "web": {
         "dependencies": [
-          "jsr:@chojs/core@*",
-          "jsr:@hono/hono@*"
+          "jsr:@chojs/core@0.9.0"
         ]
       }
     }
