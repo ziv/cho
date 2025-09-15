@@ -1,29 +1,55 @@
 import type { Any, Target } from "@chojs/core/meta";
 import { debuglog } from "@chojs/core/utils";
 import type { CompiledFeature, CompiledMethod } from "./compiler.ts";
-import type { SseAdapter, StreamAdapter, StreamingApi, TextStreamAdapter } from "./interfaces/adpater-extends.ts";
-import type { Adapter } from "./interfaces/mod.ts";
-
-// todo add error handler...
+import type {
+  Adapter,
+  ErrorHandlerFn,
+  SseAdapter,
+  StreamAdapter,
+  StreamingApi,
+  TextStreamAdapter,
+} from "./interfaces/mod.ts";
 
 const log = debuglog("web:linker");
 
+export type ErrorHandling = { onError: ErrorHandlerFn };
+
+/**
+ * Linker class to connect compiled features with a specific web framework using an adapter.
+ *
+ * @template Application The type of the application instance (e.g., Express app, Koa app).
+ * @template Feature The type of the feature instance (e.g., Express router, Koa router).
+ */
 export class Linker<
-  Application = Any,
-  Feature = Any,
+  Application extends ErrorHandling = Any,
+  Feature extends ErrorHandling = Any,
 > {
+  readonly stack: string[] = [];
   constructor(readonly adapter: Adapter) {
   }
 
+  /**
+   * Link a compiled feature to an application instance using the provided adapter.
+   * @param root
+   */
   link(root: CompiledFeature): Application {
     return this.adapter.mountApp<Application>(this.apply(root), root.route);
   }
 
   protected apply(ref: CompiledFeature): Feature {
     const feature = this.adapter.createFeature(ref.middlewares.map(this.adapter.createMiddleware));
+    this.stack.push(ref.route);
+
+    if (ref.errorHandler && typeof feature.onError === "function") {
+      feature.onError(ref.errorHandler);
+    }
 
     for (const cc of ref.controllers) {
       const controller = this.adapter.createController(cc.middlewares.map(this.adapter.createMiddleware));
+
+      if (cc.errorHandler && typeof controller.onError === "function") {
+        controller.onError(cc.errorHandler);
+      }
 
       for (const cm of cc.methods) {
         const type = cm.type.toLocaleLowerCase();
@@ -129,7 +155,7 @@ export class Linker<
     };
   }
 
-  protected linkAsyncStream(cm: CompiledMethod, method: string): Target {
+  protected linkAsyncStream(cm: CompiledMethod, method: keyof StreamingApi): Target {
     const createContext = this.adapter.createContext.bind(this.adapter);
     return async function (raw: Any, stream: StreamingApi) {
       const ctx = createContext(raw);
@@ -139,21 +165,15 @@ export class Linker<
         // todo add test to this check...
         throw new Error("Method not return an async generator");
       }
-      const m = method as keyof StreamingApi;
-      if (stream[m] == null) {
+      if (stream[method] == null) {
         throw new Error(`Streaming method ${method} not implemented by the adapter`);
       }
-      if (typeof stream[m] !== "function") {
+      if (typeof stream[method] !== "function") {
         throw new Error(`Streaming method ${method} is not a function`);
       }
       for await (const next of generator) {
-        stream[m](next as never);
+        stream[method](next as never);
       }
-      // for await (const next of generator) {
-      //   if (stream[method]) {
-      //     // stream[method as keyof StreamingApi](next);
-      //   }
-      // }
       await stream.close();
     };
   }

@@ -18,4 +18,4 @@ export interface ErrorHandler {
   catch(err: unknown, ctx: Context): Promise<Response>;
 }
 
-export type ErrorHandlerFn = (ctx: Context) => Promise<Response>;
+export type ErrorHandlerFn = (err: unknown, ctx: Context) => Promise<Response> | Response;
