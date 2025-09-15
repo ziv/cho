@@ -72,7 +72,7 @@ export class Linker<
           case "sse_async":
             if ("createSseEndpoint" in this.adapter) {
               endpoint = (this.adapter as SseAdapter).createSseEndpoint(
-                this.linkAsyncStream(cm, "writeSSE"),
+                this.linkAsyncStream(cm, "writeSSE" as keyof StreamingApi),
               );
             }
             break;
