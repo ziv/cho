@@ -1,6 +1,6 @@
 # Web Server Quick Start
 
-This guide will help you set up a basic web server using CHO's web framework. This is useful for building modern web
+This guide will help you set up a basic web server using **CHO**'s web framework. This is useful for building modern web
 applications with dependency injection and decorator-based routing.
 
 ## Controller & Endpoints
@@ -12,22 +12,25 @@ and HTTP methods.
 In CHO, a controller is a class decorated with `@Controller` that contains methods with `@Get`, `@Post`, etc.
 Controllers have to contain at least one endpoint.
 
-A Controller is a routable entity, meaning it can have a route prefix that applies to all its endpoints and can have
+A Controller is a _routable entity_, meaning it can have a route prefix that applies to all its endpoints and can have
 middleware attached to it.
+
+Controller is also _injectable entity_, meaning you can inject dependencies into it via `@Dependencies` decorator.
 
 By default, the return value from an endpoint is transformed to a JSON response. If you want to return a different type
 of response, you can return a response object.
 
-```ts
-import { Controller } from "@chojs/web";
+```ts 
+import {Controller} from "@chojs/web";
 
 @Controller("")
 class MyController {
-  @Get("hello")
-  hello() {
-    return { message: "Hello, World!" };
-  }
+    @Get("hello")
+    hello() {
+        return {message: "Hello, World!"};
+    }
 }
+
 ```
 
 Explanation:
@@ -46,12 +49,12 @@ A feature is a routable module, meaning it can have a route prefix that applies 
 middleware attached to it. A feature can contain multiple controllers and sub-features.
 
 ```ts
-import { Feature } from "@chojs/web";
-import { MyController } from "./my-controller";
+import {Feature} from "@chojs/web";
+import {MyController} from "./my-controller";
 
 @Feature({
-  controllers: [MyController],
-  prefix: "api",
+    controllers: [MyController],
+    prefix: "api",
 })
 class MyFeature {
 }
