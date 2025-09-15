@@ -1,4 +1,7 @@
 import type { Ctr, InjectableDescriptor, ModuleDescriptor, Target } from "@chojs/core";
+import { Context } from "./interfaces/mod.ts";
+
+export type InputFactory = (c: Context) => Promise<unknown>;
 
 export type Routed = {
   /**
@@ -24,7 +27,7 @@ export type MethodDescriptor = Routed & {
    * The argument to pass the method when invoked.
    * Each argument is represented by its type and an optional key.
    */
-  args: MethodArgType[];
+  args: InputFactory[];
 };
 
 /**

@@ -1,5 +1,5 @@
 #!/usr/bin/env deno run --allow-all
-import { Compiler, Controller, Feature, Get, Linker } from "@chojs/web";
+import { Args, Compiler, Controller, Feature, Get, Linker, Params } from "@chojs/web";
 import { HonoAdapter } from "@chojs/vendor-hono";
 import { describeRoutes } from "@chojs/dev";
 
@@ -29,6 +29,12 @@ class DataController {
   getData() {
     console.log("/api/data");
     return { data: [1, 2, 3, 4, 5] };
+  }
+
+  @Args(Params("key"))
+  @Get("data/:key")
+  args(key: string) {
+    return { key };
   }
 }
 

@@ -1,4 +1,6 @@
-import type {ArgType, MethodArgType, Validator} from "./types.ts";
+import { ArgType, InputFactory, MethodArgType, Validator } from "./types.ts";
+import { Context } from "./interfaces/mod.ts";
+import { InvalidInputError } from "./errors.ts";
 
 /**
  * Function overloads for creating method argument type objects.
@@ -9,6 +11,14 @@ export type ArgTypeFunction = {
   (validator: Validator): MethodArgType;
   (key: string, validator: Validator): MethodArgType;
 };
+
+export type InputTypeFunction = {
+  (key?: string): InputFactory;
+  (validator: Validator): InputFactory;
+  (key: string, validator: Validator): InputFactory;
+};
+
+type ValueRetriever = (c: Context, key?: string) => unknown | Promise<unknown>;
 
 /**
  * Creates a function to generate argument type objects for method parameters.
@@ -53,6 +63,31 @@ function createTypeFunction(type: ArgType): ArgTypeFunction {
   };
 }
 
+function createInputFunctionFactory(name: string, retriever: ValueRetriever): InputTypeFunction {
+  return function (
+    keyOrValidator?: string | Validator,
+    validatorIfKey?: Validator,
+  ): InputFactory {
+    const key = typeof keyOrValidator === "string" ? keyOrValidator : undefined;
+    const validator = typeof keyOrValidator !== "string" ? keyOrValidator : validatorIfKey;
+
+    return async function (c: Context): Promise<unknown> {
+      const value = await retriever(c, key);
+      if (!validator) {
+        return value;
+      }
+      const parsed = validator.parse(value);
+      if (!parsed.success) {
+        const message = key
+          ? `Input validation failed at argument ${name}("${key}")`
+          : `Input validation failed at argument ${name}()`;
+        throw new InvalidInputError(parsed.error, message);
+      }
+      return parsed.data;
+    };
+  };
+}
+
 /**
  * Create URL path parameter argument input.
  *
@@ -92,7 +127,11 @@ function createTypeFunction(type: ArgType): ArgTypeFunction {
  * }
  * ```
  */
-export const Params: ArgTypeFunction = createTypeFunction("param");
+// export const Params: ArgTypeFunction = createTypeFunction("param");
+export const Params: InputTypeFunction = createInputFunctionFactory(
+  "Params",
+  (c, key) => key ? c.req.param(key) : c.req.param(),
+);
 
 /**
  * Create request body argument input.
@@ -131,7 +170,20 @@ export const Params: ArgTypeFunction = createTypeFunction("param");
  * }
  * ```
  */
-export const Body: ArgTypeFunction = createTypeFunction("body");
+// export const BodyOld: ArgTypeFunction = createTypeFunction("body");
+export const Body: InputTypeFunction = createInputFunctionFactory(
+  "Body",
+  async (c, key) => {
+    // we can read the body only once, so we cache it in the context
+    // for subsequent calls
+    if (!c.get("--cached-body")) {
+      c.set("--cached-body", await c.req.json());
+    }
+    const body = c.get("--cached-body") as Record<string, unknown>;
+    return key ? body?.[key] : body;
+  },
+);
+
 /**
  * Create query parameter argument input.
  *
@@ -169,7 +221,12 @@ export const Body: ArgTypeFunction = createTypeFunction("body");
  * }
  * ```
  */
-export const Query: ArgTypeFunction = createTypeFunction("query");
+// export const Query: ArgTypeFunction = createTypeFunction("query");
+export const Query: InputTypeFunction = createInputFunctionFactory(
+  "Query",
+  (c, key) => key ? c.req.query(key) : c.req.query(),
+);
+
 /**
  * Create request header argument input.
  *
@@ -207,43 +264,8 @@ export const Query: ArgTypeFunction = createTypeFunction("query");
  * }
  * ```
  */
-export const Header: ArgTypeFunction = createTypeFunction("header");
-
-/**
- * Create cookie argument input.
- *
- * If no key is provided, all cookies will be passed as an object.
- * If key is provided, the value will be extracted from the cookies using the key.
- * If validator is provided, the cookie will be validated using the validator.
- *
- * @example Basic usage
- * ```ts
- * class UserController {
- *   @Get("/profile", [Cookie("session")])
- *   getProfile(sessionId: string) {
- *     // sessionId is extracted from session cookie
- *   }
- * }
- * ```
- *
- * @example With validator
- * ```ts
- * class UserController {
- *   @Get("/profile", [Cookie("userId", z.string().uuid())])
- *   getProfile(userId: string) {
- *     // validates userId cookie is a valid UUID
- *   }
- * }
- * ```
- *
- * @example All cookies
- * ```ts
- * class UserController {
- *   @Get("/debug", [Cookie()])
- *   debugEndpoint(cookies: Record<string, string>) {
- *     // receives all cookies as an object
- *   }
- * }
- * ```
- */
-// export const Cookie: ArgTypeFunction = createTypeFunction("cookie");
+// export const Header: ArgTypeFunction = createTypeFunction("header");
+export const Header: InputTypeFunction = createInputFunctionFactory(
+  "Header",
+  (c, key) => key ? c.req.header(key) : c.req.header(),
+);

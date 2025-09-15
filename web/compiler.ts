@@ -1,6 +1,6 @@
 import type { Ctr, Instance, Target } from "@chojs/core/meta";
 import { Injector, readMetadataObject } from "@chojs/core";
-import type { ControllerDescriptor, FeatureDescriptor, MethodArgType, MethodDescriptor, Routed } from "./types.ts";
+import type { ControllerDescriptor, FeatureDescriptor, InputFactory, MethodDescriptor, Routed } from "./types.ts";
 import type {
   ChoGuard,
   Context,
@@ -13,7 +13,6 @@ import type {
 import {
   CircularDependencyError,
   EmptyControllerError,
-  InvalidInputError,
   NotControllerError,
   NotFeatureError,
   NotMiddlewareError,
@@ -36,12 +35,13 @@ export type MethodType =
   | "DELETE"
   | "PATCH"
   // extended methods
-  | "SSE"
   | "WS"
+  | "SSE"
+  | "SSE_ASYNC"
   | "STREAM"
   | "STREAM_TEXT"
   | "STREAM_ASYNC"
-  | "STREAM_ASYNC_TEXT"
+  | "STREAM_TEXT_ASYNC"
   | "STREAM_PIPE";
 
 /**
@@ -382,59 +382,20 @@ export class Compiler {
   }
 
   /**
-   * Create a method argument factory from an array of method argument types.
+   * Aggregate a list of argument factories into a single method argument factory.
    * The factory extracts and validates arguments from the request context.
    *
    * @param args
    * @protected
    */
   protected createMethodArgFactory(
-    args: MethodArgType[],
+    args: InputFactory[],
   ): MethodArgFactory {
     return async function (ctx: Context): Promise<unknown[]> {
-      // unable to read body multiple times, so cache it
-      let body: any = undefined;
-
       const ret: unknown[] = [];
-
-      for (const arg of args) {
-        let value;
-        switch (arg.type) {
-          case "param":
-            value = arg.key ? ctx.req.param(arg.key) : ctx.req.param();
-            break;
-          case "query":
-            value = arg.key ? ctx.req.query(arg.key) : ctx.req.query();
-            break;
-          case "header":
-            value = arg.key ? ctx.req.header(arg.key) : ctx.req.header();
-            break;
-          case "body":
-            if (!body) {
-              body = await ctx.req.json();
-            }
-            value = (arg.key && arg.key in body) ? body[arg.key] : body;
-            break;
-          default:
-            // todo convert to internal error
-            throw new Error(`Unrecognized method: ${arg.type}`);
-        }
-
-        if (!arg.validator) {
-          ret.push(value);
-          continue;
-        }
-
-        const parsed = arg.validator.safeParse(value);
-
-        if (!parsed.success) {
-          const message = arg.key
-            ? `Input validation failed at argument ${arg.type}.${arg.key}`
-            : `Input validation failed at argument ${arg.type}`;
-          throw new InvalidInputError(parsed.error, message);
-        }
-
-        ret.push(parsed.data);
+      for (const argFactory of args) {
+        const value = await argFactory(ctx);
+        ret.push(value);
       }
       return ret;
     };
