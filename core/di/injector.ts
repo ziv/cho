@@ -87,6 +87,7 @@ export class Injector implements Resolver {
    * @param ctr
    */
   static async get(ctr: Ctr): Promise<Injector> {
+      console.log('>>>>>>>>><<<<<<<<<');
     let inj = read<Injector>(ctr, InjectorMetadata);
     if (!inj) {
       inj = new Injector(ctr);

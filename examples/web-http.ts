@@ -1,7 +1,15 @@
 #!/usr/bin/env deno run --allow-all
-import { Args, Compiler, Controller, Feature, Get, Linker, Params } from "@chojs/web";
-import { HonoAdapter } from "@chojs/vendor-hono";
-import { describeRoutes } from "@chojs/dev";
+import {Args, Compiler, Controller, Feature, Get, Linker, Params} from "@chojs/web";
+import {HonoAdapter} from "@chojs/vendor-hono";
+import {describeRoutes} from "@chojs/dev";
+import {Dependencies, Injectable} from "@chojs/core";
+
+@Injectable()
+@Dependencies("API_URL")
+class Service {
+  constructor(readonly url: string) {
+  }
+}
 
 @Controller("")
 class RootController {
@@ -19,7 +27,11 @@ class RootController {
 }
 
 @Controller("api")
+@Dependencies(Service)
 class DataController {
+  constructor(readonly service: Service) {
+  }
+
   @Get("")
   data() {
     console.log("/api");
@@ -34,11 +46,18 @@ class DataController {
   @Args(Params("key"))
   @Get("data/:key")
   args(key: string) {
-    return { key };
+    return { key, url: this.service.url };
   }
 }
 
 @Feature({
+  providers: [
+    {
+      provide: "API_URL",
+      factory: () => Promise.resolve("https://api.example.com"),
+    },
+    Service,
+  ],
   controllers: [RootController, DataController],
 })
 class AppFeature {
