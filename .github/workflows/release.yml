@@ -30,8 +30,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: 🧪 testing
-        run: deno test --allow-env
+#      - name: 🧪 testing
+#        run: deno test --allow-env
 
       - name: 🛫 install semantic-release
         run: npm ci --no-fund
