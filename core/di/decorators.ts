@@ -1,4 +1,11 @@
-import type { InjectableDescriptor, ModuleDescriptor, Token } from "./types.ts";
+import type {
+  ChoErrorHandler,
+  ChoErrorHandlerFn,
+  ControllerDescriptor,
+  InjectableDescriptor,
+  ModuleDescriptor,
+  Token,
+} from "./types.ts";
 import type { ClassMethodDecorator, Ctr, MetaDecoratorFactory, Target } from "../meta/mod.ts";
 import { addToMetadataObject, createMetaDecorator } from "../meta/mod.ts";
 
@@ -21,7 +28,9 @@ import { addToMetadataObject, createMetaDecorator } from "../meta/mod.ts";
  * }
  * ```
  */
-export const Injectable: MetaDecoratorFactory<InjectableDescriptor> = createMetaDecorator<InjectableDescriptor>();
+export const Injectable: MetaDecoratorFactory<InjectableDescriptor> = createMetaDecorator<InjectableDescriptor>({
+  isInjectable: true,
+});
 
 /**
  * Mark a class as a module and create its provider.
@@ -36,7 +45,34 @@ export const Injectable: MetaDecoratorFactory<InjectableDescriptor> = createMeta
  *   providers: [MyService, { provide: "API_URL", factory: () => Promise.resolve("https://api.example.com") }],
  * })
  */
-export const Module: MetaDecoratorFactory<ModuleDescriptor> = createMetaDecorator<ModuleDescriptor>();
+export const Module: MetaDecoratorFactory<ModuleDescriptor> = createMetaDecorator<ModuleDescriptor>({
+  isModule: true,
+});
+
+/**
+ * Mark a class as a web controller (gateway).
+ * Controllers can have their own route prefix, middlewares, and error handlers.
+ * Controller is an injectable itself and can have its own dependencies.
+ *
+ * @param route
+ * @constructor
+ */
+export function Controller(
+  route?: string | Partial<ControllerDescriptor>,
+): ClassDecorator {
+  let desc: Partial<ControllerDescriptor> = {};
+  if (route && typeof route === "string") {
+    desc.route = route;
+  }
+  if (route && typeof route === "object") {
+    desc = route;
+  }
+  desc.isGateway = true;
+
+  return (target: Target) => {
+    addToMetadataObject(target, desc);
+  };
+}
 
 /**
  * Add dependencies to an injectable dependency list.
@@ -62,6 +98,9 @@ export function Dependencies(
   };
 }
 
+/**
+ * Alias for `Dependencies` decorator.
+ */
 export const Deps = Dependencies; // alias
 
 /**
@@ -85,5 +124,17 @@ export function Middlewares(
 ): ClassDecorator & ClassMethodDecorator {
   return (target: Target) => {
     addToMetadataObject(target, { middlewares });
+  };
+}
+
+/**
+ * Adds an error handler to an entity (class or method).
+ * @param errorHandler
+ */
+export function Catch(
+  errorHandler: ChoErrorHandler | ChoErrorHandlerFn,
+): ClassDecorator & ClassMethodDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { errorHandler });
   };
 }

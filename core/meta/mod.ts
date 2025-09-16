@@ -192,9 +192,11 @@ export type MetaDecoratorFactory<T extends Metadata> = (
  *
  * const MyMetaDecorator = createMetaDecorator<MyMeta>();
  * ```
+ *
+ * // todo mark not suppose to be any
  */
-export function createMetaDecorator<T extends Metadata>(): MetaDecoratorFactory<T> {
+export function createMetaDecorator<T extends Metadata>(mark: Record<string, boolean> = {}): MetaDecoratorFactory<T> {
   return (desc: Partial<T> = {}) => (target: Target) => {
-    addToMetadataObject(target, desc);
+    addToMetadataObject(target, { ...desc, ...mark });
   };
 }

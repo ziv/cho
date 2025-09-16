@@ -48,16 +48,40 @@ export type InjectableDescriptor = {
  * @internal
  */
 export type ModuleDescriptor = InjectableDescriptor & {
+  route: string;
   imports: Ctr[];
   providers: (Provider | Ctr)[];
   controllers: Ctr[]; // AKA  gateways
   middlewares: (ChoMiddleware | Target)[];
   errorHandler: ChoErrorHandler | ChoErrorHandlerFn;
+  isModule: true;
+};
+
+/**
+ * Descriptor for a controller class, combining injectable and routing metadata.
+ */
+export type ControllerDescriptor = InjectableDescriptor & {
+  route: string;
+  middlewares: (ChoMiddleware | Target)[];
+  errorHandler: ChoErrorHandler | ChoErrorHandlerFn;
+  isGateway: true;
+};
+
+export type MethodDescriptor = {
+  route: string;
+  middlewares: (ChoMiddleware | Target)[];
+  errorHandler: ChoErrorHandler | ChoErrorHandlerFn;
+  isMethod: true;
+  type: string;
+  name: string;
+  args: Target[];
 };
 
 // middlewares types
 
 export type Context<T = Any> = T;
+
+export type ChoEndpointFn = (ctx: Context) => void | Response | Promise<void | Response>;
 
 export type Next = () => void | Promise<void>;
 

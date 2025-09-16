@@ -1,12 +1,14 @@
 import type { Any, Ctr, Target } from "../meta/mod.ts";
+import { readMetadataObject } from "../meta/mod.ts";
 import type {
   ChoErrorHandler,
   ChoErrorHandlerFn,
   ChoMiddleware,
   ChoMiddlewareFn,
+  ControllerDescriptor,
+  MethodDescriptor,
   ModuleDescriptor,
 } from "../di/types.ts";
-import { readMetadataObject } from "../meta/mod.ts";
 import { Injector } from "../di/injector.ts";
 import { debuglog } from "../utils/debuglog.ts";
 import { isClass, isClassImplement } from "../utils/is.ts";
@@ -28,7 +30,7 @@ export type Compiled<M, T> = T & {
   /**
    * Metadata associated with the method (e.g., HTTP method, route info).
    */
-  meta: unknown;
+  meta: M;
 
   /**
    * The instance of the target class (for modules and gateways) or the handler function (for methods).
@@ -41,14 +43,14 @@ export type Compiled<M, T> = T & {
   errorHandler?: ChoErrorHandlerFn;
 };
 
-export type CompiledMethod = Compiled<unknown, {
+export type CompiledMethod = Compiled<MethodDescriptor, {
   /**
    * The name of the method.
    */
   name: string;
 }>;
 
-export type CompiledGateway = Compiled<unknown, {
+export type CompiledGateway = Compiled<ControllerDescriptor, {
   /**
    * List of compiled methods within the gateway.
    */
@@ -86,6 +88,12 @@ export class Compiler {
     return compiled;
   }
 
+  /**
+   * Normalize and instantiate an error handler.
+   * @param handler
+   * @param injector
+   * @protected
+   */
   protected async errorHandler(
     handler: ChoErrorHandlerFn | ChoErrorHandler,
     injector: Injector,
@@ -103,6 +111,12 @@ export class Compiler {
     return instance.catch.bind(instance) as ChoErrorHandlerFn;
   }
 
+  /**
+   * Normalize and instantiate a middleware.
+   * @param mw
+   * @param injector
+   * @protected
+   */
   protected async middleware(
     mw: Ctr | Target,
     injector: Injector,
@@ -135,10 +149,18 @@ export class Compiler {
     throw new Error('ChoMiddlewareFn is not middleware class, it does not implement "handle" method');
   }
 
+  /**
+   * Compile a method into a compiled method.
+   * @param instance
+   * @param name
+   * @param meta
+   * @param injector
+   * @protected
+   */
   protected async endpoint(
     instance: Any,
     name: string,
-    meta: unknown,
+    meta: MethodDescriptor,
     injector: Injector,
   ): Promise<CompiledMethod> {
     const handle = (instance as Any)[name as keyof typeof instance].bind(instance);
@@ -154,12 +176,18 @@ export class Compiler {
     return { meta, errorHandler, middlewares, handle, name };
   }
 
+  /**
+   * Compile a gateway (controller) into a compiled gateway.
+   * @param ctr
+   * @param injector
+   * @protected
+   */
   protected async gateway(
     ctr: Ctr,
     injector: Injector,
   ): Promise<CompiledGateway | null> {
-    const meta = readMetadataObject(ctr);
-    if (!meta) {
+    const meta = readMetadataObject<ControllerDescriptor>(ctr);
+    if (!meta || !meta.isGateway) {
       // not a gateway, next
       return null;
     }
@@ -189,7 +217,7 @@ export class Compiler {
 
     const methods: CompiledMethod[] = [];
     for (const prop of props) {
-      methods.push(await this.endpoint(instance, prop.name, prop.meta, injector));
+      methods.push(await this.endpoint(instance, prop.name, prop.meta as MethodDescriptor, injector));
     }
 
     const middlewares: ChoMiddlewareFn[] = [];
@@ -203,6 +231,11 @@ export class Compiler {
     return { meta, errorHandler, middlewares, methods, handle: instance };
   }
 
+  /**
+   * Compile a module into a compiled module.
+   * @param ctr
+   * @protected
+   */
   protected async module(
     ctr: Ctr,
   ): Promise<CompiledModule> {
@@ -212,13 +245,13 @@ export class Compiler {
     }
 
     const meta = readMetadataObject<ModuleDescriptor>(ctr);
-    if (!meta) {
+    if (!meta || !meta.isModule) {
       throw new Error(`Class ${ctr.name} is not a module. Did you forget to add @Module()?`);
     }
 
     // create injector for the module while resolving its dependencies
     const injector = await Injector.get(ctr);
-    const instance = await injector.register(ctr);
+    const instance = await injector.resolve(ctr);
 
     const controllers = [];
     for (const gw of (meta.controllers ?? [])) {

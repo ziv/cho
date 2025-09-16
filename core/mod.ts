@@ -76,7 +76,7 @@
  * - `ModuleDescriptor` - Descriptor for module classes
  * - `ClassDecorator` - Type for class decorators
  * - `ClassMethodDecorator` - Type for method decorators
- * - `MethodContext` - Context object for method decorators
+ * - `MethodContext` - ChoWebContext object for method decorators
  *
  * ### Metadata System (`./meta/`)
  *

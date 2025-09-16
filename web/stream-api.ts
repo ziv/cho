@@ -1,21 +1,6 @@
-import { Target } from "@chojs/core/meta";
-import { Endpoint, Middleware } from "./adapter.ts";
+import type { Target } from "@chojs/core/meta";
+import type { ChoEndpointFn } from "@chojs/core/di";
 
-export type SseAdapter = {
-  /**
-   * Takes cho SSE endpoint handler and converts it to the framework's streaming endpoint
-   * The endpoint handler should be an async generator function
-   *
-   * @param mw
-   */
-  createSseEndpoint(mw: Target): Endpoint;
-};
-
-/**
- * API for writing to a streaming response.
- * Copied from: node_modules/.deno/hono@4.9.2/node_modules/hono/dist/types/utils/stream.d.ts
- * @see node_modules/.deno/hono@4.9.2/node_modules/hono/dist/types/utils/stream.d.ts
- */
 export type StreamingApi = {
   responseReadable: ReadableStream;
   /**
@@ -83,7 +68,25 @@ export type SSEStreamingApi = StreamingApi & {
   writeSSE(message: SSEMessage): Endpoint;
 };
 
-export type StreamAdapter = {
+// adapters
+
+export type SseAdapter<Endpoint> = {
+  /**
+   * Takes cho SSE endpoint handler and converts it to the framework's streaming endpoint
+   * The endpoint handler should be an async generator function
+   *
+   * @param endpoint
+   */
+  createSseEndpoint(endpoint: ChoEndpointFn): Endpoint;
+};
+
+/**
+ * API for writing to a streaming response.
+ * Copied from: node_modules/.deno/hono@4.9.2/node_modules/hono/dist/types/utils/stream.d.ts
+ * @see node_modules/.deno/hono@4.9.2/node_modules/hono/dist/types/utils/stream.d.ts
+ */
+
+export type StreamAdapter<Endpoint> = {
   /**
    * Takes cho streaming endpoint handler and converts it to the framework's streaming endpoint
    * @param mw
@@ -91,7 +94,7 @@ export type StreamAdapter = {
   createStreamEndpoint(mw: Target): Endpoint;
 };
 
-export type TextStreamAdapter = {
+export type TextStreamAdapter<Endpoint> = {
   /**
    * Takes cho text streaming endpoint handler and converts it to the framework's text streaming endpoint
    * @param mw
