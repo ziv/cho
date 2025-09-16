@@ -4,7 +4,7 @@ outline: 1
 
 # Introduction
 
-## Why This Project Exists
+Or...**_Why This Project Exists_**
 
 ### Portability
 
@@ -24,6 +24,15 @@ without worrying about compatibility issues.
 
 We embraced the [latest (stage 3) TC39 proposals for decorators](https://github.com/tc39/proposal-decorators), following
 [Deno's lead](https://decorators.deno.dev/) in adopting these features.
+
+### ...
+
+Working alongside engineers using Angular and NestJS frameworks, we observed a common desire for a more
+streamlined and efficient way to build server-side applications. Teams love the class based API approach and the
+decorator syntax, but often find themselves constrained by the limitations of their chosen runtime or framework.
+
+The expansion of serverless computing and the rise of edge computing have further highlighted the need for a unified
+approach
 
 ## Philosophy
 
