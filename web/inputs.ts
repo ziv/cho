@@ -1,16 +1,5 @@
-import { ArgType, InputFactory, MethodArgType, Validator } from "./types.ts";
-import { Context } from "./interfaces/mod.ts";
-import { InvalidInputError } from "./errors.ts";
-
-/**
- * Function overloads for creating method argument type objects.
- * Supports multiple signatures for different combinations of key and validator parameters.
- */
-export type ArgTypeFunction = {
-  (key?: string): MethodArgType;
-  (validator: Validator): MethodArgType;
-  (key: string, validator: Validator): MethodArgType;
-};
+import { InputFactory, Validator } from "./types.ts";
+import { ChoWebContext } from "./context.ts";
 
 export type InputTypeFunction = {
   (key?: string): InputFactory;
@@ -18,50 +7,7 @@ export type InputTypeFunction = {
   (key: string, validator: Validator): InputFactory;
 };
 
-type ValueRetriever = (c: Context, key?: string) => unknown | Promise<unknown>;
-
-/**
- * Creates a function to generate argument type objects for method parameters.
- *
- * The returned function can be called in multiple ways:
- * 1. Without arguments: returns an object with only the type.
- * 2. With a single string argument: returns an object with the type and key.
- * 3. With a single validator argument: returns an object with the type and validator.
- * 4. With both a string key and a validator: returns an object with the type, key, and validator.
- *
- * @param type - The argument type (param, query, header, body, cookie)
- * @return {ArgTypeFunction} - A function that creates MethodArgType objects
- * @internal
- */
-function createTypeFunction(type: ArgType): ArgTypeFunction {
-  return function (
-    keyOrValidator?: string | Validator,
-    validatorIfKey?: Validator,
-  ) {
-    if (!validatorIfKey) {
-      if (!keyOrValidator) {
-        return {
-          type,
-        } as MethodArgType;
-      }
-      if (typeof keyOrValidator !== "string") {
-        return {
-          type,
-          validator: keyOrValidator as Validator,
-        } as MethodArgType;
-      }
-      return {
-        type,
-        key: keyOrValidator,
-      } as MethodArgType;
-    }
-    return {
-      type,
-      key: keyOrValidator,
-      validator: validatorIfKey as Validator,
-    } as MethodArgType;
-  };
-}
+type ValueRetriever = (c: ChoWebContext, key?: string) => unknown | Promise<unknown>;
 
 function createInputFunctionFactory(name: string, retriever: ValueRetriever): InputTypeFunction {
   return function (
@@ -71,7 +17,7 @@ function createInputFunctionFactory(name: string, retriever: ValueRetriever): In
     const key = typeof keyOrValidator === "string" ? keyOrValidator : undefined;
     const validator = typeof keyOrValidator !== "string" ? keyOrValidator : validatorIfKey;
 
-    return async function (c: Context): Promise<unknown> {
+    return async function (c: ChoWebContext): Promise<unknown> {
       const value = await retriever(c, key);
       if (!validator) {
         return value;
@@ -81,7 +27,8 @@ function createInputFunctionFactory(name: string, retriever: ValueRetriever): In
         const message = key
           ? `Input validation failed at argument ${name}("${key}")`
           : `Input validation failed at argument ${name}()`;
-        throw new InvalidInputError(parsed.error, message);
+        console.log(parsed.error);
+        throw new Error(message);
       }
       return parsed.data;
     };

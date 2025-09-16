@@ -1,11 +1,11 @@
-import type { Context } from "./context.ts";
+import type { ChoWebContext } from "./context.ts";
 import type { ChoEndpointFn, ChoErrorHandlerFn, ChoMiddlewareFn } from "@chojs/core/di";
 
 /**
  * The main adapter interface that all framework adapters should implement
  * The extended adapter includes optional methods for specialized adapters
  */
-export type Adapter<
+export type ChoWebAdapter<
   Application,
   Feature,
   Controller,
@@ -15,7 +15,7 @@ export type Adapter<
 > = {
   createContext(
     raw: Ctx,
-  ): Context;
+  ): ChoWebContext;
 
   /**
    * Takes cho middleware and converts it to the framework's middleware
@@ -27,10 +27,12 @@ export type Adapter<
 
   /**
    * Takes cho endpoint and converts it to the framework's endpoint
-   * @param ep
+   * @param endpoint
+   * @param errorHandler
    */
   createEndpoint(
-    ep: ChoEndpointFn,
+    endpoint: ChoEndpointFn,
+    errorHandler?: ChoErrorHandlerFn,
   ): Endpoint;
 
   /**
@@ -60,7 +62,6 @@ export type Adapter<
    * @param endpoint
    * @param route
    * @param httpMethod
-   * @param errorHandler
    */
   mountEndpoint(
     ctr: Controller,
@@ -68,7 +69,6 @@ export type Adapter<
     endpoint: Endpoint,
     route: string,
     httpMethod: string,
-    errorHandler?: ChoErrorHandlerFn,
   ): void;
 
   /**
@@ -104,4 +104,24 @@ export type Adapter<
     feature: Feature,
     route: string,
   ): R;
+
+  // optional extended methods for specialized adapters
+
+  /**
+   * Creates an SSE endpoint from a cho endpoint function
+   * @param endpoint
+   */
+  createSseEndpoint?: (endpoint: ChoEndpointFn) => Endpoint;
+
+  /**
+   * Creates a text stream endpoint from a cho endpoint function
+   * @param endpoint
+   */
+  createStreamEndpoint?: (endpoint: ChoEndpointFn) => Endpoint;
+
+  /**
+   * Creates a text stream endpoint from a cho endpoint function
+   * @param endpoint
+   */
+  createTextStreamEndpoint?: (endpoint: ChoEndpointFn) => Endpoint;
 };

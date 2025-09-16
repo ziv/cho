@@ -1,30 +1,86 @@
-import type {Any, Target} from "@chojs/core";
-import {Adapter, Context, Endpoint, Next, SseAdapter, StreamAdapter, TextStreamAdapter,} from "@chojs/web/interfaces";
-import {type Context as RawContext, Hono, type MiddlewareHandler} from "hono";
-import {stream, streamSSE, streamText} from "hono/streaming";
-import {createMiddleware} from "hono/factory";
+import type { Any, Target } from "@chojs/core";
+import { type Context, Hono } from "hono";
+import { createMiddleware } from "hono/factory";
+import { stream, streamSSE, streamText } from "hono/streaming";
+import { ChoErrorHandlerFn, ChoMiddlewareFn } from "../../core/di/types.ts";
+import { ChoWebAdapter } from "../../web/adapter.ts";
+import { ChoWebContext } from "../../web/context.ts";
 
+/**
+ * Cho adapter for Hono framework
+ * @see https://hono.dev
+ */
 export class HonoAdapter implements
-  SseAdapter,
-  StreamAdapter,
-  TextStreamAdapter,
-  Adapter<
+  ChoWebAdapter<
     Hono,
     Hono,
     Hono,
     Target,
+    Target,
     RawContext
   > {
-  // Adapter
+  createContext(
+    raw: Context,
+  ): ChoWebContext {
+    // Hono's context is already well-typed, so we can directly cast it
+    return raw as ChoWebContext;
+  }
 
-  createContext(raw: RawContext): Context {
-    return raw as Context;
+  createMiddleware(
+    middleware: ChoMiddlewareFn,
+  ): Target {
+    return createMiddleware(handler as Any);
+  }
+
+  createEndpoint(
+    endpoint: ChoEndpointFn,
+    errorHandler?: ChoErrorHandlerFn,
+  ): Target {
+    if (!errorHandler) {
+      return endpoint;
+    }
+    return async function (...args: unknown[]) {
+      try {
+        return await endpoint(...args);
+      } catch (err) {
+        const ctx = args.pop();
+        return errorHandler(err, ctx);
+      }
+    };
+  }
+
+  createController(
+    middlewares: Target[],
+    errorHandler?: ChoErrorHandlerFn,
+  ): Hono {
+    const c = new Hono();
+    for (const mw of middlewares) {
+      c.use(mw);
+    }
+    if (errorHandler) {
+      c.onError(errorHandler);
+    }
+    return c;
+  }
+
+  createFeature(
+    middlewares: Target[],
+    errorHandler?: ChoErrorHandlerFn,
+  ): Hono {
+    const c = new Hono();
+    for (const mw of middlewares) {
+      c.use(mw);
+    }
+    if (errorHandler) {
+      c.onError(errorHandler);
+    }
+    return c;
   }
 
   mountEndpoint(
     ctr: Hono,
-    middlewares: MiddlewareHandler[],
-    endpoint: MiddlewareHandler,
+    middlewares: Target[],
+    endpoint: Target,
     route: string,
     httpMethod: string,
   ): void {
@@ -43,6 +99,12 @@ export class HonoAdapter implements
     }
   }
 
+  mountApp<R = Hono>(feature: Hono, route: string): R {
+    const app = new Hono();
+    app.route(route, feature);
+    return app as R;
+  }
+
   mountController(feat: Hono, controller: Hono, route: string): void {
     feat.route(route, controller);
   }
@@ -51,31 +113,11 @@ export class HonoAdapter implements
     return this.mountController(to, feat, route);
   }
 
-  mountApp<R = Hono>(feature: Hono, route: string): R {
-    const app = new Hono();
-    app.route(route, feature);
-    return app as R;
-  }
-
-  createMiddleware(handler: (ctx: Context, next: Next) => void): Target {
-    return createMiddleware(handler as Any);
-  }
-
-  createController(mws: MiddlewareHandler[]): Hono {
-    const c = new Hono();
-    for (const mw of mws) c.use(mw);
-    return c;
-  }
-
-  createFeature(mws: MiddlewareHandler[]): Hono {
-    const c = new Hono();
-    for (const mw of mws) c.use(mw);
-    return c;
-  }
+  // extended HTTP methods
 
   // SseAdapter
 
-  createSseEndpoint(handler: Target): Endpoint {
+  createSseEndpoint(handler: ChoEndpointFn): Target {
     return function (ctx: RawContext) {
       return streamSSE(ctx, (stream) => handler(ctx, stream));
     };
@@ -83,7 +125,7 @@ export class HonoAdapter implements
 
   // StreamAdapter
 
-  createStreamEndpoint(handler: Target): Endpoint {
+  createStreamEndpoint(handler: ChoEndpointFn): Target {
     return function (ctx: RawContext) {
       return stream(ctx, (stream) => handler(ctx, stream));
     };
@@ -91,7 +133,7 @@ export class HonoAdapter implements
 
   // TextStreamAdapter
 
-  createTextStreamEndpoint(handler: Target): Endpoint {
+  createTextStreamEndpoint(handler: ChoEndpointFn): Target {
     return function (ctx: RawContext) {
       return streamText(ctx, (stream) => handler(ctx, stream));
     };

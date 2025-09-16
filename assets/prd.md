@@ -35,13 +35,13 @@ Data types transformation through the endpoint layers:
 controller:method → function → wrapper (json → response)
 ```
 
-**Function Middleware**
+**Function ChoMiddlewareFn**
 
 ```
 function → mw wrapper
 ```
 
-**Class Middleware**
+**Class ChoMiddlewareFn**
 
 ```
 class → function → mw wrapper

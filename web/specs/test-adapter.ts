@@ -26,4 +26,13 @@ export class TestAdapter implements Adapter {
     httpMethod: string,
   ) {
   }
+
+  mountController(feat: Any, controller: Any, route: string, errorHandler?: Target): void {
+  }
+
+  mountFeature(feat: Any, feature: Any, route: string, errorHandler?: Target): void {
+  }
+
+  mountApp<R = Any>(feature: Feature, route: string): R {
+  }
 }

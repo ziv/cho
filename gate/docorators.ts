@@ -2,17 +2,6 @@ import { createMethodDecorator } from "@chojs/web/meta";
 import type { Routed } from "@chojs/web";
 import { addToMetadataObject, type InjectableDescriptor } from "@chojs/core";
 
-// todo temporary list of supported gateway types
-// const GatewayTypes = {
-//   Redis: "redis",
-//   NATS: "nats",
-//   MQTT: "mqtt",
-//   RabbitMQ: "rabbitmq",
-//   Kafka: "kafka",
-// } as const;
-// export type GatewayTypesKey = keyof typeof GatewayTypes;
-// export type GatewayType = "redis" | "nats" | "mqtt" | "rabbitmq" | "kafka";
-
 export type GatewayDescriptor =
   & InjectableDescriptor
   & Partial<Pick<Routed, "middlewares">>;
@@ -33,7 +22,6 @@ export type GatewayDescriptor =
 export function Gateway(desc: GatewayDescriptor) {
   return (target: Function) => {
     const data = {
-      type: desc.type,
       middlewares: desc?.middlewares ?? [],
       deps: desc?.deps ?? [],
     };
@@ -52,7 +40,7 @@ export function Gateway(desc: GatewayDescriptor) {
  * }
  * ```
  */
-const MessageListener = createMethodDecorator<any, GatewayType>("Message");
+export const MessageListener = createMethodDecorator<any, GatewayType>("Message");
 
 /**
  * Method decorator for listening to events (messages) from a message broker
@@ -65,4 +53,4 @@ const MessageListener = createMethodDecorator<any, GatewayType>("Message");
  * }
  * ```
  */
-const EventListener = createMethodDecorator<any, GatewayType>("Event");
+export const EventListener = createMethodDecorator<any, GatewayType>("Event");

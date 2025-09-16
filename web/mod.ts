@@ -10,7 +10,7 @@
  * - **Decorator-based Architecture**: Uses `@Controller`, `@Feature`, and HTTP method decorators
  * - **Dependency Injection**: Built-in DI system with `@Injectable` classes
  * - **Type-safe Parameter Binding**: Extract and validate request data with `Params()`, `Body()`, etc.
- * - **Middleware Support**: Apply middleware at feature, controller, or method level
+ * - **ChoMiddlewareFn Support**: Apply middleware at feature, controller, or method level
  * - **Framework Agnostic**: Works with different web frameworks via adapters
  * - **Modular Design**: Organize code into features and controllers
  *
@@ -81,11 +81,11 @@
  * - **Core Types**: `MethodType`, `ArgType`, `MethodArgType`
  * - **Descriptor Types**: `ControllerDescriptor`, `FeatureDescriptor`
  * - **Compilation Types**: `CompiledMethod`, `CompiledController`, `CompiledFeature`
- * - **Middleware Types**: `Middleware`, `Next`, `ChoMiddleware`, `ChoGuard`
+ * - **ChoMiddlewareFn Types**: `ChoMiddlewareFn`, `Next`, `ChoMiddleware`, `ChoGuard`
  * - **Validation Types**: `Validator`, `ArgValidator`
  *
- * ### Context Interface (`./context.ts`)
- * - `Context<Ctx, Req, Res>` - Unified interface over different web frameworks
+ * ### ChoWebContext Interface (`./context.ts`)
+ * - `ChoWebContext<Ctx, Req, Res>` - Unified interface over different web frameworks
  * - `ParamsType<S>` - Type for URL parameters
  *
  * ### Compilation System (`./compiler.ts`)
@@ -95,7 +95,7 @@
  * - `linker<App>(root, adapter)` - Link compiled features with framework adapters
  *
  * ### Adapter Interface (`./adapter.ts`)
- * - `Adapter<Application, Feature, Controller, Middleware>` - Framework adapter interface
+ * - `Adapter<Application, Feature, Controller, ChoMiddlewareFn>` - Framework adapter interface
  *
  * ## Usage Example
  *
@@ -121,8 +121,10 @@
  * class AppFeature {}
  * ```
  */
+export * from "./adapter.ts";
 export * from "./application.ts";
+export * from "./context.ts";
 export * from "./decorators.ts";
 export * from "./types.ts";
 export * from "./inputs.ts";
-export * from "./errors.ts";
+export * from "./web-linker.ts";

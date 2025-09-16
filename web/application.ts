@@ -1,6 +1,6 @@
 import type { Ctr } from "@chojs/core/meta";
 import type { Adapter } from "./interfaces/mod.ts";
-import { CompiledFeature, Compiler } from "./compiler.ts";
+import { CompiledModule, Compiler } from "../core/compiler/compiler.ts";
 import { Linker } from "./linker.ts";
 
 export class Application<AppRef> {
@@ -24,7 +24,7 @@ export class Application<AppRef> {
   }
 
   constructor(
-    readonly instance: CompiledFeature,
+    readonly instance: CompiledModule,
     readonly appRef: AppRef,
     readonly adapter: Adapter,
   ) {

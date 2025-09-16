@@ -1,22 +1,27 @@
 import { green } from "@std/fmt/colors";
-import type { CompiledFeature } from "@chojs/web/compiler";
+import { CompiledModule } from "../core/compiler/compiler.ts";
+// import type { CompiledFeature } from "@chojs/web/compiler";
 
 /**
  * Describe all routes in a compiled feature.
  * @param input
  */
-export function describeRoutes(input: CompiledFeature): void {
-  function describeFeature(feature: CompiledFeature, depth = 0) {
+export function describeRoutes(input: CompiledModule): void {
+  function describeFeature(feature: CompiledModule, depth = 0) {
     for (const c of feature.controllers) {
       for (const m of c.methods) {
-        const parts = [feature.route, c.route, m.route].filter(Boolean).join("/");
+        const parts = [
+          feature.meta.route ?? "",
+          c.meta.route ?? "",
+          m.meta.route ?? "",
+        ].filter(Boolean).join("/");
         console.log(
-          green(m.type),
+          green(m.meta.type),
           `/${parts}`,
         );
       }
     }
-    for (const f of feature.features) {
+    for (const f of feature.imports) {
       describeFeature(f, depth + 1);
     }
   }

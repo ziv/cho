@@ -1,9 +1,11 @@
 #!/usr/bin/env deno run --allow-all
-import { Args, Compiler, Controller, Feature, Get, Linker, Params } from "@chojs/web";
+// import { Args, Compiler, Controller, Feature, Get, Linker, Params } from "@chojs/web";
 import { HonoAdapter } from "@chojs/vendor-hono";
 import { describeRoutes } from "@chojs/dev";
-import { Dependencies, Injectable } from "@chojs/core";
+import { Controller, Dependencies, Injectable, Module } from "@chojs/core";
 import { Application } from "../web/application.ts";
+import { Args, Get } from "../web/decorators.ts";
+import { Params } from "@chojs/web";
 
 @Injectable()
 @Dependencies("API_URL")
@@ -51,7 +53,7 @@ class DataController {
   }
 }
 
-@Feature({
+@Module({
   providers: [
     {
       provide: "API_URL",

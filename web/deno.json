@@ -4,12 +4,10 @@
   "license": "MIT",
   "exports": {
     ".": "./mod.ts",
-    "./meta": "./meta.ts",
-    "./interfaces": "./interfaces/mod.ts",
-    "./compiler": "./compiler.ts"
+    "./meta": "./meta.ts"
   },
   "imports": {
-    "@chojs/core": "jsr:@chojs/core@0.9.0"
+    "@chojs/core": "jsr:@chojs/core@0.12.0"
   },
   "publish": {
     "exclude": [

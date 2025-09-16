@@ -70,7 +70,7 @@ class MyController {
 | `@Patch`  | Defines a PATCH endpoint  |
 | `@Delete` | Defines a DELETE endpoint |
 
-#### Context Argument
+#### ChoWebContext Argument
 
 The context is always passed to the method, and it is always the last argument of the method. By default, if no extra
 arguments are provided, the method will receive only the context object as its argument.
@@ -78,7 +78,7 @@ arguments are provided, the method will receive only the context object as its a
 ```ts
 class MyController {
     @Get("hello")
-    myEndpoint(ctx: Context) {
+    myEndpoint(ctx: ChoWebContext) {
         if (condition) {
             return ctx.notFound();
         }
@@ -100,7 +100,7 @@ class MyController {
     myEndpoint(
         name: string,
         token: string,
-        ctx: Context,
+        ctx: ChoWebContext,
     ) {
         if (!token) {
             return ctx.notFound();
@@ -131,7 +131,7 @@ class MyController {
     myEndpoint(
         payload: typeof bodyValidator,
         token: string,
-        ctx: Context,
+        ctx: ChoWebContext,
     ) {
         if (!token) {
             return ctx.notFound();

@@ -3,7 +3,7 @@ import { ArgTypeFunction, Body, Header, InputTypeFunction, Params, Query } from 
 import { InvalidInputError } from "./errors.ts";
 import { Context } from "./interfaces/mod.ts";
 
-// Mock Context for testing
+// Mock ChoWebContext for testing
 function createMockContext(options: {
   params?: Record<string, string>;
   query?: Record<string, string | string[]>;

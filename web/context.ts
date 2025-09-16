@@ -51,9 +51,9 @@ export interface RequestContext {
 
 /**
  * Request context interface that abstracts the underlying framework's context.
- * Embrace the Hono Context interface for a unified experience.
+ * Embrace the Hono ChoWebContext interface for a unified experience.
  */
-export interface Context {
+export interface ChoWebContext {
   readonly req: RequestContext;
   readonly res: Response;
 

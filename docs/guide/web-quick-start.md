@@ -3,6 +3,94 @@
 This guide will help you set up a basic web server using **CHO**'s web framework. This is useful for building modern web
 applications with dependency injection and decorator-based routing.
 
+## Installation
+
+First, ensure you have **CHO** installed. You can add it to your project using npm or yarn:
+
+::: code-group
+
+```shell [deno]
+deno add jsr:@chojs/web jsr:@chojs/vendor-hono
+```
+
+```shell [npm]
+npx jsr add @chojs/web @chojs/vendor-hono
+```
+
+```shell [yarn]
+yarn add jsr:@chojs/web @chojs/vendor-hono
+```
+
+```shell [pnpm]
+pnpm i jsr:@chojs/web @chojs/vendor-hono
+```
+
+```shell [bun]
+bunx jsr add @chojs/web @chojs/vendor-hono
+```
+
+:::
+
+## First Endpoint
+
+Now, let's create a simple controller with an endpoint that responds to HTTP GET requests.
+
+```ts
+import {Controller, Get} from "@chojs/web";
+
+@Controller("")
+class MyController {
+    @Get("hello")
+    hello() {
+        return {message: "Hello, World!"};
+    }
+}
+```
+
+Controller needs to be registered in a feature to be used by the application. Let's create our root feature.
+
+```ts
+import {Feature} from "@chojs/web";
+import {MyController} from "./my-controller";
+
+@Feature({
+    controllers: [MyController],
+})
+class RootFeature {
+}
+```
+
+That's it! You have created your first controller and feature. Next, you need to set up the application to use this
+feature.
+
+```ts
+import {Application} from "@chojs/web";
+import {RootFeature} from "./root-feature";
+
+const app = await Application.create(RootFeature);
+```
+
+The last part is runtime dependent.
+
+::: code-group
+
+```ts [Deno]
+Deno.serve(app.appRef.fetch);
+```
+
+```ts [Node.js]
+// todo complete me
+```
+
+```ts [Bun]
+// todo complete me
+```
+
+```ts [Cloudflare Workers]
+// todo complete me
+```
+:::
+
 ## Controller & Endpoints
 
 Controllers and endpoints are the basic building blocks of a web server. They define how the server responds to

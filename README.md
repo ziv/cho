@@ -5,11 +5,11 @@
 [![Release](https://github.com/ziv/cho/actions/workflows/release.yml/badge.svg)](https://github.com/ziv/cho/actions/workflows/release.yml)
 
 | Package              | Version                                                                               |
-|----------------------|---------------------------------------------------------------------------------------|
+| -------------------- | ------------------------------------------------------------------------------------- |
 | `@chojs/core`        | [![JSR](https://jsr.io/badges/@chojs/core)](https://jsr.io/@chojs/core)               |
-| `@chojs/web`         | [![JSR](https://jsr.io/badges/@chojs/web)](https://jsr.io/@chojs/web)                 |   
-| `@chojs/vendor-hono` | [![JSR](https://jsr.io/badges/@chojs/vendor-hono)](https://jsr.io/@chojs/vendor-hono) |   
-| `@chojs/dev`         | [![JSR](https://jsr.io/badges/@chojs/dev)](https://jsr.io/@chojs/dev)                 |   
+| `@chojs/web`         | [![JSR](https://jsr.io/badges/@chojs/web)](https://jsr.io/@chojs/web)                 |
+| `@chojs/vendor-hono` | [![JSR](https://jsr.io/badges/@chojs/vendor-hono)](https://jsr.io/@chojs/vendor-hono) |
+| `@chojs/dev`         | [![JSR](https://jsr.io/badges/@chojs/dev)](https://jsr.io/@chojs/dev)                 |
 
 CHO is a tiny decorator-based framework for building modular applications. It utilizes modern JavaScript decorators (
 see [About JavaScript Decorators](#about-javascript-decorators)) to provide a clean and efficient way to define
@@ -48,4 +48,3 @@ This project uses the TC39 stage 3 decorators proposal (JavaScript decorators).
 - [decorators.deno.dev](https://decorators.deno.dev/)
 
 <img src="./assets/cho.svg"  alt="CHO" width="200"/>
-
