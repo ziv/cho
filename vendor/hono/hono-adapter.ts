@@ -1,8 +1,8 @@
-import type { Target } from "@chojs/core";
-import { Adapter, Context, Next, SseAdapter, StreamAdapter, TextStreamAdapter } from "@chojs/web";
-import { type Context as RawContext, Hono, type MiddlewareHandler } from "hono";
-import { stream, streamSSE, streamText } from "hono/streaming";
-import { createMiddleware } from "hono/factory";
+import type {Any, Target} from "@chojs/core";
+import {Adapter, Context, Endpoint, Next, SseAdapter, StreamAdapter, TextStreamAdapter,} from "@chojs/web/interfaces";
+import {type Context as RawContext, Hono, type MiddlewareHandler} from "hono";
+import {stream, streamSSE, streamText} from "hono/streaming";
+import {createMiddleware} from "hono/factory";
 
 export class HonoAdapter implements
   SseAdapter,
@@ -58,7 +58,7 @@ export class HonoAdapter implements
   }
 
   createMiddleware(handler: (ctx: Context, next: Next) => void): Target {
-    return createMiddleware(handler);
+    return createMiddleware(handler as Any);
   }
 
   createController(mws: MiddlewareHandler[]): Hono {
@@ -75,7 +75,7 @@ export class HonoAdapter implements
 
   // SseAdapter
 
-  createSseEndpoint(handler: Target): Target {
+  createSseEndpoint(handler: Target): Endpoint {
     return function (ctx: RawContext) {
       return streamSSE(ctx, (stream) => handler(ctx, stream));
     };
@@ -83,7 +83,7 @@ export class HonoAdapter implements
 
   // StreamAdapter
 
-  createStreamEndpoint(handler: Target): Target {
+  createStreamEndpoint(handler: Target): Endpoint {
     return function (ctx: RawContext) {
       return stream(ctx, (stream) => handler(ctx, stream));
     };
@@ -91,7 +91,7 @@ export class HonoAdapter implements
 
   // TextStreamAdapter
 
-  createTextStreamEndpoint(handler: Target): Target {
+  createTextStreamEndpoint(handler: Target): Endpoint {
     return function (ctx: RawContext) {
       return streamText(ctx, (stream) => handler(ctx, stream));
     };

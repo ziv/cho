@@ -5,7 +5,14 @@
   "exports": "./mod.ts",
   "imports": {
     "hono": "jsr:@hono/hono@^4.9.4",
-    "@chojs/core": "jsr:@chojs/core@*",
-    "@chojs/web": "jsr:@chojs/web@*"
+    "@chojs/core": "jsr:@chojs/core@0.9.0",
+    "@chojs/web": "jsr:@chojs/web@1.9.0"
+  },
+  "publish": {
+    "exclude": [
+      "./**/*_test.ts",
+      "./*.mjs",
+      "./hono-cors.ts"
+    ]
   }
 }
