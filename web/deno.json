@@ -5,7 +5,8 @@
   "exports": {
     ".": "./mod.ts",
     "./meta": "./meta.ts",
-    "./interfaces": "./interfaces/mod.ts"
+    "./interfaces": "./interfaces/mod.ts",
+    "./compiler": "./compiler.ts"
   },
   "imports": {
     "@chojs/core": "jsr:@chojs/core@0.9.0"
