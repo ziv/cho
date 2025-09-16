@@ -158,25 +158,6 @@ type Validator = {
   others.
 * Should provide tools to convert other validation libraries to this interface.
 
-#### HTTP Methods Decorators
-
-Example:
-
-```ts
-class ExampleController {
-    // 1. define the HTTP method and route to handle
-    // 2. extract body and header from the request, apply validation on body
-    // 3. the context is always the last argument
-    @Post("route")
-    @Args(Body(validator), Header("x-api-key"))
-    handle(
-        body: typeof validator,
-        token: string,
-        ctx: Context,
-    ) {
-    }
-}
-```
 
 ### Controller Class
 
