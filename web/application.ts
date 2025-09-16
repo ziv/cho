@@ -9,7 +9,7 @@ export class Application<AppRef> {
    * @param feature
    * @param adapter
    */
-  static async create(feature: Ctr, adapter?: Adapter) {
+  static async create<T>(feature: Ctr, adapter?: Adapter): Promise<Application<T>> {
     if (!adapter) {
       try {
         const { HonoAdapter } = await import("@chojs/vendor-hono");
@@ -20,7 +20,7 @@ export class Application<AppRef> {
     }
     const compiled = await new Compiler().compile(feature);
     const linked = new Linker(adapter).link(compiled);
-    return new Application(compiled, linked as AppRef, adapter);
+    return new Application(compiled, linked as T, adapter);
   }
 
   constructor(

@@ -1,5 +1,5 @@
-import { Target } from '@chojs/core/meta';
-import type { Middleware } from "./adapter.ts";
+import { Target } from "@chojs/core/meta";
+import { Endpoint, Middleware } from "./adapter.ts";
 
 export type SseAdapter = {
   /**
@@ -8,7 +8,7 @@ export type SseAdapter = {
    *
    * @param mw
    */
-  createSseEndpoint(mw: Target): Middleware;
+  createSseEndpoint(mw: Target): Endpoint;
 };
 
 /**
@@ -80,7 +80,7 @@ export type SSEStreamingApi = StreamingApi & {
    * Write an SSE message to the stream.
    * @param message
    */
-  writeSSE(message: SSEMessage): Promise<void>;
+  writeSSE(message: SSEMessage): Endpoint;
 };
 
 export type StreamAdapter = {
@@ -88,7 +88,7 @@ export type StreamAdapter = {
    * Takes cho streaming endpoint handler and converts it to the framework's streaming endpoint
    * @param mw
    */
-  createStreamEndpoint(mw: Target): Middleware;
+  createStreamEndpoint(mw: Target): Endpoint;
 };
 
 export type TextStreamAdapter = {
@@ -96,5 +96,5 @@ export type TextStreamAdapter = {
    * Takes cho text streaming endpoint handler and converts it to the framework's text streaming endpoint
    * @param mw
    */
-  createTextStreamEndpoint(mw: Target): Middleware;
+  createTextStreamEndpoint(mw: Target): Endpoint;
 };

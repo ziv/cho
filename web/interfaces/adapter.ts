@@ -12,6 +12,8 @@ export type Middleware = (
   next: Next,
 ) => void | Response | Promise<void | Response>;
 
+export type Endpoint = (...args: Any[]) => Promise<Any> | Any;
+
 /**
  * The main adapter interface that all framework adapters should implement
  * The extended adapter includes optional methods for specialized adapters
