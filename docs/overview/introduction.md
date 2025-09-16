@@ -25,7 +25,7 @@ without worrying about compatibility issues.
 We embraced the [latest (stage 3) TC39 proposals for decorators](https://github.com/tc39/proposal-decorators), following
 [Deno's lead](https://decorators.deno.dev/) in adopting these features.
 
-### ...
+### Field Experience
 
 Working alongside engineers using Angular and NestJS frameworks, we observed a common desire for a more
 streamlined and efficient way to build server-side applications. Teams love the class based API approach and the
@@ -36,11 +36,15 @@ approach
 
 ## Philosophy
 
+It can be simpler. It can be better. Why not?
+
 ## What Can You Do With It?
 
 Any Node.js application can be deployed using this project. Here are some examples:
 
 - HTTP Server
+- CLI Applications
+- REST API
 - Any TCP Server
 - Cloud Functions
 - WebSocket Server
