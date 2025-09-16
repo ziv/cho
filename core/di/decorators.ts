@@ -1,5 +1,6 @@
 import type { InjectableDescriptor, ModuleDescriptor, Token } from "./types.ts";
-import { addToMetadataObject, createMetaDecorator, type MetaDecoratorFactory, type Target } from "../meta/mod.ts";
+import type { ClassMethodDecorator, Ctr, MetaDecoratorFactory, Target } from "../meta/mod.ts";
+import { addToMetadataObject, createMetaDecorator } from "../meta/mod.ts";
 
 /**
  * Mark a class as injectable and create its provider.
@@ -53,8 +54,36 @@ export const Module: MetaDecoratorFactory<ModuleDescriptor> = createMetaDecorato
  * @param deps
  * @constructor
  */
-export function Dependencies(...deps: Token[]): ClassDecorator {
+export function Dependencies(
+  ...deps: Token[]
+): ClassDecorator {
   return (target: Target) => {
     addToMetadataObject(target, { deps });
+  };
+}
+
+export const Deps = Dependencies; // alias
+
+/**
+ * Adds middleware to a class or method.
+ * Can be applied to controllers, features, or individual methods.
+ *
+ * @param middlewares - Array of middleware classes or functions
+ * @example
+ * ```ts
+ * @Controller("/api")
+ * @Middlewares(AuthMiddleware, LoggingMiddleware)
+ * class ApiController {
+ *   @Get("/users")
+ *   @Middlewares(CacheMiddleware)
+ *   getUsers() { ... }
+ * }
+ * ```
+ */
+export function Middlewares(
+  ...middlewares: (Ctr | Target)[]
+): ClassDecorator & ClassMethodDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { middlewares });
   };
 }

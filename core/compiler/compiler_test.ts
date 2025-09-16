@@ -35,7 +35,7 @@ Deno.test("should return compiled module", async () => {
   const compiled = await new Compiler().compile(TestModule);
   expect(compiled).toBeDefined();
   expect(compiled.controllers.length).toBe(1);
-  expect(compiled.controllers[0].instance).toBeInstanceOf(TestGateway);
+  expect(compiled.controllers[0].handle).toBeInstanceOf(TestGateway);
 });
 
 // todo complete the tests

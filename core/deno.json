@@ -6,6 +6,7 @@
     ".": "./mod.ts",
     "./di": "./di/mod.ts",
     "./meta": "./meta/mod.ts",
+    "./compiler": "./compiler/mod.ts",
     "./utils": "./utils/mod.ts"
   },
   "imports": {

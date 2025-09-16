@@ -1,4 +1,4 @@
-import type { Any, Ctr } from "../meta/mod.ts";
+import type { Any, Ctr, Target } from "../meta/mod.ts";
 
 /**
  * Token type for dependency injection.
@@ -51,4 +51,34 @@ export type ModuleDescriptor = InjectableDescriptor & {
   imports: Ctr[];
   providers: (Provider | Ctr)[];
   controllers: Ctr[]; // AKA  gateways
+  middlewares: (ChoMiddleware | Target)[];
+  errorHandler: ChoErrorHandler | ChoErrorHandlerFn;
 };
+
+// middlewares types
+
+export type Context<T = Any> = T;
+
+export type Next = () => void | Promise<void>;
+
+export type ChoMiddlewareFn = (ctx: Context, next: Next) => void | Response | Promise<void | Response>;
+
+export interface ChoMiddleware {
+  handle(ctx: Context, next: Next): Promise<void>;
+}
+
+// guards types
+
+export type ChoGuardFn = (ctx: Context) => boolean | Promise<boolean>;
+
+export interface ChoGuard {
+  canActivate(ctx: Context): boolean | Promise<boolean>;
+}
+
+// error handlers types
+
+export type ChoErrorHandlerFn = (err: Error, ctx: Context) => void | Response | Promise<void | Response>;
+
+export interface ChoErrorHandler {
+  catch(err: Error, ctx: Context): void | Response | Promise<void | Response>;
+}

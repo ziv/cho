@@ -164,12 +164,16 @@ export class Injector implements Resolver {
    * @returns Promise of the resolved instance
    */
   async resolve<T>(token: Token): Promise<T> {
+    log(`${this.name}: resolving ${tokenName(token)}`);
+
     const { type, value } = await this.search(token);
     if (type === "resolved") {
+      log(`${this.name}: ${tokenName(token)} resolved from cache`);
       return Promise.resolve(value as T);
     }
 
     if (type === "provider") {
+      log(`${this.name}: ${tokenName(token)} found as provider, creating instance`);
       const instance = await value.factory(this);
       this.cache.set(token, instance);
       return instance as T;
@@ -178,12 +182,16 @@ export class Injector implements Resolver {
     // TODO: missing tests
     if (type === "circular-dependency-detected") {
       const path = value.map((i) => i.name).join(" → ");
-      throw new Error(
-        `${this.name}: Circular dependency detected while resolving ${tokenName(token)}: ${path} → ${tokenName(token)}`,
-      );
+      const error = `${this.name}: Circular dependency detected while resolving ${tokenName(token)}: ${path} → ${
+        tokenName(token)
+      }`;
+      log.error(error);
+      throw new Error(error);
     }
 
-    throw new Error(`${this.name}: ${tokenName(token)} not found`);
+    const error = `${this.name}: ${tokenName(token)} not found in module or imports`;
+    log.error(error);
+    throw new Error(error);
   }
 
   /**
