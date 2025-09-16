@@ -13,6 +13,12 @@ import { isClass, isClassImplement } from "../utils/is.ts";
 
 const log = debuglog("core:compiler");
 
+export type Meta = {
+  middlewares?: (ChoMiddlewareFn | ChoMiddleware | Target)[];
+  errorHandler?: ChoErrorHandlerFn | ChoErrorHandler;
+  [key: string]: unknown;
+};
+
 export type Compiled<M, T> = T & {
   /**
    * Middlewares associated with the module, controller or method.
@@ -138,11 +144,11 @@ export class Compiler {
     const handle = (instance as Any)[name as keyof typeof instance].bind(instance);
 
     const middlewares: ChoMiddlewareFn[] = [];
-    for (const mw of ((meta as Any)?.middlewares ?? [])) {
-      middlewares.push(await this.middleware(mw, injector));
+    for (const mw of ((meta as Meta)?.middlewares ?? [])) {
+      middlewares.push(await this.middleware(mw as Target, injector));
     }
 
-    const err = (meta as Any)?.errorHandler;
+    const err = (meta as Meta)?.errorHandler;
     const errorHandler = err ? await this.errorHandler(err, injector) : undefined;
 
     return { meta, errorHandler, middlewares, handle, name };
@@ -187,11 +193,11 @@ export class Compiler {
     }
 
     const middlewares: ChoMiddlewareFn[] = [];
-    for (const mw of ((meta as Any).middlewares ?? [])) {
-      middlewares.push(await this.middleware(mw, injector));
+    for (const mw of ((meta as Meta).middlewares ?? [])) {
+      middlewares.push(await this.middleware(mw as Target, injector));
     }
 
-    const err = (meta as Any)?.errorHandler;
+    const err = (meta as Meta)?.errorHandler;
     const errorHandler = err ? await this.errorHandler(err, injector) : undefined;
 
     return { meta, errorHandler, middlewares, methods, handle: instance };
@@ -229,8 +235,8 @@ export class Compiler {
 
     // collect all middlewares and if there are any classes, register them in the injector
     const middlewares: ChoMiddlewareFn[] = [];
-    for (const mw of ((meta as Any)?.middlewares ?? [])) {
-      middlewares.push(await this.middleware(mw, injector));
+    for (const mw of ((meta as Meta)?.middlewares ?? [])) {
+      middlewares.push(await this.middleware(mw as Target, injector));
     }
 
     const err = meta?.errorHandler;
