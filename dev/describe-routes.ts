@@ -1,5 +1,5 @@
 import { green } from "@std/fmt/colors";
-import type { CompiledFeature } from "@chojs/web";
+import type { CompiledFeature } from "@chojs/web/compiler";
 
 /**
  * Describe all routes in a compiled feature.

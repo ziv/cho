@@ -1,5 +1,5 @@
 export default {
-    tagFormat: "web-v${version}",
+    tagFormat: "dev-v${version}",
     plugins: [
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
