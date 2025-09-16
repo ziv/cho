@@ -15,7 +15,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Documentation:**
 
 - `cd docs && npm run docs:build` - Build the documentation site
-- `./scripts/docs.sh` - Generate API docs
 
 ## Architecture Overview
 

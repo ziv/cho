@@ -11,12 +11,11 @@ import { addToMetadataObject, type InjectableDescriptor } from "@chojs/core";
 //   Kafka: "kafka",
 // } as const;
 // export type GatewayTypesKey = keyof typeof GatewayTypes;
-export type GatewayType = "redis" | "nats" | "mqtt" | "rabbitmq" | "kafka";
+// export type GatewayType = "redis" | "nats" | "mqtt" | "rabbitmq" | "kafka";
 
 export type GatewayDescriptor =
   & InjectableDescriptor
-  & Partial<Pick<Routed, "middlewares">>
-  & { type: GatewayType };
+  & Partial<Pick<Routed, "middlewares">>;
 
 /**
  * Gateway class decorator for marking a class as a message broker gateway.
@@ -47,7 +46,7 @@ export function Gateway(desc: GatewayDescriptor) {
  *
  * @example
  * ```ts
- * class MyController {
+ * class MyGateway {
  *   @MessageListener("event.name")
  *   streamEvents(stream, context) { ... }
  * }
@@ -60,7 +59,7 @@ const MessageListener = createMethodDecorator<any, GatewayType>("Message");
  *
  * @example
  * ```ts
- * class MyController {
+ * class MyGateway {
  *   @EventListener("event.name")
  *   streamEvents(stream, context) { ... }
  * }
