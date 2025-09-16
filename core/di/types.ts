@@ -50,4 +50,5 @@ export type InjectableDescriptor = {
 export type ModuleDescriptor = InjectableDescriptor & {
   imports: Ctr[];
   providers: (Provider | Ctr)[];
+  controllers: Ctr[]; // AKA  gateways
 };
