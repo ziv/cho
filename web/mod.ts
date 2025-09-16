@@ -121,8 +121,7 @@
  * class AppFeature {}
  * ```
  */
-export * from "./compiler.ts";
-export * from "./linker.ts";
+export * from "./application.ts";
 export * from "./decorators.ts";
 export * from "./types.ts";
 export * from "./inputs.ts";

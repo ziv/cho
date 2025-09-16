@@ -1,8 +1,9 @@
 #!/usr/bin/env deno run --allow-all
-import {Args, Compiler, Controller, Feature, Get, Linker, Params} from "@chojs/web";
-import {HonoAdapter} from "@chojs/vendor-hono";
-import {describeRoutes} from "@chojs/dev";
-import {Dependencies, Injectable} from "@chojs/core";
+import { Args, Compiler, Controller, Feature, Get, Linker, Params } from "@chojs/web";
+import { HonoAdapter } from "@chojs/vendor-hono";
+import { describeRoutes } from "@chojs/dev";
+import { Dependencies, Injectable } from "@chojs/core";
+import { Application } from "../web/application.ts";
 
 @Injectable()
 @Dependencies("API_URL")
@@ -63,8 +64,7 @@ class DataController {
 class AppFeature {
 }
 
-const compiled = await new Compiler().compile(AppFeature);
-const linked = new Linker(new HonoAdapter()).link(compiled);
+const app = await Application.create(AppFeature, new HonoAdapter());
 
-describeRoutes(compiled);
-Deno.serve(linked.fetch);
+describeRoutes(app.instance);
+Deno.serve(app.appRef.fetch);
