@@ -106,7 +106,10 @@ export class Linker<
             break;
 
           default: {
-            throw new Error(`Unsupported method type: ${cm.type}`);
+            // probably a custom method type
+            log.error(`unsupported method type: ${type}`);
+            // throw new Error(`Unsupported method type: ${cm.type}`);
+            continue;
           }
         }
         // what if no endpoint could be created?!
