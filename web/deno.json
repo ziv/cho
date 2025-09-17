@@ -7,7 +7,7 @@
     "./meta": "./meta.ts"
   },
   "imports": {
-    "@chojs/core": "jsr:@chojs/core@0.12.0"
+    "@chojs/core": "jsr:@chojs/core@0.12.3"
   },
   "publish": {
     "exclude": [

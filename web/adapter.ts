@@ -1,17 +1,18 @@
-import type { ChoWebContext } from "./context.ts";
+import type { Any, Target } from "@chojs/core/meta";
 import type { ChoEndpointFn, ChoErrorHandlerFn, ChoMiddlewareFn } from "@chojs/core/di";
+import type { ChoWebContext } from "./context.ts";
 
 /**
  * The main adapter interface that all framework adapters should implement
  * The extended adapter includes optional methods for specialized adapters
  */
 export type ChoWebAdapter<
-  Application,
-  Feature,
-  Controller,
-  Middleware,
-  Endpoint,
-  Ctx,
+  Application = Any,
+  Feature = Any,
+  Controller = Any,
+  Middleware = Target,
+  Endpoint = Target,
+  Ctx = Any,
 > = {
   createContext(
     raw: Ctx,

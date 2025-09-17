@@ -1,15 +1,21 @@
 import type { Ctr } from "@chojs/core/meta";
-import type { Adapter } from "./interfaces/mod.ts";
-import { CompiledModule, Compiler } from "../core/compiler/compiler.ts";
+import type { ChoWebAdapter } from "./adapter.ts";
+import type { CompiledModule } from "@chojs/core/compiler";
+import { Compiler } from "@chojs/core/compiler";
 import { Linker } from "./linker.ts";
+
+export type ApplicationOptions = {
+  adapter: ChoWebAdapter;
+};
 
 export class Application<AppRef> {
   /**
    * Create an application instance by compiling the feature and linking it with the adapter.
    * @param feature
-   * @param adapter
+   * @param options
    */
-  static async create<T>(feature: Ctr, adapter?: Adapter): Promise<Application<T>> {
+  static async create<T>(feature: Ctr, options?: ApplicationOptions): Promise<Application<T>> {
+    let adapter = options?.adapter;
     if (!adapter) {
       try {
         const { HonoAdapter } = await import("@chojs/vendor-hono");
@@ -26,7 +32,7 @@ export class Application<AppRef> {
   constructor(
     readonly instance: CompiledModule,
     readonly appRef: AppRef,
-    readonly adapter: Adapter,
+    readonly adapter: ChoWebAdapter,
   ) {
   }
 }

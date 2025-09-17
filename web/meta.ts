@@ -1,7 +1,6 @@
 import type { Any, ClassMethodDecorator, MethodContext } from "@chojs/core";
-// import { addToMetadataObject } from "@chojs/core";
-import { InputFactory } from "./types.ts";
-import { addToMetadataObject, readMetadataObject } from "../core/meta/mod.ts";
+import type { InputFactory } from "./types.ts";
+import { addToMetadataObject } from "@chojs/core/meta";
 
 /**
  * Function signature for method decorators that define HTTP endpoints.

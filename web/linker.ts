@@ -1,34 +1,34 @@
-// import type { Compiled, CompiledGateway, CompiledMethod, CompiledModule } from "@chojs/core/compiler";
-import type {Any} from "@chojs/core/meta";
-import {debuglog} from "@chojs/core/utils";
-import type {Adapter} from "./adapter.ts";
-import {CompiledMethod, CompiledModule} from "../core/compiler/compiler.ts";
-import {SSEStreamingApi, StreamingApi} from "./stream-api.ts";
-import {ChoWebContext} from "./context.ts";
+import type { Compiled, CompiledGateway, CompiledMethod, CompiledModule } from "@chojs/core/compiler";
+import type { Any, Target } from "@chojs/core/meta";
+import type { ChoEndpointFn } from "@chojs/core/di";
+import type { ChoWebAdapter } from "./adapter.ts";
+import type { ChoWebContext } from "./context.ts";
+import type { InputFactory } from "./types.ts";
+import { debuglog } from "@chojs/core/utils";
 
 const log = debuglog("web:linker");
 
 export class Linker {
-  constructor(readonly adapter: Adapter) {
+  constructor(readonly adapter: ChoWebAdapter) {
   }
 
   /**
    * Link a compiled module to an application instance using the provided adapter.
    * @param cm
    */
-  link(cm: CompiledModule) {
+  link<T>(cm: CompiledModule): T {
     const end = log.start();
     const app = this.feature(cm);
     if (!app) {
       throw new Error("Cannot link an empty module");
     }
     end("module linked");
-    return app;
+    return app as T;
   }
 
-  protected feature(
+  protected feature<T>(
     cm: CompiledModule,
-  ) {
+  ): T | null {
     let mounted = false;
 
     const feat = this.adapter.createFeature(
@@ -70,9 +70,9 @@ export class Linker {
     return feat;
   }
 
-  protected controller(
+  protected controller<T>(
     cg: CompiledGateway,
-  ) {
+  ): T | null {
     if (0 === cg.methods.length) {
       // no methods, no controller
       return null;
@@ -109,7 +109,9 @@ export class Linker {
    * todo add extended endpoint support (e.g. websockets, graphql, etc.)
    * @param cm
    */
-  protected method(cm: CompiledMethod) {
+  protected method(
+    cm: CompiledMethod,
+  ): Target | null {
     const type = cm.meta.type.toLocaleLowerCase();
     switch (type) {
       case "get":
@@ -120,42 +122,46 @@ export class Linker {
         return this.adapter.createEndpoint(this.linkHttp(cm), cm.errorHandler);
 
         // extended endpoints types
-      case "stream":
-        if (!this.adapter.createStreamEndpoint) return null;
-        return this.adapter.createStreamEndpoint(this.linkStream(cm));
-
-      case "sse":
-        if (!this.adapter.createSseEndpoint) return null;
-        return this.adapter.createSseEndpoint(this.linkStream(cm));
-
-      case "steam_text":
-        if (!this.adapter.createTextStreamEndpoint) return null;
-        return this.adapter.createTextStreamEndpoint(this.linkStream(cm));
-
-      case "stream_async":
-        if (!this.adapter.createStreamEndpoint) return null;
-        return this.adapter.createStreamEndpoint(this.linkAsyncStream(cm, "write"));
-
-      case "sse_async":
-        if (!this.adapter.createSseEndpoint) return null;
-        return this.adapter.createSseEndpoint(this.linkAsyncStream(cm, "writeSSE"));
-
-      case "steam_text_async":
-        if (!this.adapter.createTextStreamEndpoint) return null;
-        return this.adapter.createTextStreamEndpoint(this.linkAsyncStream(cm, "writeln"));
+      // case "stream":
+      //   if (!this.adapter.createStreamEndpoint) return null;
+      //   return this.adapter.createStreamEndpoint(this.linkStream(cm));
+      //
+      // case "sse":
+      //   if (!this.adapter.createSseEndpoint) return null;
+      //   return this.adapter.createSseEndpoint(this.linkStream(cm));
+      //
+      // case "steam_text":
+      //   if (!this.adapter.createTextStreamEndpoint) return null;
+      //   return this.adapter.createTextStreamEndpoint(this.linkStream(cm));
+      //
+      // case "stream_async":
+      //   if (!this.adapter.createStreamEndpoint) return null;
+      //   return this.adapter.createStreamEndpoint(this.linkAsyncStream(cm, "write"));
+      //
+      // case "sse_async":
+      //   if (!this.adapter.createSseEndpoint) return null;
+      //   return this.adapter.createSseEndpoint(this.linkAsyncStream(cm, "writeSSE"));
+      //
+      // case "steam_text_async":
+      //   if (!this.adapter.createTextStreamEndpoint) return null;
+      //   return this.adapter.createTextStreamEndpoint(this.linkAsyncStream(cm, "writeln"));
       default:
         return null;
     }
   }
 
-  protected linkHttp(cm: CompiledMethod) {
+  protected linkHttp(
+    cm: CompiledMethod,
+  ): ChoEndpointFn {
+    const handler = cm.handle as Target;
     const context = this.adapter.createContext.bind(this.adapter);
     const getArgs = this.createMethodArgFactory(cm.meta.args);
 
+    console.log("linking http method", cm);
     return async function (raw: Any) {
       const ctx = context(raw);
       const args = await getArgs(ctx);
-      const res = await cm.handle(...args, ctx);
+      const res = await handler(...args, ctx);
       if (res instanceof Response) {
         return res;
       }
@@ -163,57 +169,64 @@ export class Linker {
     };
   }
 
-  protected linkStream(cm: CompiledMethod): Target {
-    const handle = this.adapter.createEndpoint(cm.handle, cm.errorHandler);
-    const context = this.adapter.createContext.bind(this.adapter);
-    const getArgs = this.createMethodArgFactory(cm.meta.args);
-
-    return async function (raw: Any, stream: StreamingApi) {
-      const ctx = context(raw);
-      const args = await getArgs(ctx);
-      await handle(...args, stream, ctx);
-    };
-  }
-
-  protected linkAsyncStream(cm: CompiledMethod, method: keyof SSEStreamingApi): Target {
-    const handle = this.adapter.createEndpoint(cm.handle, cm.errorHandler);
-    const context = this.adapter.createContext.bind(this.adapter);
-    const getArgs = this.createMethodArgFactory(cm.meta.args);
-
-    return async function (raw: Any, stream: StreamingApi) {
-      if (typeof stream[method] !== "function") {
-        throw new Error(`Streaming method ${method} is not a function`);
-      }
-
-      const ctx = context(raw);
-      const args = await getArgs(ctx);
-      const generator = handle(...args, ctx);
-
-      if (generator[Symbol.asyncIterator] == null) {
-        // todo add test to this check...
-        throw new Error(`Method "${cm.meta.name}" not return an async generator`);
-      }
-
-      for await (const next of generator) {
-        stream[method](next as never);
-      }
-
-      await stream.close();
-    };
-  }
+  // protected linkStream(cm: CompiledMethod): Target {
+  //   const handle = this.adapter.createEndpoint(cm.handle as ChoEndpointFn, cm.errorHandler);
+  //   const context = this.adapter.createContext.bind(this.adapter);
+  //   const getArgs = this.createMethodArgFactory(cm.meta.args);
+  //
+  //   return async function (raw: Any, stream: StreamingApi) {
+  //     const ctx = context(raw);
+  //     const args = await getArgs(ctx);
+  //     await handle(...args, stream, ctx);
+  //   };
+  // }
+  //
+  // protected linkAsyncStream(cm: CompiledMethod, method: keyof SSEStreamingApi): ChoEndpointFn {
+  //   const handle = this.adapter.createEndpoint(cm.handle as ChoEndpointFn, cm.errorHandler);
+  //   const context = this.adapter.createContext.bind(this.adapter);
+  //   const getArgs = this.createMethodArgFactory(cm.meta.args);
+  //
+  //   return async function (raw: Any, stream: SSEStreamingApi) {
+  //     if (typeof stream[method] !== "function") {
+  //       throw new Error(`Streaming method ${method} is not a function`);
+  //     }
+  //
+  //     const ctx = context(raw);
+  //     const args = await getArgs(ctx);
+  //     const generator = handle(...args, ctx);
+  //
+  //     if (generator[Symbol.asyncIterator] == null) {
+  //       // todo add test to this check...
+  //       throw new Error(`Method "${cm.meta.name}" not return an async generator`);
+  //     }
+  //
+  //     for await (const next of generator) {
+  //       stream[method](next as never);
+  //     }
+  //
+  //     await stream.close();
+  //   };
+  // }
 
   /**
    * Return an array of middlewares for the given metadata.
    * @param meta
    * @protected
    */
-  protected middlewares(meta: Compiled<unknown, Any>) {
+  protected middlewares(
+    meta: Compiled<unknown, Any>,
+  ): Target[] {
     return (meta.middlewares ?? []).map(this.adapter.createMiddleware);
   }
 
+  /**
+   * Create a factory function that generates method arguments based on the provided input factories.
+   * @param args
+   * @protected
+   */
   protected createMethodArgFactory(
     args: InputFactory[],
-  ): MethodArgFactory {
+  ): (ctx: ChoWebContext) => Promise<unknown[]> {
     return async function (ctx: ChoWebContext): Promise<unknown[]> {
       const ret: unknown[] = [];
       for (const argFactory of args) {

@@ -1,7 +1,7 @@
 import type { Any, ClassMethodDecorator, Target } from "@chojs/core";
+import type { MethodDecoratorFn } from "./meta.ts";
 import { addToMetadataObject } from "@chojs/core";
 import { InputFactory } from "./types.ts";
-import type { MethodDecoratorFn } from "./meta.ts";
 import { createMethodDecorator } from "./meta.ts";
 
 /**
