@@ -1,11 +1,8 @@
 #!/usr/bin/env deno run --allow-all
-// import { Args, Compiler, Controller, Feature, Get, Linker, Params } from "@chojs/web";
 import { HonoAdapter } from "@chojs/vendor-hono";
 import { describeRoutes } from "@chojs/dev";
 import { Controller, Dependencies, Injectable, Module } from "@chojs/core";
-import { Application } from "../web/application.ts";
-import { Args, Get } from "../web/decorators.ts";
-import { Params } from "@chojs/web";
+import { Application, Args, ChoWebContext, Get, Params } from "@chojs/web";
 
 @Injectable()
 @Dependencies("API_URL")
@@ -48,7 +45,8 @@ class DataController {
 
   @Args(Params("key"))
   @Get("data/:key")
-  args(key: string) {
+  args(key: string, c: ChoWebContext) {
+    // console.log(key);
     return { key, url: this.service.url };
   }
 }

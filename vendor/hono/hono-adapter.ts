@@ -1,10 +1,10 @@
-import type { Any, Target } from "@chojs/core";
-import { type Context, Hono } from "hono";
+import type { Target } from "@chojs/core/meta";
+import type { ChoEndpointFn, ChoErrorHandlerFn, ChoMiddlewareFn } from "@chojs/core/di";
+import type { Context, ErrorHandler, MiddlewareHandler } from "hono";
+import type { ChoWebAdapter, ChoWebContext } from "@chojs/web";
+import { Hono } from "hono";
 import { createMiddleware } from "hono/factory";
-import { stream, streamSSE, streamText } from "hono/streaming";
-import { ChoErrorHandlerFn, ChoMiddlewareFn } from "../../core/di/types.ts";
-import { ChoWebAdapter } from "../../web/adapter.ts";
-import { ChoWebContext } from "../../web/context.ts";
+// import { stream, streamSSE, streamText } from "hono/streaming";
 
 /**
  * Cho adapter for Hono framework
@@ -17,7 +17,7 @@ export class HonoAdapter implements
     Hono,
     Target,
     Target,
-    RawContext
+    Context
   > {
   createContext(
     raw: Context,
@@ -29,7 +29,7 @@ export class HonoAdapter implements
   createMiddleware(
     middleware: ChoMiddlewareFn,
   ): Target {
-    return createMiddleware(handler as Any);
+    return createMiddleware(middleware as MiddlewareHandler) as Target;
   }
 
   createEndpoint(
@@ -37,14 +37,21 @@ export class HonoAdapter implements
     errorHandler?: ChoErrorHandlerFn,
   ): Target {
     if (!errorHandler) {
+      // no error handler, return as is (to avoid unnecessary wrapping)
       return endpoint;
     }
+    // wrap with error handler
     return async function (...args: unknown[]) {
       try {
+        // todo fix types
+        // @ts-ignore
         return await endpoint(...args);
       } catch (err) {
         const ctx = args.pop();
-        return errorHandler(err, ctx);
+        return errorHandler(
+          err as Error,
+          ctx as Context,
+        );
       }
     };
   }
@@ -55,10 +62,10 @@ export class HonoAdapter implements
   ): Hono {
     const c = new Hono();
     for (const mw of middlewares) {
-      c.use(mw);
+      c.use(mw as MiddlewareHandler);
     }
     if (errorHandler) {
-      c.onError(errorHandler);
+      c.onError(errorHandler as ErrorHandler);
     }
     return c;
   }
@@ -67,14 +74,8 @@ export class HonoAdapter implements
     middlewares: Target[],
     errorHandler?: ChoErrorHandlerFn,
   ): Hono {
-    const c = new Hono();
-    for (const mw of middlewares) {
-      c.use(mw);
-    }
-    if (errorHandler) {
-      c.onError(errorHandler);
-    }
-    return c;
+    // in hone, feature and controller are the same
+    return this.createController(middlewares, errorHandler);
   }
 
   mountEndpoint(
@@ -90,11 +91,19 @@ export class HonoAdapter implements
       case "put":
       case "delete":
       case "patch":
+        // todo get rid of this ts-ignore by fixing types
+        // @ts-ignore
         ctr[httpMethod](route, ...middlewares, endpoint);
         break;
       case "get":
       default: // all non http methods are treated as get
-        ctr.get(route, ...middlewares, endpoint);
+        // todo get rid of this ts-ignore by fixing types
+        // @ts-ignore
+        ctr.get(
+          route as string,
+          ...middlewares as Target[],
+          endpoint as Target,
+        );
         break;
     }
   }
@@ -117,25 +126,25 @@ export class HonoAdapter implements
 
   // SseAdapter
 
-  createSseEndpoint(handler: ChoEndpointFn): Target {
-    return function (ctx: RawContext) {
-      return streamSSE(ctx, (stream) => handler(ctx, stream));
-    };
-  }
-
-  // StreamAdapter
-
-  createStreamEndpoint(handler: ChoEndpointFn): Target {
-    return function (ctx: RawContext) {
-      return stream(ctx, (stream) => handler(ctx, stream));
-    };
-  }
-
-  // TextStreamAdapter
-
-  createTextStreamEndpoint(handler: ChoEndpointFn): Target {
-    return function (ctx: RawContext) {
-      return streamText(ctx, (stream) => handler(ctx, stream));
-    };
-  }
+  // createSseEndpoint(handler: ChoEndpointFn): Target {
+  //   return function (ctx: RawContext) {
+  //     return streamSSE(ctx, (stream) => handler(ctx, stream));
+  //   };
+  // }
+  //
+  // // StreamAdapter
+  //
+  // createStreamEndpoint(handler: ChoEndpointFn): Target {
+  //   return function (ctx: RawContext) {
+  //     return stream(ctx, (stream) => handler(ctx, stream));
+  //   };
+  // }
+  //
+  // // TextStreamAdapter
+  //
+  // createTextStreamEndpoint(handler: ChoEndpointFn): Target {
+  //   return function (ctx: RawContext) {
+  //     return streamText(ctx, (stream) => handler(ctx, stream));
+  //   };
+  // }
 }
