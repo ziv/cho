@@ -157,7 +157,7 @@ app arg1 arg2 --flag
 
 ### Middlewares
 
-See middlewares in the [Application Lifecycle RFC](./lifecycle.md).
+See middlewares in the [Application Lifecycle RFC./lifecycle.md).
 
 The middlewares are functions that are executed before and after the command is executed. The signature of a middleware
 is:
