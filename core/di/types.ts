@@ -1,4 +1,5 @@
 import type { Any, Ctr, Target } from "../meta/mod.ts";
+import { InputFactory } from "../../web/types.ts";
 
 /**
  * Token type for dependency injection.
@@ -74,14 +75,17 @@ export type MethodDescriptor = {
   isMethod: true;
   type: string;
   name: string;
-  args: Target[];
+  args: InputFactory[];
 };
 
 // middlewares types
 
 export type Context<T = Any> = T;
 
-export type ChoEndpointFn = (ctx: Context) => void | Response | Promise<void | Response>;
+export type ChoEndpointFn = {
+  (ctx: Context): void | Response | Promise<void | Response>;
+  (...aegs: unknown[]): void | Response | Promise<void | Response>;
+};
 
 export type Next = () => void | Promise<void>;
 
