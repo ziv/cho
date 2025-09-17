@@ -35,7 +35,7 @@ Introduce a decorator-based dependency injection (DI) system with the following 
 6. Classes can be annotated as injectable using `@Injectable`.
 7. Classes can be annotated as modules using `@Module`.
 
-This RFC specifies the programming model, resolution semantics, and a minimal runtime API.
+This document specifies the programming model, resolution semantics, and a minimal runtime API.
 
 ## Motivation
 
@@ -74,7 +74,7 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
     - Factories must return a future value (promise).
     - Factories may construct classes (including `@Injectable` classes) or compute values.
 
-## Core Concepts
+## Implementation Details
 
 ### Tokens
 
@@ -245,7 +245,7 @@ interface Injector {
 
 ---
 
-## Error Handling
+### Error Handling
 
 | Error Case                                                    | Throw                                                                          |
 |---------------------------------------------------------------|--------------------------------------------------------------------------------|

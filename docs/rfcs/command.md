@@ -21,7 +21,8 @@
 
 ## Summary
 
-This RFC proposes a decorator-based command line application framework that allows developers to define controllers and
+This document proposes a decorator-based command line application framework that allows developers to define controllers
+and
 commands using decorators. The framework will support dependency injection, routing, and middlewares.
 
 ## Building Blocks
@@ -34,8 +35,7 @@ An injectable entity is a class that can have dependencies injected into its con
 ### Command
 
 A command is an endpoint, method withing a controller that can be executed from the command line. Commands can have
-arguments and options from the CLI. The return value of the command is the application exit code, where `void` is
-treated as `0`.
+arguments and options from the CLI.
 
 ### Controller
 
@@ -56,6 +56,11 @@ other modules.
 
 Decorators will be used to define endpoints, controllers and modules. The decorators will be processed at runtime to
 set up middleware and error handling.
+
+### Endpoint/Command Method
+
+The method get a `ChoCommandContext` parameter that contains the command line arguments and options (minimist API).
+The return value of the command is the application exit code, where `void` is treated as `0`.
 
 ### `@Main()` decorator
 
