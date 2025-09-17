@@ -21,8 +21,6 @@ import {
 } from "./decorators.ts";
 import { expect } from "@std/expect";
 import { Context, ErrorHandler } from "./interfaces/mod.ts";
-import type { MethodArgType } from "./types.ts";
-import { Params } from "./inputs.ts";
 
 // sanity, class decorators
 
