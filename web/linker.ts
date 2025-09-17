@@ -1,4 +1,9 @@
-import type { Compiled, CompiledGateway, CompiledMethod, CompiledModule } from "@chojs/core/compiler";
+import type {
+  Compiled,
+  CompiledGateway,
+  CompiledMethod,
+  CompiledModule,
+} from "@chojs/core/compiler";
 import type { Any, Target } from "@chojs/core/meta";
 import type { ChoEndpointFn } from "@chojs/core/di";
 import type { ChoWebAdapter } from "./adapter.ts";
@@ -89,7 +94,11 @@ export class Linker {
         continue;
       }
       mounted = true;
-      log(`mounting endpoint: [${cm.meta.type}] ${cg.meta.route ?? ""}${cm.meta.route ?? ""}`);
+      log(
+        `mounting endpoint: [${cm.meta.type}] ${cg.meta.route ?? ""}${
+          cm.meta.route ?? ""
+        }`,
+      );
       this.adapter.mountEndpoint(
         controller,
         this.middlewares(cm),

@@ -1,5 +1,12 @@
 import { expect } from "@std/expect";
-import { ArgTypeFunction, Body, Header, InputTypeFunction, Params, Query } from "./inputs.ts";
+import {
+  ArgTypeFunction,
+  Body,
+  Header,
+  InputTypeFunction,
+  Params,
+  Query,
+} from "./inputs.ts";
 import { InvalidInputError } from "./errors.ts";
 import { Context } from "./interfaces/mod.ts";
 
@@ -44,7 +51,11 @@ const mockValidator = {
 };
 
 const mockFailingValidator = {
-  safeParse: (data: unknown) => ({ success: false, data: null, error: "Validation failed" }),
+  safeParse: (data: unknown) => ({
+    success: false,
+    data: null,
+    error: "Validation failed",
+  }),
 };
 
 // // Test type exports
@@ -120,7 +131,9 @@ Deno.test("Params with failing validator includes proper error message", async (
     await factory(ctx);
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidInputError);
-    expect((error as InvalidInputError).message).toBe('Input validation failed at argument Params("id")');
+    expect((error as InvalidInputError).message).toBe(
+      'Input validation failed at argument Params("id")',
+    );
   }
 });
 
@@ -134,7 +147,9 @@ Deno.test("Params with failing validator (no key) includes proper error message"
     await factory(ctx);
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidInputError);
-    expect((error as InvalidInputError).message).toBe("Input validation failed at argument Params()");
+    expect((error as InvalidInputError).message).toBe(
+      "Input validation failed at argument Params()",
+    );
   }
 });
 
@@ -191,7 +206,10 @@ Deno.test("Body caches parsed body in context", async () => {
 
   // Second call should use cached body
   expect(result2).toBe("test@example.com");
-  expect(ctx.get("--cached-body")).toEqual({ name: "test", email: "test@example.com" });
+  expect(ctx.get("--cached-body")).toEqual({
+    name: "test",
+    email: "test@example.com",
+  });
 });
 
 Deno.test("Body with failing validator throws InvalidInputError", async () => {
@@ -257,11 +275,17 @@ Deno.test("Query with failing validator throws InvalidInputError", async () => {
 Deno.test("Header() - returns InputFactory that gets all headers", async () => {
   const factory = Header();
   const ctx = createMockContext({
-    headers: { "content-type": "application/json", "authorization": "Bearer token" },
+    headers: {
+      "content-type": "application/json",
+      "authorization": "Bearer token",
+    },
   });
 
   const result = await factory(ctx);
-  expect(result).toEqual({ "content-type": "application/json", "authorization": "Bearer token" });
+  expect(result).toEqual({
+    "content-type": "application/json",
+    "authorization": "Bearer token",
+  });
 });
 
 Deno.test("Header(key) - returns InputFactory that gets specific header", async () => {
@@ -314,7 +338,9 @@ Deno.test("Body with failing validator (with key) includes proper error message"
     await factory(ctx);
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidInputError);
-    expect((error as InvalidInputError).message).toBe('Input validation failed at argument Body("email")');
+    expect((error as InvalidInputError).message).toBe(
+      'Input validation failed at argument Body("email")',
+    );
   }
 });
 
@@ -328,7 +354,9 @@ Deno.test("Query with failing validator (with key) includes proper error message
     await factory(ctx);
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidInputError);
-    expect((error as InvalidInputError).message).toBe('Input validation failed at argument Query("page")');
+    expect((error as InvalidInputError).message).toBe(
+      'Input validation failed at argument Query("page")',
+    );
   }
 });
 
@@ -342,7 +370,9 @@ Deno.test("Header with failing validator (with key) includes proper error messag
     await factory(ctx);
   } catch (error) {
     expect(error).toBeInstanceOf(InvalidInputError);
-    expect((error as InvalidInputError).message).toBe('Input validation failed at argument Header("authorization")');
+    expect((error as InvalidInputError).message).toBe(
+      'Input validation failed at argument Header("authorization")',
+    );
   }
 });
 

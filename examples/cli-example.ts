@@ -1,8 +1,9 @@
 #!/usr/bin/env deno run --allow-all
-import { Application } from "../cli/application.ts";
-import { Command, Help, Main } from "../cli/decorators.ts";
+// import { Application } from "../cli/application.ts";
+import { Command, Help, Main } from "../command/decorators.ts";
 import { Controller, Module } from "../core/mod.ts";
-import { ChoCliContext } from "../cli/context.ts";
+import { ChoCliContext } from "../command/context.ts";
+import { graphBuilder } from "../core/compiler/graph-builder.ts";
 
 const helpText = `
 A simple CLI application example.
@@ -49,5 +50,7 @@ class MyController {
 class MyApp {
 }
 
-const app = await Application.create(MyApp);
-await app.run(Deno.args);
+// const app = await Application.create(MyApp);
+// await app.run(Deno.args);
+
+console.log(graphBuilder(MyApp));

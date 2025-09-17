@@ -1,5 +1,16 @@
 #!/usr/bin/env deno run --allow-all
-import { Args, Compiler, Controller, Feature, Get, Linker, Params, Query, Sse, SseAsync } from "@chojs/web";
+import {
+  Args,
+  Compiler,
+  Controller,
+  Feature,
+  Get,
+  Linker,
+  Params,
+  Query,
+  Sse,
+  SseAsync,
+} from "@chojs/web";
 import { HonoAdapter } from "@chojs/vendor-hono";
 import { describeRoutes } from "@chojs/dev";
 import { SSEStreamingApi } from "@chojs/web/interfaces";

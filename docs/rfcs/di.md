@@ -2,7 +2,7 @@
 outline: [ 2, 4 ]
 ---
 
-# RFC: Decorator-based Dependency Injection
+# Specifications: Decorator-based Dependency Injection
 
 <table class="properties">
     <tbody>
@@ -17,10 +17,6 @@ outline: [ 2, 4 ]
         <tr>
             <th>Target</th>
             <td>TypeScript (ECMAScript decorators)</td>
-        </tr>
-        <tr>
-            <th>Authors</th>
-            <td>XPR</td>
         </tr>
     </tbody>
 </table>
@@ -57,7 +53,7 @@ This RFC specifies the programming model, resolution semantics, and a minimal ru
 ## Terminology
 
 - **Token**: The key used to look up a dependency. A class constructor, a string or a symbol.
-- **Factory Provider**: A provider that supplies a value by invoking a factory function.
+- **Factory Provider**: A provider (or a recipe) that supplies a value by invoking a factory function.
 - **Injectable**: A class annotated with `@Injectable` that can be constructed and injected (implicit provider).
 - **Module**: A class annotated with `@Module` that declares providers and imports (DI context).
 - **Injector**: A per-module dependency resolver/registry.
@@ -88,7 +84,7 @@ Tokens identify dependencies. They can be class constructors (e.g., `class Foo {
 ##### Token Definition:
 
 ```ts
-type Ctr = new (...args: any[]) => any;
+type Ctr<T = any> = new (...args: any[]) => T;
 type Token = Ctr | symbol | string;
 ```
 
@@ -121,7 +117,7 @@ type InjectableDescriptor = {
     deps?: Token[];
 };
 
-function Injectable(d: InjectableDescriptor) {
+function Injectable(descriptor?: InjectableDescriptor) {
 }
 ```
 
@@ -140,10 +136,24 @@ class MyService {
 }
 ```
 
+For convenience, the decorator `@Dependencies(...deps)` or `@Deps(...deps)` can be used as a shorthand for
+`@Injectable({ deps })`.
+
+Example:
+
+```ts
+
+@Dependencies(Foo, Bar)
+class MyService {
+    constructor(readonly foo: Foo, readonly bar: Bar) {
+    }
+}
+```
+
 By default, the system will:
 
 - Treat the class constructor as the token.
-- Generate an implicit factory: `factory: (inj) => new C(...deps)`.
+- Generate an implicit factory: `async factory: (inj) => new C(...deps)`.
 
 ### Module Decorator
 
@@ -157,7 +167,7 @@ type ModuleDescriptor = InjectableDescriptor & {
     providers: (Provider | Ctr)[];
 };
 
-function Module(d: ModuleDescriptor): ClassDecorator {
+function Module(descriptor?: ModuleDescriptor): ClassDecorator {
 }
 ```
 
@@ -169,16 +179,17 @@ function Module(d: ModuleDescriptor): ClassDecorator {
 Example:
 
 ```ts
-
-@Injectable({
-    deps: [Foo],
-})
+// the commented code is equivalent
+// @Injectable({
+//     deps: [Foo],
+// })
+@Deps(Foo)
 class MyService {
     constructor(readonly foo: Foo) {
     }
 }
 
-// set the service from previous example in a module (di context)
+// set the service in a module (di context)
 @Module({
     providers: [MyService],
 })
@@ -197,6 +208,16 @@ class MyModule {
         },
     ],
 })
+```
+
+Shorthand decorators for modules:
+
+```ts
+
+@Imports(/*...*/) // can be omitted if no imports
+@Providers(/*...*/) // can be omitted if no providers
+class MyModule {
+}
 ```
 
 ### Injector

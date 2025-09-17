@@ -118,7 +118,12 @@ Deno.test("@Patch", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "PATCH", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "PATCH",
+    args: [],
+  });
 });
 
 Deno.test("@Delete", () => {
@@ -127,7 +132,12 @@ Deno.test("@Delete", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "DELETE", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "DELETE",
+    args: [],
+  });
 });
 
 Deno.test("@Sse", () => {
@@ -154,7 +164,12 @@ Deno.test("@SseAsync", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "SSE_ASYNC", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "SSE_ASYNC",
+    args: [],
+  });
 });
 
 Deno.test("@Stream", () => {
@@ -163,7 +178,12 @@ Deno.test("@Stream", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "STREAM", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "STREAM",
+    args: [],
+  });
 });
 
 Deno.test("@StreamAsync", () => {
@@ -172,7 +192,12 @@ Deno.test("@StreamAsync", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "STREAM_ASYNC", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "STREAM_ASYNC",
+    args: [],
+  });
 });
 
 Deno.test("@StreamText", () => {
@@ -181,7 +206,12 @@ Deno.test("@StreamText", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "STREAM_TEXT", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "STREAM_TEXT",
+    args: [],
+  });
 });
 
 Deno.test("@StreamTextAsync", () => {
@@ -190,7 +220,12 @@ Deno.test("@StreamTextAsync", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "STREAM_TEXT_ASYNC", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "STREAM_TEXT_ASYNC",
+    args: [],
+  });
 });
 
 Deno.test("@StreamPipe", () => {
@@ -199,5 +234,10 @@ Deno.test("@StreamPipe", () => {
     test() {}
   }
   const meta = readMetadataObject(TestClass.prototype.test);
-  expect(meta).toEqual({ name: "test", route: "test", type: "STREAM_PIPE", args: [] });
+  expect(meta).toEqual({
+    name: "test",
+    route: "test",
+    type: "STREAM_PIPE",
+    args: [],
+  });
 });

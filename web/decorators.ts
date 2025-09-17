@@ -181,7 +181,9 @@ export const Stream: MethodDecoratorFn = createMethodDecorator("STREAM");
  * }
  *       ```
  */
-export const StreamAsync: MethodDecoratorFn = createMethodDecorator("STREAM_ASYNC");
+export const StreamAsync: MethodDecoratorFn = createMethodDecorator(
+  "STREAM_ASYNC",
+);
 
 /**
  * Method decorator for text streaming endpoints.
@@ -195,7 +197,9 @@ export const StreamAsync: MethodDecoratorFn = createMethodDecorator("STREAM_ASYN
  * }
  * ```
  */
-export const StreamText: MethodDecoratorFn = createMethodDecorator("STREAM_TEXT");
+export const StreamText: MethodDecoratorFn = createMethodDecorator(
+  "STREAM_TEXT",
+);
 
 /**
  * Method decorator for text streaming endpoints.
@@ -214,7 +218,9 @@ export const StreamText: MethodDecoratorFn = createMethodDecorator("STREAM_TEXT"
  * }
  * ```
  */
-export const StreamTextAsync: MethodDecoratorFn = createMethodDecorator("STREAM_TEXT_ASYNC");
+export const StreamTextAsync: MethodDecoratorFn = createMethodDecorator(
+  "STREAM_TEXT_ASYNC",
+);
 
 /**
  * Method decorator for streaming endpoints that pipe from a ReadableStream.
@@ -231,4 +237,6 @@ export const StreamTextAsync: MethodDecoratorFn = createMethodDecorator("STREAM_
  * }
  * ```
  */
-export const StreamPipe: MethodDecoratorFn = createMethodDecorator("STREAM_PIPE");
+export const StreamPipe: MethodDecoratorFn = createMethodDecorator(
+  "STREAM_PIPE",
+);

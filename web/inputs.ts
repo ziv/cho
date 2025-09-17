@@ -7,15 +7,23 @@ export type InputTypeFunction = {
   (key: string, validator: Validator): InputFactory;
 };
 
-type ValueRetriever = (c: ChoWebContext, key?: string) => unknown | Promise<unknown>;
+type ValueRetriever = (
+  c: ChoWebContext,
+  key?: string,
+) => unknown | Promise<unknown>;
 
-function createInputFunctionFactory(name: string, retriever: ValueRetriever): InputTypeFunction {
+function createInputFunctionFactory(
+  name: string,
+  retriever: ValueRetriever,
+): InputTypeFunction {
   return function (
     keyOrValidator?: string | Validator,
     validatorIfKey?: Validator,
   ): InputFactory {
     const key = typeof keyOrValidator === "string" ? keyOrValidator : undefined;
-    const validator = typeof keyOrValidator !== "string" ? keyOrValidator : validatorIfKey;
+    const validator = typeof keyOrValidator !== "string"
+      ? keyOrValidator
+      : validatorIfKey;
 
     return async function (c: ChoWebContext): Promise<unknown> {
       const value = await retriever(c, key);

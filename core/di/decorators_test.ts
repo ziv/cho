@@ -1,5 +1,13 @@
 import { expect } from "@std/expect";
-import { Catch, Controller, Dependencies, Deps, Injectable, Middlewares, Module } from "./decorators.ts";
+import {
+  Catch,
+  Controller,
+  Dependencies,
+  Deps,
+  Injectable,
+  Middlewares,
+  Module,
+} from "./decorators.ts";
 import { readMetadataObject } from "../meta/mod.ts";
 
 // sanity check only
@@ -8,19 +16,28 @@ import { readMetadataObject } from "../meta/mod.ts";
 Deno.test("sanity - Injectable decorator should add metadata", () => {
   @Injectable({ deps: ["dep1", "dep2"] })
   class TestClass {}
-  expect(readMetadataObject(TestClass)).toEqual({ deps: ["dep1", "dep2"], isInjectable: true });
+  expect(readMetadataObject(TestClass)).toEqual({
+    deps: ["dep1", "dep2"],
+    isInjectable: true,
+  });
 });
 
 Deno.test("sanity - Module decorator should add metadata", () => {
   @Module({ deps: ["dep1", "dep2"] })
   class TestClass {}
-  expect(readMetadataObject(TestClass)).toEqual({ deps: ["dep1", "dep2"], isModule: true });
+  expect(readMetadataObject(TestClass)).toEqual({
+    deps: ["dep1", "dep2"],
+    isModule: true,
+  });
 });
 
 Deno.test("sanity - Controller decorator should add metadata", () => {
   @Controller("route")
   class TestClass {}
-  expect(readMetadataObject(TestClass)).toEqual({ route: "route", isGateway: true });
+  expect(readMetadataObject(TestClass)).toEqual({
+    route: "route",
+    isGateway: true,
+  });
 });
 
 Deno.test("sanity - Dependencies decorator should set deps metadata", () => {

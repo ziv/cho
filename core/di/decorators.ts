@@ -6,8 +6,8 @@ import type {
   ModuleDescriptor,
   Token,
 } from "./types.ts";
-import type { ClassMethodDecorator, Ctr, MetaDecoratorFactory, Target } from "../meta/mod.ts";
-import { addToMetadataObject, createMetaDecorator } from "../meta/mod.ts";
+import type { ClassMethodDecorator, Ctr, Target } from "../meta/mod.ts";
+import { addToMetadataObject } from "../meta/mod.ts";
 
 /**
  * Mark a class as injectable and create its provider.
@@ -28,9 +28,13 @@ import { addToMetadataObject, createMetaDecorator } from "../meta/mod.ts";
  * }
  * ```
  */
-export const Injectable: MetaDecoratorFactory<InjectableDescriptor> = createMetaDecorator<InjectableDescriptor>({
-  isInjectable: true,
-});
+export function Injectable(
+  descriptor: Partial<InjectableDescriptor> = {},
+): ClassDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { isInjectable: true, ...descriptor });
+  };
+}
 
 /**
  * Mark a class as a module and create its provider.
@@ -45,9 +49,13 @@ export const Injectable: MetaDecoratorFactory<InjectableDescriptor> = createMeta
  *   providers: [MyService, { provide: "API_URL", factory: () => Promise.resolve("https://api.example.com") }],
  * })
  */
-export const Module: MetaDecoratorFactory<ModuleDescriptor> = createMetaDecorator<ModuleDescriptor>({
-  isModule: true,
-});
+export function Module(
+  descriptor: Partial<ModuleDescriptor> = {},
+): ClassDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { isModule: true, ...descriptor });
+  };
+}
 
 /**
  * Mark a class as a web controller (gateway).
@@ -94,7 +102,7 @@ export function Dependencies(
   ...deps: Token[]
 ): ClassDecorator {
   return (target: Target) => {
-    addToMetadataObject(target, { deps });
+    addToMetadataObject(target, { deps, isInjectable: true });
   };
 }
 
@@ -104,8 +112,38 @@ export function Dependencies(
 export const Deps = Dependencies; // alias
 
 /**
+ * Add providers to a module's provider list.
+ * Another way to specify providers instead of using the `providers` property in `@Module`.
+ *
+ * @param providers
+ * @constructor
+ */
+export function Providers(
+  ...providers: (Token | Ctr)[]
+): ClassDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { providers, isModule: true });
+  };
+}
+
+/**
+ * Add imported modules to a module's import list.
+ * Another way to specify imports instead of using the `imports` property in `@Module`.
+ *
+ * @param imports
+ * @constructor
+ */
+export function Imports(
+  ...imports: Ctr[]
+): ClassDecorator {
+  return (target: Target) => {
+    addToMetadataObject(target, { imports, isModule: true });
+  };
+}
+
+/**
  * Adds middleware to a class or method.
- * Can be applied to controllers, features, or individual methods.
+ * Can be applied to modules, controllers, or individual methods.
  *
  * @param middlewares - Array of middleware classes or functions
  * @example

@@ -1,9 +1,9 @@
 export type ChoArgs = {
-    _: string[];
-    [key: string]: unknown;
+  _: string[];
+  [key: string]: unknown;
 };
 
 export class ChoCommandContext {
-    constructor(readonly args: ChoArgs) {
-    }
+  constructor(readonly args: ChoArgs) {
+  }
 }

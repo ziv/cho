@@ -11,7 +11,8 @@
 3. [x] Should define middlewares using extension functions
 4. [ ] Order of middlewares, guards, interceptors matters
 5. [x] Should define guards using extension functions
-6. [ ] Should define interceptors using extension functions (TBD interceptors or middlewares?)
+6. [ ] Should define interceptors using extension functions (TBD interceptors or
+       middlewares?)
 
 #### HTTP Endpoints
 

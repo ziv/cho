@@ -11,27 +11,33 @@
 | `@chojs/vendor-hono` | [![JSR](https://jsr.io/badges/@chojs/vendor-hono)](https://jsr.io/@chojs/vendor-hono) |
 | `@chojs/dev`         | [![JSR](https://jsr.io/badges/@chojs/dev)](https://jsr.io/@chojs/dev)                 |
 
-CHO is a tiny decorator-based framework for building modular applications. It utilizes modern JavaScript decorators (
-see [About JavaScript Decorators](#about-javascript-decorators)) to provide a clean and efficient way to define
-application structure.
+CHO is a tiny decorator-based framework for building modular applications. It
+utilizes modern JavaScript decorators ( see
+[About JavaScript Decorators](#about-javascript-decorators)) to provide a clean
+and efficient way to define application structure.
 
-The concept is inspired by Angular, NestJS, and Spring but with a different approach (or why this project exists):
+The concept is inspired by Angular, NestJS, and Spring but with a different
+approach (or why this project exists):
 
 ### Standardization
 
-Decorators and reflect metadata are not yet part of the official ECMAScript standard, leading to inconsistencies in
-their implementation across different runtimes. This lack of standardization can result in compatibility issues and
-hinder the adoption of these features in production environments. This project aims to provide a consistent and reliable
-way to use decorators across multiple JavaScript runtimes, ensuring that developers can leverage these powerful features
-without worrying about compatibility issues.
+Decorators and reflect metadata are not yet part of the official ECMAScript
+standard, leading to inconsistencies in their implementation across different
+runtimes. This lack of standardization can result in compatibility issues and
+hinder the adoption of these features in production environments. This project
+aims to provide a consistent and reliable way to use decorators across multiple
+JavaScript runtimes, ensuring that developers can leverage these powerful
+features without worrying about compatibility issues.
 
 ### Portability (Cross-Platform/Engine Agnostic)
 
-In the modern software development landscape, the ability to deploy applications across various environments and
-platforms is crucial. Developers often face challenges when trying to ensure that their applications run seamlessly on
-different runtimes such as **Node.js**, **Deno**, **Bun**, **Cloudflare Workers**, **AWS Lambda** and more. Each of
-these runtimes has its own set of features, performance characteristics, and limitations, making it difficult to write
-code that is truly portable.
+In the modern software development landscape, the ability to deploy applications
+across various environments and platforms is crucial. Developers often face
+challenges when trying to ensure that their applications run seamlessly on
+different runtimes such as **Node.js**, **Deno**, **Bun**, **Cloudflare
+Workers**, **AWS Lambda** and more. Each of these runtimes has its own set of
+features, performance characteristics, and limitations, making it difficult to
+write code that is truly portable.
 
 ### Build for Performance
 

@@ -1,4 +1,4 @@
-# RFC: Decorator Based Web Application Framework
+# Specifications: Decorator Based Web Application Framework
 
 todo missing middleware, error handling, request lifecycle, examples, testing
 

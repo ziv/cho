@@ -26,5 +26,6 @@ export function isClass(v: unknown): v is Ctr {
 }
 
 export function isClassImplement<T>(ctr: Ctr, method: string): ctr is Ctr<T> {
-  return isClass(ctr) && (typeof ctr.prototype[method as keyof typeof ctr.prototype] === "function");
+  return isClass(ctr) &&
+    (typeof ctr.prototype[method as keyof typeof ctr.prototype] === "function");
 }

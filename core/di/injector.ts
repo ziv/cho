@@ -1,5 +1,11 @@
 import type { Any, Ctr } from "../meta/mod.ts";
-import type { InjectableDescriptor, ModuleDescriptor, Provider, Resolver, Token } from "./types.ts";
+import type {
+  InjectableDescriptor,
+  ModuleDescriptor,
+  Provider,
+  Resolver,
+  Token,
+} from "./types.ts";
 import { debuglog } from "../utils/debuglog.ts";
 import { read, readMetadataObject, write } from "../meta/mod.ts";
 
@@ -7,7 +13,8 @@ const log = debuglog("di:injector");
 
 const InjectorMetadata = Symbol("ModuleInjector");
 
-const tokenName = (token: Token) => (typeof token === "function" && token.name) ? token.name : String(token);
+const tokenName = (token: Token) =>
+  (typeof token === "function" && token.name) ? token.name : String(token);
 
 /**
  * Provider found during search.
@@ -173,7 +180,11 @@ export class Injector implements Resolver {
     }
 
     if (type === "provider") {
-      log(`${this.name}: ${tokenName(token)} found as provider, creating instance`);
+      log(
+        `${this.name}: ${
+          tokenName(token)
+        } found as provider, creating instance`,
+      );
       const instance = await value.factory(this);
       this.cache.set(token, instance);
       return instance as T;
@@ -182,14 +193,17 @@ export class Injector implements Resolver {
     // TODO: missing tests
     if (type === "circular-dependency-detected") {
       const path = value.map((i) => i.name).join(" → ");
-      const error = `${this.name}: Circular dependency detected while resolving ${tokenName(token)}: ${path} → ${
-        tokenName(token)
-      }`;
+      const error =
+        `${this.name}: Circular dependency detected while resolving ${
+          tokenName(token)
+        }: ${path} → ${tokenName(token)}`;
       log.error(error);
       throw new Error(error);
     }
 
-    const error = `${this.name}: ${tokenName(token)} not found in module or imports`;
+    const error = `${this.name}: ${
+      tokenName(token)
+    } not found in module or imports`;
     log.error(error);
     throw new Error(error);
   }

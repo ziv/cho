@@ -5,7 +5,10 @@ import { addToMetadataObject } from "@chojs/core/meta";
 /**
  * Function signature for method decorators that define HTTP endpoints.
  */
-export type MethodDecoratorFn<R = string> = (route: R, args?: InputFactory[]) => Any; // ClassMethodDecorator;
+export type MethodDecoratorFn<R = string> = (
+  route: R,
+  args?: InputFactory[],
+) => Any; // ClassMethodDecorator;
 
 /**
  * Creates a method decorator for the given HTTP method.

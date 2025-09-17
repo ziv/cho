@@ -1,7 +1,7 @@
 import {
-    addToMetadataObject,
-    ClassMethodDecorator,
-    Target,
+  addToMetadataObject,
+  ClassMethodDecorator,
+  Target,
 } from "../core/mod.ts";
 
 /**
@@ -10,9 +10,9 @@ import {
  * @constructor
  */
 export function Main(): ClassMethodDecorator {
-    return (target: Target) => {
-        addToMetadataObject(target, { command: "main" });
-    };
+  return (target: Target) => {
+    addToMetadataObject(target, { command: "main" });
+  };
 }
 
 /**
@@ -21,13 +21,13 @@ export function Main(): ClassMethodDecorator {
  * @constructor
  */
 export function Command(name: string): ClassMethodDecorator {
-    return (target: Target) => {
-        addToMetadataObject(target, { command: name });
-    };
+  return (target: Target) => {
+    addToMetadataObject(target, { command: name });
+  };
 }
 
 export function Help(content: string) {
-    return (target: Target) => {
-        addToMetadataObject(target, { help: content });
-    };
+  return (target: Target) => {
+    addToMetadataObject(target, { help: content });
+  };
 }

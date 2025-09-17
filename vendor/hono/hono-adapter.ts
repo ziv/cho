@@ -1,5 +1,9 @@
 import type { Target } from "@chojs/core/meta";
-import type { ChoEndpointFn, ChoErrorHandlerFn, ChoMiddlewareFn } from "@chojs/core/di";
+import type {
+  ChoEndpointFn,
+  ChoErrorHandlerFn,
+  ChoMiddlewareFn,
+} from "@chojs/core/di";
 import type { Context, ErrorHandler, MiddlewareHandler } from "hono";
 import type { ChoWebAdapter, ChoWebContext } from "@chojs/web";
 import { Hono } from "hono";

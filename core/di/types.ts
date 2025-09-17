@@ -89,7 +89,10 @@ export type ChoEndpointFn = {
 
 export type Next = () => void | Promise<void>;
 
-export type ChoMiddlewareFn = (ctx: Context, next: Next) => void | Response | Promise<void | Response>;
+export type ChoMiddlewareFn = (
+  ctx: Context,
+  next: Next,
+) => void | Response | Promise<void | Response>;
 
 export interface ChoMiddleware {
   handle(ctx: Context, next: Next): Promise<void>;
@@ -105,7 +108,10 @@ export interface ChoGuard {
 
 // error handlers types
 
-export type ChoErrorHandlerFn = (err: Error, ctx: Context) => void | Response | Promise<void | Response>;
+export type ChoErrorHandlerFn = (
+  err: Error,
+  ctx: Context,
+) => void | Response | Promise<void | Response>;
 
 export interface ChoErrorHandler {
   catch(err: Error, ctx: Context): void | Response | Promise<void | Response>;

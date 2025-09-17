@@ -40,7 +40,9 @@ export function Gateway(desc: GatewayDescriptor) {
  * }
  * ```
  */
-export const MessageListener = createMethodDecorator<any, GatewayType>("Message");
+export const MessageListener = createMethodDecorator<any, GatewayType>(
+  "Message",
+);
 
 /**
  * Method decorator for listening to events (messages) from a message broker

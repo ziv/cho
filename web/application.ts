@@ -14,14 +14,19 @@ export class Application<AppRef> {
    * @param feature
    * @param options
    */
-  static async create<T>(feature: Ctr, options?: ApplicationOptions): Promise<Application<T>> {
+  static async create<T>(
+    feature: Ctr,
+    options?: ApplicationOptions,
+  ): Promise<Application<T>> {
     let adapter = options?.adapter;
     if (!adapter) {
       try {
         const { HonoAdapter } = await import("@chojs/vendor-hono");
         adapter = new HonoAdapter();
       } catch {
-        throw new Error("Adapter is required. Please provide an adapter or install @chojs/vendor-hono.");
+        throw new Error(
+          "Adapter is required. Please provide an adapter or install @chojs/vendor-hono.",
+        );
       }
     }
     const compiled = await new Compiler().compile(feature);

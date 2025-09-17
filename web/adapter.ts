@@ -1,5 +1,9 @@
 import type { Any, Target } from "@chojs/core/meta";
-import type { ChoEndpointFn, ChoErrorHandlerFn, ChoMiddlewareFn } from "@chojs/core/di";
+import type {
+  ChoEndpointFn,
+  ChoErrorHandlerFn,
+  ChoMiddlewareFn,
+} from "@chojs/core/di";
 import type { ChoWebContext } from "./context.ts";
 
 /**
