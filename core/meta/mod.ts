@@ -81,7 +81,8 @@ export type ClassMethodDecorator = (value: Function, context: {
 // metadata read/write utilities
 // ------------------------------------
 
-const MetaKey = Symbol("meta");
+// const MetaKey = Symbol("meta");
+const MetaKey = "___cho_meta___";
 
 /**
  * Read a metadata value from a target.

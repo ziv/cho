@@ -209,6 +209,7 @@ export class Compiler {
       // filter out methods without metadata
       .filter(({ meta }) => meta !== undefined);
 
+
     if (0 === props.length) {
       throw new Error(`Gateway "${ctr.name}" has no methods. Did you forget to decorate endpoints?`);
     }
