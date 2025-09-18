@@ -4,7 +4,7 @@
  */
 export type ChoArgs = {
   _: string[];
-  [key: string]: unknown;
+  [key: string]: boolean | string | number | string[] | undefined;
 };
 
 /**
