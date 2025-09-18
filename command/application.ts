@@ -9,7 +9,7 @@ import {
   onModuleActivate,
   onModuleInit,
   onModuleShutdown,
-} from "../core/application/mod.ts";
+} from "@chojs/core/application";
 import { type ChoArgs, ChoCommandContext } from "./context.ts";
 
 export class MissingCommandError extends Error {}
@@ -22,7 +22,7 @@ export class Application {
    *
    * @param ctr
    */
-  static async create(ctr: Ctr) {
+  static async create(ctr: Ctr): Promise<Application> {
     const compiled = await new Compiler().compile(graphBuilder(ctr));
     await onModuleInit(compiled);
 

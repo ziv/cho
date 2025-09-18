@@ -1,7 +1,7 @@
-import type {
+import {
   addToMetadataObject,
-  ClassDecorator,
-  ClassMethodDecorator,
+  type ClassDecorator,
+  type ClassMethodDecorator,
   Target,
 } from "@chojs/core";
 

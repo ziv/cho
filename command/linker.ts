@@ -1,6 +1,6 @@
-import {CompiledGateway, CompiledMethod, CompiledModule} from "../core/application/mod.ts";
-import { Any, Target } from "../core/meta/mod.ts";
-import { debuglog } from "../core/utils/debuglog.ts";
+import type {CompiledMethod, CompiledModule} from "@chojs/core/application";
+import type {Target} from "@chojs/core/meta";
+import {debuglog} from "@chojs/core/utils";
 
 export type LinkedCommand = {
   middlewares: Target[];
