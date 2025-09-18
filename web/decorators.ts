@@ -1,8 +1,8 @@
 import type { Any, ClassMethodDecorator, Target } from "@chojs/core";
-import type { MethodDecoratorFn } from "./meta.ts";
+import type { MethodDecoratorFn } from "./internals/meta.ts";
 import { addToMetadataObject } from "@chojs/core/meta";
 import { InputFactory } from "./types.ts";
-import { createMethodDecorator } from "./meta.ts";
+import { createMethodDecorator } from "./internals/meta.ts";
 
 /**
  * Define a method arguments list.

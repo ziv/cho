@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@chojs/core@0.9.0": "0.9.0",
+    "jsr:@chojs/core@1.0.0": "1.0.0",
     "jsr:@chojs/web@1.9.0": "1.9.0",
     "jsr:@chojs/web@2.0.0": "2.0.0",
     "jsr:@hono/hono@^4.9.4": "4.9.7",
@@ -31,14 +32,24 @@
         "jsr:@std/fmt"
       ]
     },
+    "@chojs/core@1.0.0": {
+      "integrity": "9a57627dc0ba97f53aeb7d0561027dd374fd5cd557408c99443c825f66fdbefd",
+      "dependencies": [
+        "jsr:@std/datetime",
+        "jsr:@std/fmt"
+      ]
+    },
     "@chojs/web@1.9.0": {
       "integrity": "a63247dff7befe54287eab99cc9b8d035d9d911ff0812ccac57d2db311548767",
       "dependencies": [
-        "jsr:@chojs/core"
+        "jsr:@chojs/core@0.9.0"
       ]
     },
     "@chojs/web@2.0.0": {
-      "integrity": "593adec0ef35e502513d7d5908f03c0b4b924d375678e6ce6ae5f46f2a9c2241"
+      "integrity": "593adec0ef35e502513d7d5908f03c0b4b924d375678e6ce6ae5f46f2a9c2241",
+      "dependencies": [
+        "jsr:@chojs/core@1.0.0"
+      ]
     },
     "@hono/hono@4.9.7": {
       "integrity": "5293d82fc6d25782ff9e0a89680f99cdd27ed19eb0558e2786c22a46a4594424"
@@ -2906,6 +2917,12 @@
       ]
     },
     "members": {
+      "command": {
+        "dependencies": [
+          "jsr:@chojs/core@^1.1.2",
+          "jsr:@std/cli@^1.0.22"
+        ]
+      },
       "core": {
         "dependencies": [
           "jsr:@std/datetime@~0.225.5",
@@ -2929,7 +2946,7 @@
       },
       "web": {
         "dependencies": [
-          "jsr:@chojs/core@1.0.0"
+          "jsr:@chojs/core@1.1.2"
         ]
       }
     }

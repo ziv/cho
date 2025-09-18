@@ -1,5 +1,5 @@
 import type { Any, ClassMethodDecorator, MethodContext } from "@chojs/core";
-import type { InputFactory } from "./types.ts";
+import type { InputFactory } from "../types.ts";
 import { addToMetadataObject } from "@chojs/core/meta";
 
 /**

@@ -1,8 +1,10 @@
 import type { Ctr } from "@chojs/core/meta";
-import type { ChoWebAdapter } from "./adapter.ts";
-import type { CompiledModule } from "@chojs/core/compiler";
-import { Compiler } from "@chojs/core/compiler";
-import { Linker } from "./linker.ts";
+import type { CompiledModule } from "@chojs/core/application";
+import { Compiler } from "@chojs/core/application";
+import type { ChoWebAdapter } from "./internals/adapter.ts";
+import { Linker } from "./internals/linker.ts";
+import { onModuleActivate, onModuleInit } from "../core/application/hooks.ts";
+import {graphBuilder} from "../core/application/graph-builder.ts";
 
 export type ApplicationOptions = {
   adapter: ChoWebAdapter;
@@ -29,9 +31,17 @@ export class Application<AppRef> {
         );
       }
     }
-    const compiled = await new Compiler().compile(feature);
+    const compiled = await new Compiler().compile(graphBuilder(feature));
+    await onModuleInit(compiled);
+
     const linked = new Linker(adapter).link(compiled);
-    return new Application(compiled, linked as T, adapter);
+    await onModuleActivate(compiled);
+
+    return new Application(
+      compiled,
+      linked as T,
+      adapter,
+    );
   }
 
   constructor(

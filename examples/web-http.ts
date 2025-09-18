@@ -66,5 +66,5 @@ class AppFeature {
 
 const app = await Application.create(AppFeature, new HonoAdapter());
 
-describeRoutes(app.instance);
-Deno.serve(app.appRef.fetch);
+// describeRoutes(app.instance);
+// Deno.serve(app.appRef.fetch);

@@ -7,8 +7,8 @@ import type {
 import type { Any, Target } from "@chojs/core/meta";
 import type { ChoEndpointFn } from "@chojs/core/di";
 import type { ChoWebAdapter } from "./adapter.ts";
-import type { ChoWebContext } from "./context.ts";
-import type { InputFactory } from "./types.ts";
+import type { ChoWebContext } from "../context.ts";
+import type { InputFactory } from "../types.ts";
 import { debuglog } from "@chojs/core/utils";
 
 const log = debuglog("web:linker");

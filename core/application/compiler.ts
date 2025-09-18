@@ -240,6 +240,7 @@ export class Compiler {
       return this.resolved.get(node.ctr) as CompiledModule;
     }
 
+    log('compiling module: ' + node.ctr);
     // create injector for the module while resolving its dependencies
     const injector = await Injector.get(node.ctr);
     const handle = await injector.resolve(node.ctr);

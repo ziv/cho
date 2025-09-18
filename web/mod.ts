@@ -121,11 +121,11 @@
  * class AppFeature {}
  * ```
  */
-export * from "./adapter.ts";
+export * from "./internals/adapter.ts";
 export * from "./application.ts";
 export * from "./context.ts";
 export * from "./decorators.ts";
 export * from "./inputs.ts";
-export * from "./linker.ts";
-export * from "./meta.ts";
+export * from "./internals/linker.ts";
+export * from "./internals/meta.ts";
 export * from "./types.ts";

@@ -1,8 +1,9 @@
-import {
+import type {
   addToMetadataObject,
+  ClassDecorator,
   ClassMethodDecorator,
   Target,
-} from "../core/mod.ts";
+} from "@chojs/core";
 
 /**
  * Mark a method as the main command handler.
@@ -26,7 +27,13 @@ export function Command(name: string): ClassMethodDecorator {
   };
 }
 
-export function Help(content: string) {
+/**
+ * Add help content to a command method or controller.
+ *
+ * @param content
+ * @constructor
+ */
+export function Help(content: string): ClassDecorator & ClassMethodDecorator {
   return (target: Target) => {
     addToMetadataObject(target, { help: content });
   };
