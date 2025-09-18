@@ -1,22 +1,42 @@
 /**
- * CLI Application Module
+ * Command Application Module
  *
- * Parsing args using minimist api
- * The controller can have the "@Main" decorator to indicate the main entry point
- * Or use multiple "@Command('name')" to define sub-commands
+ * Allow creating command-line applications using decorators.
  *
- * "@Main" and "@SubCommand" are not allowed in the same controller.
- * If a controller contain a "@Main", the linker will not continue to search for other sub-commands.
- * If a controller contain multiple "@Command", it will throw an error if it will find "@Main" in the same controller.
+ * Main features:
+ * 1. Dependency Injection
+ * 2. Single command or multiple sub-commands support
+ * 3. Parsing args using minimist api
  *
+ * @example single command
+ * ```ts
  * @Controller()
  * class CliController {
  *
  *  @Main()
- *  main() {
- *
+ *  main(ctx: ChoCommandContext) {
+ *      console.log("Hello World");
  *  }
  * }
+ * ```
+ *
+ * @example multiple sub-commands
+ * ```ts
+ * @Controller()
+ * class CliController {
+ *
+ *   @Command("greet")
+ *   greet(ctx: ChoCommandContext) {
+ *     console.log("Greetings!");
+ *   }
+ *
+ *   @Command("farewell")
+ *   farewell(ctx: ChoCommandContext) {
+ *     console.log("Farewell!");
+ *   }
+ * }
+ * ```
+ *
  */
 export * from "./application.ts";
 export * from "./decorators.ts";

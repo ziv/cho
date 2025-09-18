@@ -16,6 +16,7 @@
     "vitepress": "^1.6.4"
   },
   "dependencies": {
+    "esbuild": "^0.25.10",
     "twoandhalfslash": "^0.2.1"
   }
 }
