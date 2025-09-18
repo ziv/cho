@@ -11,31 +11,34 @@ import {
   Provider,
 } from "../di/types.ts";
 
-export type Node<T = Any> = T & {
+export type Node<M = Any, T = Any> = T & {
+  meta: M;
   middlewares: (ChoMiddleware | ChoMiddlewareFn)[];
   errorHandler?: ChoErrorHandler | ChoErrorHandlerFn;
 };
 
-export type MethodNode = Node<{
-  meta: MethodDescriptor;
+export type MethodNode = Node<MethodDescriptor, {
   name: string;
 }>;
 
-export type ControllerNode = Node<{
-  meta: ControllerDescriptor;
+export type ControllerNode = Node<ControllerDescriptor, {
   ctr: Ctr;
   methods: MethodNode[];
 }>;
 
-export type ModuleNode = Node<{
-  meta: ModuleDescriptor;
+export type ModuleNode = Node<ModuleDescriptor, {
   ctr: Ctr;
   imports: ModuleNode[];
   providers: (Provider | Ctr)[];
-  controllers: Ctr[];
+  controllers: ControllerNode[];
 }>;
 
-const getMethods = (ctr: Ctr) =>
+/**
+ * Get all methods of a class constructor along with their metadata.
+ *
+ * @param ctr
+ */
+const getMethods = (ctr: Ctr): { name: string; meta: MethodDescriptor }[] =>
   (
     Object.getOwnPropertyNames(
       ctr.prototype,
@@ -47,10 +50,10 @@ const getMethods = (ctr: Ctr) =>
     // add metadata to each method
     .map((name) => ({
       name,
-      meta: readMetadataObject(ctr.prototype[name]),
+      meta: readMetadataObject<MethodDescriptor>(ctr.prototype[name]),
     }))
     // filter out methods without metadata
-    .filter(({ meta }) => !!meta);
+    .filter(({ meta }) => !!meta) as { name: string; meta: MethodDescriptor }[];
 
 /**
  * Build a graph representation of the module and its dependencies.
@@ -59,7 +62,7 @@ const getMethods = (ctr: Ctr) =>
  * and constructing a tree-like structure that represents the relationships between them.
  * @param ctr
  */
-export function graphBuilder(ctr: Ctr) {
+export function graphBuilder(ctr: Ctr): ModuleNode {
   const modules = new WeakMap<Ctr, ModuleNode>();
 
   function visitMethod(
@@ -67,6 +70,8 @@ export function graphBuilder(ctr: Ctr) {
   ): MethodNode {
     return {
       name,
+      middlewares: [],
+      errorHandler: undefined,
       meta,
     };
   }
@@ -78,12 +83,10 @@ export function graphBuilder(ctr: Ctr) {
         `Class ${ctr.name} is not a controller. Did you forget to add @Controller()?`,
       );
     }
-
     return {
       ctr,
       meta,
       methods: getMethods(ctr).map(visitMethod),
-      providers: meta.providers ?? [],
       middlewares: meta.middlewares ?? [],
       errorHandler: meta.errorHandler,
     };
@@ -101,7 +104,7 @@ export function graphBuilder(ctr: Ctr) {
       );
     }
 
-    const node = {
+    const node: ModuleNode = {
       ctr,
       meta,
       imports: (meta.imports ?? []).map(visitModule),

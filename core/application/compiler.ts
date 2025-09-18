@@ -1,5 +1,4 @@
 import type { Any, Ctr, Target } from "../meta/mod.ts";
-import { readMetadataObject } from "../meta/mod.ts";
 import type {
   ChoErrorHandler,
   ChoErrorHandlerFn,
@@ -9,6 +8,11 @@ import type {
   MethodDescriptor,
   ModuleDescriptor,
 } from "../di/types.ts";
+import type {
+  ControllerNode,
+  MethodNode,
+  ModuleNode,
+} from "./graph-builder.ts";
 import { Injector } from "../di/injector.ts";
 import { debuglog } from "../utils/debuglog.ts";
 import { isClass, isClassImplement } from "../utils/is.ts";
@@ -79,12 +83,12 @@ export class Compiler {
   /**
    * Compile the given class constructor
    * Return a tree of compiled modules ready for execution
-   * @param ctr
+   * @param node
    */
-  async compile(ctr: Ctr): Promise<CompiledModule> {
+  async compile(node: ModuleNode): Promise<CompiledModule> {
     const end = log.start();
-    const compiled = await this.module(ctr);
-    end(`module "${ctr.name}" compiled`);
+    const compiled = await this.module(node);
+    end(`module "${node.ctr.name}" compiled`);
     return compiled;
   }
 
@@ -120,9 +124,10 @@ export class Compiler {
    * @param mw
    * @param injector
    * @protected
+   * // todo add cache...
    */
   protected async middleware(
-    mw: Ctr | Target,
+    mw: ChoMiddleware | ChoMiddlewareFn,
     injector: Injector,
   ): Promise<ChoMiddlewareFn> {
     if (typeof mw !== "function") {
@@ -158,157 +163,115 @@ export class Compiler {
   /**
    * Compile a method into a compiled method.
    * @param instance
-   * @param name
-   * @param meta
+   * @param node
    * @param injector
    * @protected
    */
   protected async endpoint(
     instance: Any,
-    name: string,
-    meta: MethodDescriptor,
+    node: MethodNode,
     injector: Injector,
   ): Promise<CompiledMethod> {
-    const handle = (instance as Any)[name as keyof typeof instance].bind(
-      instance,
-    );
+    const handle = instance[node.name as keyof typeof instance].bind(instance);
 
     const middlewares: ChoMiddlewareFn[] = [];
-    for (const mw of ((meta as Meta)?.middlewares ?? [])) {
-      middlewares.push(await this.middleware(mw as Target, injector));
+    for (const mw of node.middlewares) {
+      middlewares.push(await this.middleware(mw, injector));
     }
 
-    const err = (meta as Meta)?.errorHandler;
-    const errorHandler = err
-      ? await this.errorHandler(err, injector)
+    const errorHandler = node.errorHandler
+      ? await this.errorHandler(node.errorHandler, injector)
       : undefined;
 
-    return { meta, errorHandler, middlewares, handle, name };
+    return {
+      meta: node.meta,
+      errorHandler,
+      middlewares,
+      handle,
+      name: node.name,
+    };
   }
 
   /**
    * Compile a gateway (controller) into a compiled gateway.
-   * @param ctr
+   * @param node
    * @param injector
    * @protected
    */
   protected async gateway(
-    ctr: Ctr,
+    node: ControllerNode,
     injector: Injector,
-  ): Promise<CompiledGateway | null> {
-    const meta = readMetadataObject<ControllerDescriptor>(ctr);
-    if (!meta || !meta.isGateway) {
-      // not a gateway, next
-      return null;
-    }
-
-    // props
-    const props = (
-      Object.getOwnPropertyNames(
-        ctr.prototype,
-      ) as (string & keyof typeof ctr.prototype)[]
-    )
-      // takes only methods, but not constructor
-      .filter((name) => name !== "constructor")
-      .filter((name) => typeof ctr.prototype[name] === "function")
-      // add metadata to each method
-      .map((name) => ({
-        name,
-        meta: readMetadataObject(ctr.prototype[name]),
-      }))
-      // filter out methods without metadata
-      .filter(({ meta }) => meta !== undefined);
-
-    if (0 === props.length) {
-      throw new Error(
-        `Gateway "${ctr.name}" has no methods. Did you forget to decorate endpoints?`,
-      );
-    }
-
-    const instance = await injector.register(ctr).resolve(ctr);
+  ): Promise<CompiledGateway> {
+    const handle = await injector.register(node.ctr).resolve(node.ctr);
 
     const methods: CompiledMethod[] = [];
-    for (const prop of props) {
-      methods.push(
-        await this.endpoint(
-          instance,
-          prop.name,
-          prop.meta as MethodDescriptor,
-          injector,
-        ),
-      );
+    for (const m of node.methods) {
+      methods.push(await this.endpoint(handle, m, injector));
     }
 
     const middlewares: ChoMiddlewareFn[] = [];
-    for (const mw of ((meta as Meta).middlewares ?? [])) {
-      middlewares.push(await this.middleware(mw as Target, injector));
+    for (const mw of node.middlewares) {
+      middlewares.push(await this.middleware(mw, injector));
     }
 
-    const err = (meta as Meta)?.errorHandler;
-    const errorHandler = err
-      ? await this.errorHandler(err, injector)
+    const errorHandler = node.errorHandler
+      ? await this.errorHandler(node.errorHandler, injector)
       : undefined;
 
-    return { meta, errorHandler, middlewares, methods, handle: instance };
+    return {
+      meta: node.meta,
+      errorHandler,
+      middlewares,
+      handle,
+      methods,
+    };
   }
 
   /**
    * Compile a module into a compiled module.
-   * @param ctr
    * @protected
+   * @param node
    */
   protected async module(
-    ctr: Ctr,
+    node: ModuleNode,
   ): Promise<CompiledModule> {
     // module is processed only once
-    if (this.resolved.has(ctr)) {
-      return this.resolved.get(ctr) as CompiledModule;
-    }
-
-    const meta = readMetadataObject<ModuleDescriptor>(ctr);
-    if (!meta || !meta.isModule) {
-      throw new Error(
-        `Class ${ctr.name} is not a module. Did you forget to add @Module()?`,
-      );
+    if (this.resolved.has(node.ctr)) {
+      return this.resolved.get(node.ctr) as CompiledModule;
     }
 
     // create injector for the module while resolving its dependencies
-    const injector = await Injector.get(ctr);
-    const instance = await injector.resolve(ctr);
+    const injector = await Injector.get(node.ctr);
+    const handle = await injector.resolve(node.ctr);
 
-    const controllers = [];
-    for (const gw of (meta.controllers ?? [])) {
-      const gateway = await this.gateway(gw, injector);
-      if (gateway) {
-        controllers.push(gateway);
-      }
+    const controllers: CompiledGateway[] = [];
+    for (const cn of node.controllers) {
+      controllers.push(await this.gateway(cn, injector));
     }
 
-    const imports = [];
-    for (const im of (meta.imports ?? [])) {
-      imports.push(await this.module(im));
+    const imports: CompiledModule[] = [];
+    for (const mn of node.imports) {
+      imports.push(await this.module(mn));
     }
 
-    // collect all middlewares and if there are any classes, register them in the injector
     const middlewares: ChoMiddlewareFn[] = [];
-    for (const mw of ((meta as Meta)?.middlewares ?? [])) {
-      middlewares.push(await this.middleware(mw as Target, injector));
+    for (const mw of node.middlewares) {
+      middlewares.push(await this.middleware(mw, injector));
     }
 
-    const err = meta?.errorHandler;
-    const errorHandler = err
-      ? await this.errorHandler(err, injector)
+    const errorHandler = node.errorHandler
+      ? await this.errorHandler(node.errorHandler, injector)
       : undefined;
 
     const mod: CompiledModule = {
-      meta,
+      meta: node.meta,
       errorHandler,
       middlewares,
       controllers,
       imports,
-      handle: instance,
+      handle,
     };
-    this.resolved.set(ctr, mod);
+    this.resolved.set(node.ctr, mod);
     return mod;
   }
 }

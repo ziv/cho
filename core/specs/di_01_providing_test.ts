@@ -1,6 +1,6 @@
 import { expect } from "@std/expect";
-import { Injectable, Module } from "../decorators.ts";
-import { Injector } from "../injector.ts";
+import { Injectable, Module } from "../di/decorators.ts";
+import { Injector } from "../di/injector.ts";
 
 Deno.test("value provider", async () => {
   @Module({

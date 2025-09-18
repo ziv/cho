@@ -59,7 +59,7 @@ set up middleware and error handling.
 
 ### Endpoint/Command Method
 
-The method get a `ChoCommandContext` parameter that contains the command line arguments and options (minimist API).
+The method get a `ChoCommandContext` as an argument that contains the command line arguments and options (minimist API).
 The return value of the command is the application exit code, where `void` is treated as `0`.
 
 ### `@Main()` decorator

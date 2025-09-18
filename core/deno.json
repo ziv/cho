@@ -6,7 +6,7 @@
     ".": "./mod.ts",
     "./di": "./di/mod.ts",
     "./meta": "./meta/mod.ts",
-    "./compiler": "./compiler/mod.ts",
+    "./application": "./application/mod.ts",
     "./utils": "./utils/mod.ts"
   },
   "imports": {
@@ -16,7 +16,7 @@
   },
   "publish": {
     "exclude": [
-      "./di/specs/**/*",
+      "./specs/**/*",
       "./**/*_test.ts",
       "./*.mjs"
     ]

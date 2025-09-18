@@ -94,7 +94,7 @@ const MetaKey = "___cho_meta___";
  */
 export function read<T = unknown>(
   target: Target,
-  key: symbol,
+  key: symbol | string,
 ): T | undefined {
   if (key in target) {
     return target[key as keyof typeof target] as T;
@@ -111,7 +111,7 @@ export function read<T = unknown>(
  */
 export function write(
   target: Target,
-  key: symbol,
+  key: symbol | string,
   value: unknown,
 ): void {
   Object.defineProperty(target, key, {

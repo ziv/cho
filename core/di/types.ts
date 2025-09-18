@@ -52,7 +52,7 @@ export type ModuleDescriptor = InjectableDescriptor & {
   imports: Ctr[];
   providers: (Provider | Ctr)[];
   controllers: Ctr[]; // AKA  gateways
-  middlewares: (ChoMiddleware | Target)[];
+  middlewares: (ChoMiddleware | ChoMiddlewareFn)[];
   errorHandler: ChoErrorHandler | ChoErrorHandlerFn;
   isModule: true;
 };
@@ -62,7 +62,7 @@ export type ModuleDescriptor = InjectableDescriptor & {
  */
 export type ControllerDescriptor = InjectableDescriptor & {
   route: string;
-  middlewares: (ChoMiddleware | Target)[];
+  middlewares: (ChoMiddleware | ChoMiddlewareFn)[];
   errorHandler: ChoErrorHandler | ChoErrorHandlerFn;
   isGateway: true;
 };

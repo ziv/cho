@@ -169,4 +169,4 @@
 export * from "./di/mod.ts";
 export * from "./utils/mod.ts";
 export * from "./meta/mod.ts";
-export * from "./compiler/mod.ts";
+export * from "./application/mod.ts";

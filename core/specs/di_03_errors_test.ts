@@ -1,6 +1,6 @@
 import { expect } from "@std/expect";
-import { Injectable, Module } from "../decorators.ts";
-import { Injector } from "../injector.ts";
+import { Injectable, Module } from "../di/decorators.ts";
+import { Injector } from "../di/injector.ts";
 
 Deno.test("should throw for creating new injector for module that already have one ", async () => {
   @Injectable()

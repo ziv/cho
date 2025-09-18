@@ -111,6 +111,7 @@ export default defineConfig({
         text: "Specs",
         items: [
           { text: "Dependency Injection", link: "/rfcs/di" },
+          { text: "Applications", link: "/rfcs/application" },
           { text: "Command", link: "/rfcs/command" },
           { text: "Web", link: "/rfcs/web" },
           { text: "Web/Stream", link: "/rfcs/web" },
