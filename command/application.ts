@@ -53,14 +53,8 @@ export class Application {
       return this.apply(this.appRef.main, args);
     }
 
-    // route to subcommand if exists
-    const route = args._[0] as string;
-    const subArgs = {
-      ...args,
-      _: args._.slice(1), // remove the route from args
-    };
-
-    if (!route) {
+    // do we have a sub command?
+    if (!args._[0]) {
       if (this.appRef.errorHandler) {
         return this.appRef.errorHandler(
           new MissingCommandError(),
@@ -69,6 +63,13 @@ export class Application {
       }
       throw new MissingCommandError();
     }
+
+    // route to subcommand
+    const route = args._[0] as string;
+    const subArgs = {
+      ...args,
+      _: args._.slice(1), // remove the route from args
+    };
 
     if (!this.appRef.commands[route]) {
       if (this.appRef.errorHandler) {

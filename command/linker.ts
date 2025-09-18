@@ -1,6 +1,6 @@
-import type {CompiledMethod, CompiledModule} from "@chojs/core/application";
-import type {Target} from "@chojs/core/meta";
-import {debuglog} from "@chojs/core/utils";
+import type { CompiledMethod, CompiledModule } from "@chojs/core/application";
+import type { Target } from "@chojs/core/meta";
+import { debuglog } from "@chojs/core/utils";
 
 export type LinkedCommand = {
   middlewares: Target[];
