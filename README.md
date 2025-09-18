@@ -5,8 +5,9 @@
 [![Release](https://github.com/ziv/cho/actions/workflows/release.yml/badge.svg)](https://github.com/ziv/cho/actions/workflows/release.yml)
 
 | Package              | Version                                                                               |
-| -------------------- | ------------------------------------------------------------------------------------- |
+|----------------------|---------------------------------------------------------------------------------------|
 | `@chojs/core`        | [![JSR](https://jsr.io/badges/@chojs/core)](https://jsr.io/@chojs/core)               |
+| `@chojs/command`     | [![JSR](https://jsr.io/badges/@chojs/command)](https://jsr.io/@chojs/command)         |
 | `@chojs/web`         | [![JSR](https://jsr.io/badges/@chojs/web)](https://jsr.io/@chojs/web)                 |
 | `@chojs/vendor-hono` | [![JSR](https://jsr.io/badges/@chojs/vendor-hono)](https://jsr.io/@chojs/vendor-hono) |
 | `@chojs/dev`         | [![JSR](https://jsr.io/badges/@chojs/dev)](https://jsr.io/@chojs/dev)                 |
