@@ -28,7 +28,7 @@ outline: [ 2, 4 ]
 While DI provides the mechanism to wire up dependencies, we still need a way create entire object graphs and execute the
 application.
 
-This RFC proposes the application lifecycle and composition model for building applications with CHO.
+This specification document proposes the application lifecycle and composition model for building applications with CHO.
 
 ## Summary
 
@@ -49,7 +49,7 @@ This RFC proposes the application lifecycle and composition model for building a
 
 ## Building Blocks
 
-This chapter is relying on concepts defined in the [Dependency Injection RFC](./di.md).
+This chapter is relying on concepts defined in the [Dependency Injection](./di.md).
 
 ### Error Handling
 
@@ -69,7 +69,7 @@ For a middleware require dependencies, it can be defined as an injectable class 
 
 ### Module
 
-The application specifications extends the use of modules as defined in the [Dependency Injection RFC](./di.md) to
+The application specifications extends the use of modules as defined in the [Dependency Injection](./di.md) to
 contain controllers, error handlers, and middleware.
 
 A module is required to bootstrap the application. The root module is passed to the application bootstrap function.
@@ -137,13 +137,65 @@ When the application is signaled to shut down (e.g., via a termination signal), 
 this phase, the application should clean up resources, close connections, and perform any necessary teardown tasks.
 The lifecycle hook `onModuleShutdown` can be implemented by module classes to handle cleanup tasks.
 
+---
+
 ## Implementation Details
 
-### The `@Module` Decorator
+### The Methods Decorators
+
+Defined by the specific application type (e.g., web, CLI, etc.), these decorators are used to define endpoints within
+controllers. Examples include `@Get`, `@Post` for web applications, or `@Command` for CLI applications.
+
+The endpoint handler methods always get an application runtime context as the last argument.
+
+```ts
+class MyController {
+
+    @Example()
+    method(ctx: ExampleContext) {
+        // endpoint logic
+    }
+}
+```
+
+More arguments can be defined by the user and resolved by the application at runtime.
 
 ### The `@Controller` Decorator
 
-### The Methods Decorators
+The `@Controller` decorator is used to define a controller class. Controllers are responsible for handling incoming
+requests or commands and can contain multiple endpoints.
+
+```ts
+@Controller()
+class MyController {
+
+    @Example()
+    method(ctx: ExampleContext) {
+        // endpoint logic
+    }
+}
+```
+
+Since the controller is an injectable class, it can have dependencies that will be resolved by the DI system.
+
+```ts
+
+@Controller()
+@Deps("dep1", "dep2")
+class MyController {
+
+    constructor(private dep1: Dep1, private dep2: Dep2) {
+    }
+
+    @Example()
+    method(ctx: ExampleContext) {
+        // endpoint logic
+    }
+}
+```
+
+
+### The `@Module` Decorator
 
 ### Middlewares
 
