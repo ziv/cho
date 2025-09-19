@@ -2,14 +2,19 @@
 import { Application } from "../command/application.ts";
 import { Help, Main } from "../command/decorators.ts";
 import { Catch, Controller, Module } from "../core/mod.ts";
-import { ChoCliContext } from "../command/context.ts";
+import { ChoCommandContext } from "../command/context.ts";
 
 @Controller()
 class MyController {
   @Help("specific help for main command")
   @Main()
-  async main(ctx: ChoCliContext) {
-    console.log(Deno.readTextFileSync("./deno.json"));
+  async main(ctx: ChoCommandContext) {
+    if (0 === ctx.args._.length) {
+      console.log("Hello World!");
+      return 0;
+    }
+    const filePath = ctx.args._[0];
+    console.log(Deno.readTextFileSync(filePath));
   }
 }
 

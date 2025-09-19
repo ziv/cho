@@ -4,7 +4,7 @@ import { Compiler } from "@chojs/core/application";
 import type { ChoWebAdapter } from "./internals/adapter.ts";
 import { Linker } from "./internals/linker.ts";
 import { onModuleActivate, onModuleInit } from "../core/application/hooks.ts";
-import {graphBuilder} from "../core/application/graph-builder.ts";
+import { graphBuilder } from "../core/application/graph-builder.ts";
 
 export type ApplicationOptions = {
   adapter: ChoWebAdapter;

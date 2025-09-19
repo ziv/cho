@@ -1,26 +1,7 @@
 {
-  "name": "@chojs/core",
+  "name": "chojs",
   "version": "0.0.0",
-  "sideEffects": false,
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "author": "Ziv Perry",
   "license": "MIT",
-  "keywords": [],
-  "engines": {
-    "node": ">=22.0.0",
-    "npm": ">=10.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ziv/cho.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ziv/cho/issues"
-  },
-  "homepage": "https://github.com/ziv/cho#readme",
   "devDependencies": {
     "@semantic-release/exec": "^7.1.0",
     "jsr": "^0.13.5",

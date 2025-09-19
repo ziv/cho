@@ -32,7 +32,6 @@ OPTIONS:
 
 @Controller()
 class MyController {
-  @Help("bla bla bla")
   @Command("foo")
   main(ctx: ChoCliContext) {
     if (ctx.args._.length) {

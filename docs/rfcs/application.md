@@ -47,7 +47,49 @@ This RFC proposes the application lifecycle and composition model for building a
 - **Middleware**: A function that intercepts process before reaching the endpoint handler.
 - **Error Handler**: A function that handles errors thrown during endpoint processing.
 
+## Building Blocks
+
+This chapter is relying on concepts defined in the [Dependency Injection RFC](./di.md).
+
+### Error Handling
+
+Error handling is done via error handlers that can be registered at any level (module, controller, endpoint). Error
+handlers are functions that take an error and the request context as arguments.
+
+For an error handler require dependencies, it can be defined as an injectable class with a `catch` method, implementing
+`ChoErrorHandler` interface.
+
+### Middleware
+
+Middleware used to intercept the request processing pipeline. Middleware can be registered at any level (module,
+controller, endpoint). Middleware are functions that take the request context and a `next` function as arguments.
+
+For a middleware require dependencies, it can be defined as an injectable class with a `handle` method, implementing
+`ChoMiddleware` interface.
+
+### Module
+
+The application specifications extends the use of modules as defined in the [Dependency Injection RFC](./di.md) to
+contain controllers, error handlers, and middleware.
+
+A module is required to bootstrap the application. The root module is passed to the application bootstrap function.
+
+### Controller
+
+A controller is an injectable class annotated with the `@Controller` decorator. A controller can contain multiple
+endpoints, error handlers, and middleware.
+
+### Endpoint
+
+An endpoint is an asynchronous method within a controller, annotated with decorators depending on the type of
+application being built (e.g., `@Get`, `@Post` for web applications).
+
+
+---
+
 ## Stages
+
+The application lifecycle consists of the following stages:
 
 #### Build Module Graph
 
@@ -62,8 +104,9 @@ instantiating all dependencies. The result is a tree of resolved modules with th
 controllers, and their endpoints bound and ready to be invoked.
 
 The compilation stage is the first **initialization** phase of the application lifecycle. It is an async process and
-ends
-when all dependencies are resolved and instantiated. Any setup task should be done in this phase.
+ends when all dependencies are resolved and instantiated. Any setup task should be done in this phase.
+
+The compilation stage is an asynchronous process.
 
 #### Initialization
 
@@ -92,6 +135,7 @@ handles incoming requests or commands, invoking the appropriate controllers and 
 
 When the application is signaled to shut down (e.g., via a termination signal), it enters the shutdown phase. During
 this phase, the application should clean up resources, close connections, and perform any necessary teardown tasks.
+The lifecycle hook `onModuleShutdown` can be implemented by module classes to handle cleanup tasks.
 
 ## Implementation Details
 
@@ -100,3 +144,7 @@ this phase, the application should clean up resources, close connections, and pe
 ### The `@Controller` Decorator
 
 ### The Methods Decorators
+
+### Middlewares
+
+### Error Handling
